@@ -123,3 +123,25 @@ def top_rate(request):
     }
     
     return Response(response_data)
+
+
+@api_view(['GET'])
+def deposit_product_details(request, fin_prdt_cd):
+    """
+    특정 상품에 대한 상세정보와 옵션 리스트를 반환합니다.
+    """
+    try:
+        product = DepositProducts.objects.get(fin_prdt_cd=fin_prdt_cd)
+    except DepositProducts.DoesNotExist:
+        return Response({'error': '상품이 존재하지 않습니다.'}, status=404)
+    
+    product_serializer = DepositProductsSerializer(product)
+    options = DepositOptions.objects.filter(product=product)
+    options_serializer = DepositOptionsSerializer(options, many=True)
+
+    response_data = {
+        'product': product_serializer.data,
+        'options': options_serializer.data,
+    }
+
+    return Response(response_data)
