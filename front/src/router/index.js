@@ -5,7 +5,7 @@ import SignInView from '@/views/SignInView.vue'
 import HomeView from '@/views/HomeView.vue'
 import LocationView from '@/views/LocationView.vue'
 import InterestRateView from '@/views/InterestRateView.vue'
-import ExchangeRateView from '@/views/ExchangeRateView.vue'
+import ExchangeRateView from '@/views/exchangeRateView.vue'
 import SavingsView from '@/views/SavingsView.vue'
 
 const router = createRouter({
