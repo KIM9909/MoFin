@@ -1,10 +1,14 @@
 <template>
   <div>
-    <RouterLink :to="{ name: 'home' }">Home</RouterLink>
+    <RouterLink :to="{ name: 'home' }">MoFin</RouterLink>
     <span> | </span>
-    <RouterLink :to="{ name: 'signIn' }">SignIn</RouterLink>
+    <RouterLink :to="{ name: 'signIn' }">로그인</RouterLink>
     <span> | </span>
-    <RouterLink :to="{ name: 'signUp' }">SignUp</RouterLink>
+    <RouterLink :to="{ name: 'signUp' }">회원가입</RouterLink>
+    <span> | </span>
+    <RouterLink :to="{ name: 'location' }">근처 은행 찾기</RouterLink>
+    <span> | </span>
+    <RouterLink :to="{ name: 'interestRate' }">금리 조회</RouterLink>
   </div>
 </template>
 

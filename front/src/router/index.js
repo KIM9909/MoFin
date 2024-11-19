@@ -3,6 +3,8 @@ import { useAuthStore } from '@/stores/auth'
 import SignUpView from '@/views/SignUpView.vue'
 import SignInView from '@/views/SignInView.vue'
 import HomeView from '@/views/HomeView.vue'
+import LocationView from '@/views/LocationView.vue'
+import InterestRateView from '@/views/InterestRateView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,7 +23,17 @@ const router = createRouter({
       path: '/signin',
       name: 'signIn',
       component: SignInView
-    }
+    },
+    {
+      path: '/location',
+      name: 'location',
+      component: LocationView
+    },
+    {
+      path: '/interest_rate',
+      name: 'interestRate',
+      component: InterestRateView
+    },
   ]
 })
 
