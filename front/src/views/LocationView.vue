@@ -1,20 +1,22 @@
 <template>
-  <div>
-    <h1>은행 위치 찾기</h1>
-    <div>
-      <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="지역을 입력하세요 (예: 강남구)"
-      />
-      <select v-model="selectedBank">
-        <option value="" disabled selected>은행 선택</option>
-        <option v-for="bank in banks" :key="bank" :value="bank">{{ bank }}</option>
-      </select>
-      <button @click="searchLocations">은행 찾기</button>
-      <button @click="findNearbyBanks">내 주변 은행 찾기</button>
+  <div class="container">
+    <div class="form-container">
+      <div class="form">
+      <h1>은행 위치 찾기</h1>
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="지역을 입력하세요 (예: 강남구)"
+        />
+        <select v-model="selectedBank">
+          <option value="" disabled selected>은행 선택</option>
+          <option v-for="bank in banks" :key="bank" :value="bank">{{ bank }}</option>
+        </select>
+        <button @click="searchLocations">은행 찾기</button>
+        <button @click="findNearbyBanks">내 주변 은행 찾기</button>
+      </div>
     </div>
-    <div id="map" style="width: 100%; height: 500px;"></div>
+    <div id="map"></div>
   </div>
 </template>
 
@@ -207,27 +209,49 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.form-container {
+  width: 300px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding-top: 50px;
+}
+
 #map {
-  margin-top: 20px;
+  flex-grow: 1;
+  height: 550px;
+  width: 500px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
-input {
-  margin-right: 10px;
-  padding: 5px;
-  width: 200px;
-}
-select {
-  margin-right: 10px;
-  padding: 5px;
-}
+
+input,
+select,
 button {
-  margin-left: 10px;
-  padding: 5px 10px;
-  cursor: pointer;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
   border-radius: 4px;
 }
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
 button:hover {
   background-color: #45a049;
 }
