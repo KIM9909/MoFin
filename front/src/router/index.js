@@ -37,7 +37,7 @@ const router = createRouter({
       component: InterestRateView
     },
     {
-      path: '/exchage_rate',
+      path: '/exchange_rate',
       name: 'exchangeRate',
       component: ExchangeRateView
     },
