@@ -41,12 +41,15 @@ API_KEY = env('API_KEY')
 
 ALLOWED_HOSTS = []
 
+EXIMBANK_API_KEY = "XilWCA67tSYmLpY9laZOja3jimRDmYm3"
+
 
 # Application definition
 
 INSTALLED_APPS = [
     'accounts',
     'interests',
+    'exchange',
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
@@ -78,7 +81,10 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CALSSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
+        
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
@@ -90,6 +96,8 @@ SITE_ID = 1
 ROOT_URLCONF = 'crud.urls'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
 
 ROOT_URLCONF = 'final_pjt.urls'
 
