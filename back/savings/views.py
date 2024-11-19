@@ -2,14 +2,14 @@ from django.conf import settings
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import DepositProducts, DepositOptions
-from .serializers import DepositProductsSerializer, DepositOptionsSerializer
+from .models import SavingsProducts, SavingsOptions
+from .serializers import SavingsProductsSerializer, SavingsOptionsSerializer
 import requests
 
 @api_view(['GET'])
-def save_deposit_products(request):
+def save_savings_products(request):
     api_key = settings.API_KEY
-    url = 'http://finlife.fss.or.kr/finlifeapi/depositProductsSearch.json'
+    url = 'http://finlife.fss.or.kr/finlifeapi/savingProductsSearch.json'
     params = {
         'auth': api_key,
         'topFinGrpNo': '020000',
@@ -38,14 +38,14 @@ def save_deposit_products(request):
             'spcl_cnd': spcl_cnd,
         }
             
-        if DepositProducts.objects.filter(
+        if SavingsProducts.objects.filter(
             fin_prdt_cd=fin_prdt_cd, kor_co_nm=kor_co_nm, fin_prdt_nm=fin_prdt_nm, 
             etc_note=etc_note, join_deny=join_deny, join_member=join_member, 
             join_way=join_way, spcl_cnd=spcl_cnd
         ).exists():
             continue
 
-        serializer = DepositProductsSerializer(data=save_data)
+        serializer = SavingsProductsSerializer(data=save_data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
 
@@ -58,8 +58,8 @@ def save_deposit_products(request):
         save_trm = option.get('save_trm')
         fin_prdt_cd = option.get('fin_prdt_cd')
 
-        if DepositProducts.objects.get(fin_prdt_cd=fin_prdt_cd):
-            product = DepositProducts.objects.get(fin_prdt_cd=fin_prdt_cd)
+        if SavingsProducts.objects.get(fin_prdt_cd=fin_prdt_cd):
+            product = SavingsProducts.objects.get(fin_prdt_cd=fin_prdt_cd)
             save_data = {
                 'intr_rate_type_nm': intr_rate_type_nm,
                 'intr_rate': intr_rate,
@@ -68,13 +68,13 @@ def save_deposit_products(request):
                 'fin_prdt_cd': fin_prdt_cd,
             }
 
-            if DepositOptions.objects.filter(
+            if SavingsOptions.objects.filter(
                 intr_rate_type_nm=intr_rate_type_nm, intr_rate=intr_rate, 
                 intr_rate2=intr_rate2, save_trm=save_trm
             ).exists():
                 continue
 
-            serializer = DepositOptionsSerializer(data=save_data)
+            serializer = SavingsOptionsSerializer(data=save_data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save(product=product)
 
@@ -83,14 +83,14 @@ def save_deposit_products(request):
 
 
 @api_view(['GET', 'POST'])
-def deposit_products(request):
+def savings_products(request):
     if request.method == 'GET':
-        deposit_products_list = DepositProducts.objects.all()
-        serializer = DepositProductsSerializer(deposit_products_list, many=True)
+        deposit_products_list = SavingsProducts.objects.all()
+        serializer = SavingsProductsSerializer(deposit_products_list, many=True)
         return Response(serializer.data)
     
     elif request.method == 'POST':
-        serializer = DepositProductsSerializer(data=request.data)
+        serializer = SavingsProductsSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -99,45 +99,25 @@ def deposit_products(request):
 
 
 @api_view(['GET'])
-def deposit_product_options(request, fin_prdt_cd):
-    product = DepositOptions.objects.filter(fin_prdt_cd=fin_prdt_cd)
-    serializer = DepositOptionsSerializer(product, many=True)
+def savings_product_options(request, fin_prdt_cd):
+    product = SavingsOptions.objects.filter(fin_prdt_cd=fin_prdt_cd)
+    serializer = SavingsOptionsSerializer(product, many=True)
     return Response(serializer.data)
 
 
 @api_view(['GET'])
-def top_rate(request):
-    top_option = DepositOptions.objects.order_by('-intr_rate2').first()
-
-    if not top_option:
-        return Response({'error': '데이터가 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
-    
-    product = top_option.product
-    options = DepositOptions.objects.filter(product=product)
-    product_serializer = DepositProductsSerializer(product)
-    options_serializer = DepositOptionsSerializer(options, many=True)
-
-    response_data = {
-        'deposit_product': product_serializer.data,
-        'options': options_serializer.data,
-    }
-    
-    return Response(response_data)
-
-
-@api_view(['GET'])
-def deposit_product_details(request, fin_prdt_cd):
+def savings_product_details(request, fin_prdt_cd):
     """
     특정 상품에 대한 상세정보와 옵션 리스트를 반환합니다.
     """
     try:
-        product = DepositProducts.objects.get(fin_prdt_cd=fin_prdt_cd)
-    except DepositProducts.DoesNotExist:
+        product = SavingsProducts.objects.get(fin_prdt_cd=fin_prdt_cd)
+    except SavingsProducts.DoesNotExist:
         return Response({'error': '상품이 존재하지 않습니다.'}, status=404)
     
-    product_serializer = DepositProductsSerializer(product)
-    options = DepositOptions.objects.filter(product=product)
-    options_serializer = DepositOptionsSerializer(options, many=True)
+    product_serializer = SavingsProductsSerializer(product)
+    options = SavingsOptions.objects.filter(product=product)
+    options_serializer = SavingsOptionsSerializer(options, many=True)
 
     response_data = {
         'product': product_serializer.data,
