@@ -1,0 +1,127 @@
+from django.conf import settings
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .models import SavingsProducts, SavingsOptions
+from .serializers import SavingsProductsSerializer, SavingsOptionsSerializer
+import requests
+
+@api_view(['GET'])
+def save_savings_products(request):
+    api_key = settings.API_KEY
+    url = 'http://finlife.fss.or.kr/finlifeapi/savingProductsSearch.json'
+    params = {
+        'auth': api_key,
+        'topFinGrpNo': '020000',
+        'pageNo': 1,
+    }
+    response = requests.get(url, params=params).json()
+
+    for data in response.get('result').get('baseList'):
+        fin_prdt_cd = data.get('fin_prdt_cd')
+        kor_co_nm = data.get('kor_co_nm')
+        fin_prdt_nm = data.get('fin_prdt_nm')
+        etc_note = data.get('etc_note')
+        join_deny = data.get('join_deny')
+        join_member = data.get('join_member')
+        join_way = data.get('join_way')
+        spcl_cnd = data.get('spcl_cnd')
+
+        save_data = {
+            'fin_prdt_cd': fin_prdt_cd,
+            'kor_co_nm': kor_co_nm,
+            'fin_prdt_nm': fin_prdt_nm,
+            'etc_note': etc_note,
+            'join_deny': join_deny,
+            'join_member': join_member,
+            'join_way': join_way,
+            'spcl_cnd': spcl_cnd,
+        }
+            
+        if SavingsProducts.objects.filter(
+            fin_prdt_cd=fin_prdt_cd, kor_co_nm=kor_co_nm, fin_prdt_nm=fin_prdt_nm, 
+            etc_note=etc_note, join_deny=join_deny, join_member=join_member, 
+            join_way=join_way, spcl_cnd=spcl_cnd
+        ).exists():
+            continue
+
+        serializer = SavingsProductsSerializer(data=save_data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+
+    options = response.get('result').get('optionList')
+
+    for option in options:
+        intr_rate_type_nm = option.get('intr_rate_type_nm')
+        intr_rate = option.get('intr_rate')
+        intr_rate2 = option.get('intr_rate2')
+        save_trm = option.get('save_trm')
+        fin_prdt_cd = option.get('fin_prdt_cd')
+
+        if SavingsProducts.objects.get(fin_prdt_cd=fin_prdt_cd):
+            product = SavingsProducts.objects.get(fin_prdt_cd=fin_prdt_cd)
+            save_data = {
+                'intr_rate_type_nm': intr_rate_type_nm,
+                'intr_rate': intr_rate,
+                'intr_rate2': intr_rate2,
+                'save_trm': save_trm,
+                'fin_prdt_cd': fin_prdt_cd,
+            }
+
+            if SavingsOptions.objects.filter(
+                intr_rate_type_nm=intr_rate_type_nm, intr_rate=intr_rate, 
+                intr_rate2=intr_rate2, save_trm=save_trm
+            ).exists():
+                continue
+
+            serializer = SavingsOptionsSerializer(data=save_data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(product=product)
+
+
+    return Response(response, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET', 'POST'])
+def savings_products(request):
+    if request.method == 'GET':
+        deposit_products_list = SavingsProducts.objects.all()
+        serializer = SavingsProductsSerializer(deposit_products_list, many=True)
+        return Response(serializer.data)
+    
+    elif request.method == 'POST':
+        serializer = SavingsProductsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response({'message': '이미 있는 데이터이거나, 데이터가 잘못 입력되었습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def savings_product_options(request, fin_prdt_cd):
+    product = SavingsOptions.objects.filter(fin_prdt_cd=fin_prdt_cd)
+    serializer = SavingsOptionsSerializer(product, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def savings_product_details(request, fin_prdt_cd):
+    """
+    특정 상품에 대한 상세정보와 옵션 리스트를 반환합니다.
+    """
+    try:
+        product = SavingsProducts.objects.get(fin_prdt_cd=fin_prdt_cd)
+    except SavingsProducts.DoesNotExist:
+        return Response({'error': '상품이 존재하지 않습니다.'}, status=404)
+    
+    product_serializer = SavingsProductsSerializer(product)
+    options = SavingsOptions.objects.filter(product=product)
+    options_serializer = SavingsOptionsSerializer(options, many=True)
+
+    response_data = {
+        'product': product_serializer.data,
+        'options': options_serializer.data,
+    }
+
+    return Response(response_data)
