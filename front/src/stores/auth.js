@@ -4,7 +4,6 @@ import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
 export const useAuthStore = defineStore('auth', () => {
   const router = useRouter()
-
   const BASE_URL = 'http://127.0.0.1:8000'
   const token = ref(null)
 
@@ -25,6 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
         console.log(err)
       })
   }
+
   const signIn = function (payload) {
     const { username, password } = payload
 
@@ -44,6 +44,7 @@ export const useAuthStore = defineStore('auth', () => {
         console.log(err)
       })
     }
+
     const isLogin = computed(() => {
       if (token.value === null) {
         return false
@@ -51,5 +52,6 @@ export const useAuthStore = defineStore('auth', () => {
         return true
       }
     })
+    
   return { signIn, signUp, token, isLogin }
 })
