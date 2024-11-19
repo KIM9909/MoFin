@@ -9,6 +9,8 @@
     <RouterLink :to="{ name: 'location' }">근처 은행 찾기</RouterLink>
     <span> | </span>
     <RouterLink :to="{ name: 'interestRate' }">금리 조회</RouterLink>
+    <span> | </span>
+    <RouterLink :to="{ name: 'exchangeRate' }">환율 계산</RouterLink>
   </div>
 </template>
 
