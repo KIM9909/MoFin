@@ -20,10 +20,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-d3t$@!#k+ol(u#-+d3*@hty)6q+evb((83md6%b3&p0v^7x)&s'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
+import os
+import environ
+
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+
+environ.Env.read_env(
+    env_file=os.path.join(BASE_DIR, '.env')
+)
+
+
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
+API_KEY = env('API_KEY')
+
 
 ALLOWED_HOSTS = []
 
@@ -32,6 +46,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'accounts',
+    'interests',
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
