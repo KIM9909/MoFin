@@ -8,11 +8,13 @@
     <span> | </span>
     <RouterLink :to="{ name: 'location' }">근처 은행 찾기</RouterLink>
     <span> | </span>
-    <RouterLink :to="{ name: 'interestRate' }">금리 조회</RouterLink>
+    <RouterLink :to="{ name: 'interest' }">금리 조회</RouterLink>
     <span> | </span>
     <RouterLink :to="{ name: 'exchangeRate' }">환율 계산</RouterLink>
     <span> | </span>
     <RouterLink :to="{ name: 'savings' }">적금 상품 조회</RouterLink>
+    <span> | </span>
+    <RouterLink :to="{ name: 'products' }">상품 조회</RouterLink>
   </div>
 </template>
 

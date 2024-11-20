@@ -7,6 +7,7 @@ import LocationView from '@/views/LocationView.vue'
 import InterestRateView from '@/views/InterestRateView.vue'
 import ExchangeRateView from '@/views/ExchangeRateView.vue'
 import SavingsView from '@/views/SavingsView.vue'
+import ProductView from '@/views/ProductView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,8 +33,8 @@ const router = createRouter({
       component: LocationView
     },
     {
-      path: '/interest_rate',
-      name: 'interestRate',
+      path: '/interest',
+      name: 'interest',
       component: InterestRateView
     },
     {
@@ -45,6 +46,11 @@ const router = createRouter({
       path: '/savings',
       name: 'savings',
       component: SavingsView
+    },
+    {
+      path: '/products',
+      name: 'products',
+      component: ProductView
     }
   ]
 })

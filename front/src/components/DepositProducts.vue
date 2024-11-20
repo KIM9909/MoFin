@@ -1,12 +1,16 @@
 <template>
   <div>
+    <!-- 예금 상품 기본 정보 -->
     <p>금융 상품명: {{ deposit_product.fin_prdt_nm }}</p>
     <p>금융 회사명: {{ deposit_product.kor_co_nm }}</p>
     <p>공시 제출월: {{ deposit_product.dcls_month }}</p>
+    
+    <!-- 상세 정보 보기 버튼 -->
     <button @click="toggleDetails(deposit_product.fin_prdt_cd)">
       {{ details ? "닫기" : "상세 보기" }}
     </button>
 
+    <!-- 상세 정보 토글 -->
     <div v-if="details">
       <h3>상세 정보</h3>
       <p>기타 유의사항: {{ details.product.etc_note }}</p>
@@ -23,33 +27,36 @@
         </li>
       </ul>
     </div>
+    
     <hr>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useDepositStore } from '@/stores/deposit';
+import { ref } from 'vue'
+import { useDepositStore } from '@/stores/deposit'
 
 defineProps({
-  deposit_product: Object,
-});
+  deposit_product: Object, // 부모로부터 deposit_product 객체를 받음
+})
 
-const store = useDepositStore();
-const details = ref(null);
+const store = useDepositStore()
+const details = ref(null) // 상세 정보를 저장할 변수
 
+// 상세 정보 토글 함수
 const toggleDetails = async (fin_prdt_cd) => {
   if (details.value) {
     // 상세 정보가 이미 표시 중이면 닫기
-    details.value = null;
+    details.value = null
   } else {
     // 상세 정보가 닫혀 있으면 가져오기
-    details.value = await store.getDepositDetails(fin_prdt_cd);
+    details.value = await store.getDepositDetails(fin_prdt_cd)
   }
-};
+}
 </script>
 
 <style scoped>
+/* 버튼 스타일 */
 button {
   margin: 10px 0;
   padding: 8px 12px;
