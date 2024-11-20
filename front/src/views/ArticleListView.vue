@@ -1,7 +1,15 @@
 <template>
   <div>
     <h1>게시글 리스트</h1>
-    <RouterLink :to="{ name: 'articleCreate' }">새 게시글 작성</RouterLink>
+    <RouterLink 
+      v-if="store.isLogin"
+      :to="{ name: 'articleCreate' }"
+      class="create-button"
+    >
+      새 게시글 작성
+    </RouterLink>
+    <p v-else>게시글을 작성하려면 로그인해주세요.</p>
+    
     <ul>
       <li v-if="articles.length === 0">게시글이 없습니다.</li>
       <li v-else v-for="article in articles" :key="article.id">
@@ -20,24 +28,29 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import { useAuthStore } from '@/stores/auth';
 
-const articles = ref([]); // 초기값은 항상 빈 배열로 설정
+const articles = ref([]);
+const store = useAuthStore();
 
 onMounted(() => {
-  axios
-  .get('http://127.0.0.1:8000/articles/') // Django 서버 URL
-  .then((response) => {
-    if (Array.isArray(response.data)) {
-      articles.value = response.data;
-    } else if (response.data.results) {
-      articles.value = response.data.results;
-    } else {
-      console.error('올바르지 않은 API 데이터 구조:', response.data);
-      articles.value = [];
-    }
+  axios({
+    method: 'get',
+    url: 'http://127.0.0.1:8000/articles/',
+    headers: store.token ? { Authorization: `Token ${store.token}` } : {}
   })
-  .catch((error) => {
-    console.error('게시글 데이터를 가져오는 중 오류가 발생했습니다:', error);
-  });
+    .then((response) => {
+      if (Array.isArray(response.data)) {
+        articles.value = response.data;
+      } else if (response.data.results) {
+        articles.value = response.data.results;
+      } else {
+        console.error('올바르지 않은 API 데이터 구조:', response.data);
+        articles.value = [];
+      }
+    })
+    .catch((error) => {
+      console.error('게시글 데이터를 가져오는 중 오류가 발생했습니다:', error);
+    });
 });
 </script>
