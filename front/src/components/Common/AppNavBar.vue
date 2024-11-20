@@ -13,6 +13,8 @@
     <RouterLink :to="{ name: 'exchangeRate' }">환율 계산</RouterLink>
     <span> | </span>
     <RouterLink :to="{ name: 'savings' }">적금 상품 조회</RouterLink>
+    <span> | </span>
+    <RouterLink :to="{ name: 'articleList' }">게시판</RouterLink>
   </div>
 </template>
 

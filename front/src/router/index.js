@@ -7,6 +7,10 @@ import LocationView from '@/views/LocationView.vue'
 import InterestRateView from '@/views/InterestRateView.vue'
 import ExchangeRateView from '@/views/ExchangeRateView.vue'
 import SavingsView from '@/views/SavingsView.vue'
+import ArticleListView from '@/views/ArticleListView.vue'
+import ArticleDetailView from '@/views/ArticleDetailView.vue'
+import ArticleCreateView from '@/views/ArticleCreateView.vue'
+import ArticleUpdateView from '@/views/ArticleUpdateView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,7 +49,27 @@ const router = createRouter({
       path: '/savings',
       name: 'savings',
       component: SavingsView
-    }
+    },
+    {
+      path: '/articles',
+      name: 'articleList',
+      component: ArticleListView
+    },
+    {
+      path: '/articles/:id',
+      name: 'articleDetail',
+      component: ArticleDetailView
+    },
+    {
+      path: '/article/:id/update',
+      name: 'articleUpdate',
+      component: ArticleUpdateView
+    },
+    {
+      path: '/article/create',
+      name: 'articleCreate',
+      component: ArticleCreateView
+    },
   ]
 })
 
