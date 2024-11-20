@@ -22,7 +22,7 @@ const title = ref('')
 const content = ref('')
 
 onMounted(() => {
-  axios.get(`http://127.0.0.1:8000/articles/${route.params.id}/`)
+  axios.get(`http://127.0.0.1:8000/articles/articles/${route.params.id}/`)
     .then(response => {
       title.value = response.data.title;
       content.value = response.data.content;
@@ -33,7 +33,7 @@ onMounted(() => {
 });
 
 const updateArticle = () => {
-  axios.put(`http://127.0.0.1:8000/articles/${route.params.id}/`, {
+  axios.put(`http://127.0.0.1:8000/articles/articles/${route.params.id}/`, {
     title: title.value,
     content: content.value,
   })

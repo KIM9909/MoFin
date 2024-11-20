@@ -51,7 +51,7 @@ const store = useAuthStore();
 onMounted(() => {
   axios({
     method: 'get',
-    url: 'http://127.0.0.1:8000/articles/',
+    url: 'http://127.0.0.1:8000/articles/articles/',
     headers: store.token ? { Authorization: `Token ${store.token}` } : {}
   })
     .then((response) => {
