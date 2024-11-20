@@ -95,11 +95,7 @@ REST_FRAMEWORK = {
 
 SITE_ID = 1
 
-ROOT_URLCONF = 'crud.urls'
-
 CORS_ALLOW_ALL_ORIGINS = True
-
-
 
 ROOT_URLCONF = 'final_pjt.urls'
 

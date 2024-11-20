@@ -11,6 +11,7 @@ import ArticleListView from '@/views/ArticleListView.vue'
 import ArticleDetailView from '@/views/ArticleDetailView.vue'
 import ArticleCreateView from '@/views/ArticleCreateView.vue'
 import ArticleUpdateView from '@/views/ArticleUpdateView.vue'
+import ProductView from '@/views/ProductView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,8 +37,8 @@ const router = createRouter({
       component: LocationView
     },
     {
-      path: '/interest_rate',
-      name: 'interestRate',
+      path: '/interest',
+      name: 'interest',
       component: InterestRateView
     },
     {
@@ -70,6 +71,11 @@ const router = createRouter({
       name: 'articleCreate',
       component: ArticleCreateView
     },
+    {
+      path: '/products',
+      name: 'products',
+      component: ProductView
+    }
   ]
 })
 
