@@ -4,10 +4,10 @@ import SignUpView from '@/views/SignUpView.vue'
 import SignInView from '@/views/SignInView.vue'
 import HomeView from '@/views/HomeView.vue'
 import LocationView from '@/views/LocationView.vue'
-import InterestRateView from '@/views/InterestRateView.vue'
 import ExchangeRateView from '@/views/ExchangeRateView.vue'
 import SavingsView from '@/views/SavingsView.vue'
 import ProductView from '@/views/ProductView.vue'
+import DepositView from '@/views/DepositView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,9 +33,9 @@ const router = createRouter({
       component: LocationView
     },
     {
-      path: '/interest',
-      name: 'interest',
-      component: InterestRateView
+      path: '/deposit',
+      name: 'deposit',
+      component: DepositView
     },
     {
       path: '/exchange_rate',

@@ -48,7 +48,6 @@ EXIMBANK_API_KEY = "XilWCA67tSYmLpY9laZOja3jimRDmYm3"
 
 INSTALLED_APPS = [
     'accounts',
-    'interests',
     'exchange',
     'savings',
     'rest_framework',

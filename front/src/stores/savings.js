@@ -33,4 +33,8 @@ export const useSavingsStore = defineStore('savings', () => {
   }
 
   return { savingsProducts, BASE_URL, getSavings, getSavingsDetails }
-})
+},
+{
+  persist: true,
+},
+)
