@@ -10,6 +10,7 @@ import ArticleDetailView from '@/views/ArticleDetailView.vue'
 import ArticleCreateView from '@/views/ArticleCreateView.vue'
 import ArticleUpdateView from '@/views/ArticleUpdateView.vue'
 import ProductView from '@/views/ProductView.vue'
+import DepositView from '@/views/DepositView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,6 +34,11 @@ const router = createRouter({
       path: '/location',
       name: 'location',
       component: LocationView
+    },
+    {
+      path: '/deposit',
+      name: 'deposit',
+      component: DepositView
     },
     {
       path: '/exchange_rate',

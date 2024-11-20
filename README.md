@@ -76,7 +76,7 @@
 
 
 - #### 문제점 2
-    입력 폼은 추가 했지만, 여전히 DB에는 저장이 되지 않는 문제 발생
+    입력 폼은 추가 했지만, 여전히 DB에는 저장이 되지 않는 문제 발생!
 
 - #### 해결방안
     models.py에 DefaultAccountAdapter를 import 받아와서 CustomAccountAdapter를 만들어줌
