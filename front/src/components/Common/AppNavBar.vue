@@ -14,6 +14,8 @@
     <span> | </span>
     <RouterLink :to="{ name: 'savings' }">적금 상품 조회</RouterLink>
     <span> | </span>
+    <RouterLink :to="{ name: 'articleList' }">게시판</RouterLink>
+    <span> | </span>
     <RouterLink :to="{ name: 'products' }">상품 조회</RouterLink>
   </div>
 </template>

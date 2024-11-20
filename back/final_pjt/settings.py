@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'interests',
     'exchange',
     'savings',
+    'articles',
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
