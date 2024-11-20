@@ -1,17 +1,18 @@
 from django.contrib.auth.models import AbstractUser
 from allauth.account.adapter import DefaultAccountAdapter
 from django.db import models
-
+from savings.models import SavingsProducts
 
 class User(AbstractUser):
-    # 추가 필드: nickname, birth, preference
     nickname = models.CharField(max_length=255, blank=False)
     birth = models.DateField(blank=True, null=True)
-    preference = models.TextField(blank=True, null=True)  # 다중 선택 값을 저장 가능
+    preference = models.TextField(blank=True, null=True)
+    joined_products = models.ManyToManyField(SavingsProducts, blank=True, null=True, related_name='users_joined')
 
     def __str__(self):
         return self.username
-    
+
+
 class CustomAccountAdapter(DefaultAccountAdapter):
     def save_user(self, request, user, form, commit=True):
         """
@@ -43,9 +44,12 @@ class CustomAccountAdapter(DefaultAccountAdapter):
             user.set_password(data["password1"])
         else:
             user.set_unusable_password()
+
         self.populate_username(request, user)
+
         if commit:
             # Ability not to commit makes it easier to derive from
             # this adapter by adding
             user.save()
+
         return user

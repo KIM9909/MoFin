@@ -33,8 +33,4 @@ export const useDepositStore = defineStore('deposit', () => {
   }
 
   return { depositProducts, BASE_URL, getDeposits, getDepositDetails }
-},
-{
-  persist: true,
-},
-)
+})
