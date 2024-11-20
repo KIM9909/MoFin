@@ -50,14 +50,16 @@ const router = createRouter({
       component: ArticleDetailView
     },
     {
-      path: '/article/:id/update',
-      name: 'articleUpdate',
-      component: ArticleUpdateView
-    },
-    {
       path: '/article/create',
       name: 'articleCreate',
-      component: ArticleCreateView
+      component: ArticleCreateView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/article/:id/update',
+      name: 'articleUpdate',
+      component: ArticleUpdateView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/products',
@@ -67,11 +69,20 @@ const router = createRouter({
   ]
 })
 
+// 라우터 가드 수정
 router.beforeEach((to, from) => {
   const store = useAuthStore()
+  
+  // 기존 로직
   if ((to.name === 'signUp' || to.name === 'signIn') && (store.isLogin)) {
     window.alert('이미 로그인이 되어 있습니다.')
     return { name: 'home' }
+  }
+
+  // 인증이 필요한 페이지 체크 추가
+  if (to.meta.requiresAuth && !store.isLogin) {
+    window.alert('로그인이 필요한 서비스입니다.')
+    return { name: 'signIn' }
   }
 })
 export default router
