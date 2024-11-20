@@ -11,6 +11,7 @@ import ArticleCreateView from '@/views/ArticleCreateView.vue'
 import ArticleUpdateView from '@/views/ArticleUpdateView.vue'
 import ProductView from '@/views/ProductView.vue'
 import DepositView from '@/views/DepositView.vue'
+import SignOutView from '@/views/SignOutView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,6 +30,11 @@ const router = createRouter({
       path: '/signin',
       name: 'signIn',
       component: SignInView
+    },
+    {
+      path: '/signout',
+      name: 'signOut',
+      component: SignOutView
     },
     {
       path: '/location',
