@@ -4,9 +4,7 @@ import SignUpView from '@/views/SignUpView.vue'
 import SignInView from '@/views/SignInView.vue'
 import HomeView from '@/views/HomeView.vue'
 import LocationView from '@/views/LocationView.vue'
-import InterestRateView from '@/views/InterestRateView.vue'
 import ExchangeRateView from '@/views/ExchangeRateView.vue'
-import SavingsView from '@/views/SavingsView.vue'
 import ArticleListView from '@/views/ArticleListView.vue'
 import ArticleDetailView from '@/views/ArticleDetailView.vue'
 import ArticleCreateView from '@/views/ArticleCreateView.vue'
@@ -37,19 +35,9 @@ const router = createRouter({
       component: LocationView
     },
     {
-      path: '/interest',
-      name: 'interest',
-      component: InterestRateView
-    },
-    {
       path: '/exchange_rate',
       name: 'exchangeRate',
       component: ExchangeRateView
-    },
-    {
-      path: '/savings',
-      name: 'savings',
-      component: SavingsView
     },
     {
       path: '/articles',
