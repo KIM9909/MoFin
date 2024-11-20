@@ -14,7 +14,7 @@ class ExchangeRateAPIView(APIView):
         }
 
         try:
-            response = requests.get(url, params=params, verify=True)
+            response = requests.get(url, params=params, verify=False)
             if response.status_code == 200:
                 data = response.json()
                 target_currency = request.query_params.get('target', 'USD')

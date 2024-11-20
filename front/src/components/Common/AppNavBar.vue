@@ -4,6 +4,8 @@
     <span> | </span>
     <RouterLink :to="{ name: 'signIn' }">로그인</RouterLink>
     <span> | </span>
+    <RouterLink :to="{ name: 'signOut' }">로그아웃</RouterLink>
+    <span> | </span>
     <RouterLink :to="{ name: 'signUp' }">회원가입</RouterLink>
     <span> | </span>
     <RouterLink :to="{ name: 'products' }">상품 조회</RouterLink>
