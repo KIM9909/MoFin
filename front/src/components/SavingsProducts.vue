@@ -58,6 +58,16 @@ const handleSubscribe = () => {
   transition: all 0.3s;
 }
 
+.detail-btn {
+  background-color: #46a3ff;
+  color: white;
+  border: none;
+}
+
+.detail-btn:hover {
+  opacity: 0.9;
+}
+
 .subscribe-btn {
   background-color: #2c662f;
   color: white;
