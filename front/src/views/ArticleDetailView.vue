@@ -8,6 +8,15 @@
           <span class="author">작성자: {{ article.user?.nickname }}</span>
           <span class="separator">•</span>
           <span class="date">{{ formatDate(article.created_at) }}</span>
+          <span class="separator">•</span>
+          <button 
+            @click="toggleLike"
+            :class="['like-button', { 'liked': article.is_liked }]"
+            :disabled="!authStore.isLogin"
+          >
+            <span class="heart-icon">{{ article.is_liked ? '❤️' : '🤍' }}</span>
+            <span class="like-count">{{ article.like_count }}</span>
+          </button>
         </div>
       </div>
 
@@ -91,7 +100,6 @@ const comments = ref([]);
 const newComment = ref("");
 const authStore = useAuthStore();
 
-
 // 댓글 수정 관련 상태
 const editingCommentId = ref(null);
 const editingContent = ref("");
@@ -111,6 +119,28 @@ const fetchArticle = () => {
     .catch((error) => {
       console.error('게시글 데이터를 가져오는 중 오류가 발생했습니다:', error);
     });
+};
+
+// 좋아요 토글 함수
+const toggleLike = async () => {
+  if (!authStore.isLogin) {
+    alert('좋아요를 누르려면 로그인이 필요합니다.');
+    return;
+  }
+
+  try {
+    const response = await axios({
+      method: 'post',
+      url: `http://127.0.0.1:8000/articles/articles/${article.value.id}/like/`,
+      headers: { Authorization: `Token ${authStore.token}` }
+    });
+    
+    article.value.is_liked = response.data.is_liked;
+    article.value.like_count = response.data.like_count;
+  } catch (error) {
+    console.error('좋아요 처리 중 오류가 발생했습니다:', error);
+    alert('좋아요 처리 중 오류가 발생했습니다.');
+  }
 };
 
 const fetchComments = () => {
@@ -480,4 +510,41 @@ const formatDate = (dateString) => {
     text-align: center;
   }
 }
+
+  .like-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 350px;
+  }
+
+  .like-button:hover:not(:disabled) {
+    background-color: #fff5f5;
+    border-color: #ff8787;
+  }
+
+  .like-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .like-button.liked {
+    background-color: #fff5f5;
+    border-color: #ff8787;
+  }
+
+  .heart-icon {
+    font-size: 1.2rem;
+  }
+
+  .like-count {
+    font-size: 0.9rem;
+    color: #495057;
+  }
 </style>
