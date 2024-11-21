@@ -14,12 +14,35 @@ export const useAuthStore = defineStore('auth', () => {
     axios.defaults.headers.common['Authorization'] = token.value
       ? `Token ${token.value}`
       : '';
-      // console.log('Authorization 헤더:', axios.defaults.headers.common['Authorization']);
-
   };
 
   // 초기화 시 헤더 설정
   setAxiosAuthHeader();
+
+  // 회원가입
+  const signUp = (payload) => {
+    axios
+      .post(`${BASE_URL}/accounts/signup/`, payload)
+      .then((res) => {
+        if (res.data) {
+          console.log('회원가입 성공:', res.data);
+          alert('회원가입이 완료되었습니다. 로그인 화면으로 이동합니다.');
+          router.push({ name: 'signIn' }); // 회원가입 후 로그인 페이지로 이동
+        } else {
+          console.error('응답 데이터가 비어있습니다:', res);
+          alert('서버 응답이 예상치 못한 형식입니다. 관리자에게 문의하세요.');
+        }
+      })
+      .catch((err) => {
+        console.error('회원가입 중 오류:', err.response?.data || err.message);
+        alert(
+          `회원가입에 실패했습니다. ${
+            err.response?.data?.non_field_errors || '입력값을 확인해주세요.'
+          }`
+        );
+      });
+  };
+  
 
   // 로그인
   const signIn = (payload) => {
@@ -46,15 +69,13 @@ export const useAuthStore = defineStore('auth', () => {
     axios
       .get(`${BASE_URL}/accounts/user/`)
       .then((res) => {
-        // console.log('사용자 정보:', res.data);
         userId.value = res.data.pk;
-        // console.log(userId.value)
         nickname.value = res.data.username;
       })
       .catch((err) => {
         console.error('사용자 정보를 가져오는 중 오류:', err);
       });
-   };
+  };
 
   // 로그아웃
   const logout = () => {
@@ -68,5 +89,5 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isLogin = computed(() => token.value !== null);
 
-  return { signIn, logout, token, userId, nickname, isLogin };
+  return { signUp, signIn, logout, token, userId, nickname, isLogin };
 });
