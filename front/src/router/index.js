@@ -10,7 +10,6 @@ import ArticleDetailView from '@/views/ArticleDetailView.vue'
 import ArticleCreateView from '@/views/ArticleCreateView.vue'
 import ArticleUpdateView from '@/views/ArticleUpdateView.vue'
 import ProductView from '@/views/ProductView.vue'
-import DepositView from '@/views/DepositView.vue'
 import SignOutView from '@/views/SignOutView.vue'
 
 const router = createRouter({
@@ -40,11 +39,6 @@ const router = createRouter({
       path: '/location',
       name: 'location',
       component: LocationView
-    },
-    {
-      path: '/deposit',
-      name: 'deposit',
-      component: DepositView
     },
     {
       path: '/exchange_rate',
@@ -77,6 +71,12 @@ const router = createRouter({
       path: '/products',
       name: 'products',
       component: ProductView
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('@/views/ProfilePageView.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })

@@ -89,5 +89,5 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isLogin = computed(() => token.value !== null);
 
-  return { signUp, signIn, logout, token, userId, nickname, isLogin };
+  return { signUp, signIn, logout, fetchUserInfo, token, userId, nickname, isLogin };
 });
