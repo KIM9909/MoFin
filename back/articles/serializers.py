@@ -18,19 +18,29 @@ class CommentSerializer(serializers.ModelSerializer):
             'nickname': obj.user.nickname,  # 추가된 필드: nickname
         }
 
-# ArticleSerializer에서 댓글을 포함하도록 설정
 class ArticleSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
-    user = serializers.SerializerMethodField()  # 추가
+    user = serializers.SerializerMethodField()
+    like_count = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = Article
-        fields = ['id', 'title', 'content', 'comments', 'created_at', 'updated_at', 'user']
+        fields = ['id', 'title', 'content', 'comments', 'created_at', 
+                 'updated_at', 'user', 'like_count', 'is_liked']
 
     def get_user(self, obj):
-        # 게시글 작성자 정보 반환
         return {
             'id': obj.user.id,
             'username': obj.user.username,
             'nickname': obj.user.nickname
         }
+
+    def get_like_count(self, obj):
+        return obj.like_users.count()
+
+    def get_is_liked(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.like_users.filter(id=request.user.id).exists()
+        return False
