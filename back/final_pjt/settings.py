@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'accounts',
     'exchange',
     'savings',
-    'articles',
+    'articles.apps.ArticlesConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
@@ -177,3 +177,13 @@ REST_AUTH = {
 }
 
 ACCOUNT_ADAPTER = 'accounts.models.CustomAccountAdapter'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+
+# 추가 설정
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_EMAIL_VERIFICATION = 'none'

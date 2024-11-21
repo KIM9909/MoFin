@@ -1,24 +1,39 @@
 from rest_framework import serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
-from savings.models import SavingsProducts
+from dj_rest_auth.serializers import UserDetailsSerializer
+from .models import User
+from savings.models import SavingsProducts, DepositProducts
 
 class CustomRegisterSerializer(RegisterSerializer):
-    nickname = serializers.CharField(required=False, max_length=255)
-    birth = serializers.DateField(required=False)
-    preference = serializers.CharField(required=False, max_length=255)
-    # subscribe_deposits = serializers.
-
+    nickname = serializers.CharField(required=True)
+    birth = serializers.DateField(required=False, allow_null=True)
+    preference = serializers.CharField(required=False, allow_null=True)
+    
     def get_cleaned_data(self):
-        cleaned_data = {
+        data = super().get_cleaned_data()
+        data.update({
             'nickname': self.validated_data.get('nickname', ''),
-            'birth': self.validated_data.get('birth', ''),
-            'preference': self.validated_data.get('preference', ''),
+            'birth': self.validated_data.get('birth', None),
+            'preference': self.validated_data.get('preference', None),
+        })
+        return data
 
-        }
-        
-        return cleaned_data
+class CustomUserDetailsSerializer(UserDetailsSerializer):
+    subscribe_deposits = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=DepositProducts.objects.all(),
+        required=False
+    )
+    subscribe_savings = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=SavingsProducts.objects.all(),
+        required=False
+    )
 
-    def save(self, request):
-        user = super().save(request)
-        
-        return user
+    class Meta(UserDetailsSerializer.Meta):
+        model = User
+        fields = UserDetailsSerializer.Meta.fields + (
+            'nickname', 'birth', 'preference', 
+            'subscribe_deposits', 'subscribe_savings'
+        )
+        read_only_fields = ('email',)
