@@ -1,5 +1,3 @@
-```vue
-<!-- components/DepositProducts.vue -->
 <template>
   <div class="product-card">
     <div class="product-header">
@@ -8,76 +6,69 @@
       <p class="submission-date">공시 제출월: {{ deposit_product.dcls_month }}</p>
     </div>
     
-    <button class="detail-btn" @click="showDetails">
-      상세 보기
-    </button>
+    <div class="button-group">
+      <button class="detail-btn" @click="showDetails">
+        상세 보기
+      </button>
+      <button 
+        class="subscribe-btn" 
+        :class="{ 'subscribed': isSubscribed }"
+        @click="handleSubscribe"
+      >
+        {{ isSubscribed ? '구독 취소' : '구독하기' }}
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { useDepositStore } from '@/stores/deposit'
-
 const props = defineProps({
   deposit_product: {
     type: Object,
     required: true
+  },
+  isSubscribed: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['show-detail'])
+const emit = defineEmits(['show-detail', 'toggle-subscription'])
 
 const showDetails = () => {
   emit('show-detail', { product: props.deposit_product, type: 'deposit' })
 }
+
+const handleSubscribe = () => {
+  emit('toggle-subscription', 'deposit', props.deposit_product.fin_prdt_cd)
+}
 </script>
 
 <style scoped>
-.product-card {
-  background: white;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+.button-group {
+  display: flex;
+  gap: 10px;
 }
 
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.product-header {
-  margin-bottom: 15px;
-}
-
-.product-header h3 {
-  color: #2c662f;
-  margin-bottom: 10px;
-}
-
-.bank-name {
-  color: #666;
-  font-size: 0.9em;
-  margin-bottom: 5px;
-}
-
-.submission-date {
-  color: #888;
-  font-size: 0.8em;
-}
-
-.detail-btn {
-  width: 100%;
+.detail-btn, .subscribe-btn {
+  flex: 1;
   padding: 10px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s;
 }
 
-.detail-btn:hover {
-  background-color: #45a049;
+.subscribe-btn {
+  background-color: #2c662f;
+  color: white;
+  border: none;
+}
+
+.subscribe-btn.subscribed {
+  background-color: #dc3545;
+}
+
+.subscribe-btn:hover {
+  opacity: 0.9;
 }
 </style>
-```

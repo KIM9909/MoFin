@@ -5,7 +5,6 @@
       <p class="subtitle">MoFin에서 제공하는 다양한 금융 상품을 확인하세요</p>
     </div>
 
-    <!-- 상품 조회 버튼들 -->
     <div class="filter-section">
       <div class="button-group">
         <button 
@@ -35,71 +34,82 @@
       </div>
     </div>
 
-    <!-- 로딩 인디케이터 -->
     <div v-if="loading" class="loading-container">
       <div class="loading-spinner"></div>
       <p>상품 정보를 불러오는 중...</p>
     </div>
 
-    <!-- 상품 그리드 -->
     <div v-else class="products-container">
-      <!-- 전체 상품 표시 -->
       <div v-if="showAllProducts" class="products-grid">
         <DepositProducts
           v-for="deposit_product in store.depositProducts"
           :key="`deposit-${deposit_product.fin_prdt_cd}`"
           :deposit_product="deposit_product"
+          :is-subscribed="subscriptionStore.isSubscribed('deposit', deposit_product.fin_prdt_cd)"
           @show-detail="showProductDetail"
+          @toggle-subscription="handleSubscription"
         />
         <SavingsProducts
           v-for="savings_product in savingsStore.savingsProducts"
           :key="`savings-${savings_product.fin_prdt_cd}`"
           :savings_product="savings_product"
+          :is-subscribed="subscriptionStore.isSubscribed('savings', savings_product.fin_prdt_cd)"
           @show-detail="showProductDetail"
+          @toggle-subscription="handleSubscription"
         />
       </div>
 
-      <!-- 예금 상품만 표시 -->
       <div v-else-if="showDepositList" class="products-grid">
         <DepositProducts
           v-for="deposit_product in store.depositProducts"
           :key="deposit_product.fin_prdt_cd"
           :deposit_product="deposit_product"
+          :is-subscribed="subscriptionStore.isSubscribed('deposit', deposit_product.fin_prdt_cd)"
           @show-detail="showProductDetail"
+          @toggle-subscription="handleSubscription"
         />
       </div>
 
-      <!-- 적금 상품만 표시 -->
       <div v-else class="products-grid">
         <SavingsProducts
           v-for="savings_product in savingsStore.savingsProducts"
           :key="savings_product.fin_prdt_cd"
           :savings_product="savings_product"
+          :is-subscribed="subscriptionStore.isSubscribed('savings', savings_product.fin_prdt_cd)"
           @show-detail="showProductDetail"
+          @toggle-subscription="handleSubscription"
         />
       </div>
     </div>
 
-    <!-- 상세 정보 모달 -->
     <ProductDetailModal
       :is-open="!!selectedProduct"
       :product="selectedProduct"
       :details="productDetails"
+      :is-subscribed="selectedProduct ? subscriptionStore.isSubscribed(
+        selectedProduct.type, 
+        selectedProduct.fin_prdt_cd
+      ) : false"
       @close="closeModal"
+      @toggle-subscription="handleSubscription"
     />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import DepositProducts from '@/components/DepositProducts.vue'
 import SavingsProducts from '@/components/SavingsProducts.vue'
 import ProductDetailModal from '@/components/ProductDetailModal.vue'
 import { useDepositStore } from '@/stores/deposit'
 import { useSavingsStore } from '@/stores/savings'
+import { useSubscriptionStore } from '@/stores/subscription'
+import { useAuthStore } from '@/stores/auth'
 
 const store = useDepositStore()
 const savingsStore = useSavingsStore()
+const subscriptionStore = useSubscriptionStore()
+const authStore = useAuthStore()
 const loading = ref(false)
 
 const showDepositList = ref(true)
@@ -153,7 +163,7 @@ const showSavings = async () => {
 
 const showProductDetail = async ({ product, type }) => {
   try {
-    selectedProduct.value = product
+    selectedProduct.value = { ...product, type }
     if (type === 'deposit') {
       productDetails.value = await store.getDepositDetails(product.fin_prdt_cd)
     } else {
@@ -167,10 +177,36 @@ const showProductDetail = async ({ product, type }) => {
   }
 }
 
+const handleSubscription = async (productType, productId) => {
+  if (!authStore.isLogin) {
+    alert('로그인이 필요한 서비스입니다.')
+    return
+  }
+
+  try {
+    const result = await subscriptionStore.toggleSubscription(productType, productId)
+    alert(result.message)
+  } catch (error) {
+    console.error('구독 처리 중 오류:', error)
+    alert('구독 처리 중 오류가 발생했습니다.')
+  }
+}
+
 const closeModal = () => {
   selectedProduct.value = null
   productDetails.value = null
 }
+
+onMounted(async () => {
+  if (authStore.isLogin) {
+    try {
+      await subscriptionStore.fetchSubscriptions()
+    } catch (error) {
+      console.error('구독 정보 로딩 실패:', error)
+    }
+  }
+  await showAll()
+})
 </script>
 
 <style scoped>
@@ -290,7 +326,6 @@ const closeModal = () => {
   }
 }
 
-/* 반응형 디자인 */
 @media (max-width: 768px) {
   .product-list-container {
     padding: 1rem;
