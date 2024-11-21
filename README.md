@@ -201,3 +201,63 @@
     ```javascript
     let rate = parseFloat(response.data.rate.replace(",", ""))
     ```
+
+## 11월 20일(수)
+### [게시판 기능 및 댓글 기능 구현] - 홍범
+- #### 목표
+    유저들이 서로 게시글을 올려 게시글을 작성하고, 댓글을 달아서 소통할 수 있는 자유게시판 구축
+
+- #### 문제점 1
+    전체 게시글 조회 및 상세 게시글 조회 시 데이터를 받아오지 못하는 문제 발생
+
+- #### 해결방안
+    url을 Django서버로 받아와서 제대로된 url에 요청 및 응답을 받을 수 있도록 수정
+    ```javaScript
+    onMounted(() => {
+    axios({
+        method: 'get',
+        url: 'http://127.0.0.1:8000/articles/articles/',
+        headers: store.token ? { Authorization: `Token ${store.token}` } : {}
+    })
+        .then((response) => {
+        if (Array.isArray(response.data)) {
+            articles.value = response.data;
+        } else if (response.data.results) {
+            articles.value = response.data.results;
+        } else {
+            console.error('올바르지 않은 API 데이터 구조:', response.data);
+            articles.value = [];
+        }
+        })
+        .catch((error) => {
+        console.error('게시글 데이터를 가져오는 중 오류가 발생했습니다:', error);
+        });
+    });
+    ``` 
+
+- #### 문제점 2
+    댓글 수정 및 삭제 시 작성한 사용자에게만 버튼이 보이도록 구현
+
+- #### 해결방안
+    로그인할 때 사용자 정보를 auth.js에서 fetchUserInfo 함수를 통해 userId(pk)를 가져옴.
+    그 다음 현재 접속한 사용자(authStore.userId)와 댓글을 작성한 사용자(user.id)와 같으면 삭제 및 수정 버튼이 보이도록 구현
+    ```html
+    <h2>댓글</h2>
+    <ul>
+      <li v-for="comment in comments" :key="comment.id" class="comment-item">
+        <!-- 수정 모드가 아닐 때 -->
+        <div v-if="editingCommentId !== comment.id">
+          <p>{{ comment.content }}</p>
+          <div class="comment-meta">
+            <span>{{ formatDate(comment.created_at) }}</span>
+            <span>작성자: {{ comment.user.nickname }}</span>
+            <!-- 자신이 작성한 댓글만 수정/삭제 버튼 표시 -->
+            <div v-if="comment.user.id === authStore.userId" class="comment-actions">
+              <button @click="startEdit(comment)">수정</button>
+              <button @click="deleteComment(comment.id)">삭제</button>
+            </div>
+            <!-- <span>작성자: {{ comment.user.nickname }} (ID: {{ comment.user.id }})</span>
+            <span>로그인 사용자 ID: {{ authStore.userId }}</span> -->
+          </div>
+        </div>
+    ```
