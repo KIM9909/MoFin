@@ -13,7 +13,7 @@
           </div>
           
           <!-- 헤더 영역 -->
-          <h1 class="text-h2 font-weight-bold primary--text mb-6">
+          <h1 class="text-h3 font-weight-bold primary--text mb-6">
             MoFin을 찾아주셔서 감사합니다.
           </h1>
           

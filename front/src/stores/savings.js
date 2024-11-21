@@ -12,7 +12,7 @@ export const useSavingsStore = defineStore('savings', () => {
       url: `${BASE_URL}/savings/save_savings_products/`
     })
       .then((res) => {
-        console.log('예금 데이터를 가져왔습니다.')
+        console.log('적금 데이터를 가져왔습니다.')
         console.log(res)
         savingsProducts.value = res.data.result.baseList
       })
@@ -26,6 +26,7 @@ export const useSavingsStore = defineStore('savings', () => {
     try {
       const response = await axios.get(`${BASE_URL}/savings/savings_product_details/${fin_prdt_cd}/`)
       console.log('상세 정보를 가져왔습니다.', response.data)
+      console.log(response)
       return response.data // 호출한 컴포넌트에서 데이터를 처리
     } catch (error) {
       console.error('상세 정보를 가져오는 중 오류가 발생했습니다.', error)

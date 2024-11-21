@@ -1,85 +1,177 @@
+```vue
+<!-- views/ProductList.vue -->
 <template>
   <div>
     <h1>상품 목록</h1>
 
-    <!-- 예금 상품과 적금 상품을 조회하는 버튼 -->
-    <div>
-      <button @click="showDeposits" :class="{'active-btn': showDepositList}">예금 상품 조회</button>
-      <button @click="showSavings" :class="{'active-btn': !showDepositList}">적금 상품 조회</button>
+    <!-- 상품 조회 버튼들 -->
+    <div class="button-group">
+      <button @click="showAll" :class="{'active-btn': showAllProducts}">
+        전체 상품 조회
+      </button>
+      <button @click="showDeposits" :class="{'active-btn': showDepositList && !showAllProducts}">
+        예금 상품 조회
+      </button>
+      <button @click="showSavings" :class="{'active-btn': !showDepositList && !showAllProducts}">
+        적금 상품 조회
+      </button>
     </div>
 
-    <!-- 예금 상품 컴포넌트 -->
-    <div v-if="showDepositList">
-      <h2>예금 상품 목록</h2>
+    <!-- 전체 상품 표시 -->
+    <div v-if="showAllProducts" class="products-grid">
+      <DepositProducts
+        v-for="deposit_product in store.depositProducts"
+        :key="`deposit-${deposit_product.fin_prdt_cd}`"
+        :deposit_product="deposit_product"
+        @show-detail="showProductDetail"
+      />
+      <SavingsProducts
+        v-for="savings_product in savingsStore.savingsProducts"
+        :key="`savings-${savings_product.fin_prdt_cd}`"
+        :savings_product="savings_product"
+        @show-detail="showProductDetail"
+      />
+    </div>
+
+    <!-- 예금 상품만 표시 -->
+    <div v-else-if="showDepositList" class="products-grid">
       <DepositProducts
         v-for="deposit_product in store.depositProducts"
         :key="deposit_product.fin_prdt_cd"
         :deposit_product="deposit_product"
+        @show-detail="showProductDetail"
       />
     </div>
 
-    <!-- 적금 상품 컴포넌트 -->
-    <div v-if="!showDepositList">
-      <h2>적금 상품 목록</h2>
+    <!-- 적금 상품만 표시 -->
+    <div v-else class="products-grid">
       <SavingsProducts
         v-for="savings_product in savingsStore.savingsProducts"
         :key="savings_product.fin_prdt_cd"
         :savings_product="savings_product"
+        @show-detail="showProductDetail"
       />
     </div>
+
+    <!-- 상세 정보 모달 -->
+    <ProductDetailModal
+      :is-open="!!selectedProduct"
+      :product="selectedProduct"
+      :details="productDetails"
+      @close="closeModal"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import DepositProducts from '@/components/DepositProducts.vue'
 import SavingsProducts from '@/components/SavingsProducts.vue'
+import ProductDetailModal from '@/components/ProductDetailModal.vue'
 import { useDepositStore } from '@/stores/deposit'
 import { useSavingsStore } from '@/stores/savings'
 
-// Deposit Store와 Savings Store를 사용
 const store = useDepositStore()
 const savingsStore = useSavingsStore()
 
-// 상품 목록을 표시할지 여부를 제어하는 변수
 const showDepositList = ref(true)
+const showAllProducts = ref(true)
+const selectedProduct = ref(null)
+const productDetails = ref(null)
 
-// 예금 상품 조회 함수
+const showAll = async () => {
+  showAllProducts.value = true
+  await Promise.all([
+    store.getDeposits(),
+    savingsStore.getSavings()
+  ])
+}
+
 const showDeposits = async () => {
+  showAllProducts.value = false
   showDepositList.value = true
-  await store.getDeposits() // 예금 상품 데이터 가져오기
+  await store.getDeposits()
 }
 
-// 적금 상품 조회 함수
 const showSavings = async () => {
+  showAllProducts.value = false
   showDepositList.value = false
-  await savingsStore.getSavings() // 적금 상품 데이터 가져오기
+  await savingsStore.getSavings()
 }
 
-// 페이지가 로드될 때 예금 상품을 가져옵니다
-onMounted(() => {
-  showDeposits() // 기본적으로 예금 상품 목록을 보여줌
-})
+const showProductDetail = async ({ product, type }) => {
+  try {
+    selectedProduct.value = product
+    if (type === 'deposit') {
+      productDetails.value = await store.getDepositDetails(product.fin_prdt_cd)
+    } else {
+      productDetails.value = await savingsStore.getSavingsDetails(product.fin_prdt_cd)
+    }
+  } catch (error) {
+    console.error('상품 상세 정보를 가져오는데 실패했습니다:', error)
+    selectedProduct.value = null
+    productDetails.value = null
+    alert('상품 정보를 불러오는데 실패했습니다. 다시 시도해주세요.')
+  }
+}
+
+const closeModal = () => {
+  selectedProduct.value = null
+  productDetails.value = null
+}
 </script>
 
 <style scoped>
-/* 버튼 스타일 */
+.button-group {
+  margin: 20px 0;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
 button {
-  padding: 10px;
-  margin: 5px;
+  padding: 12px 20px;
   background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
 }
 
 button:hover {
   background-color: #45a049;
+  transform: translateY(-2px);
 }
 
-/* 활성화된 버튼 강조 */
 .active-btn {
-  background-color: #45a049;
+  background-color: #2c662f;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .button-group {
+    flex-direction: column;
+    padding: 0 20px;
+  }
+
+  button {
+    width: 100%;
+  }
 }
 </style>
+```
