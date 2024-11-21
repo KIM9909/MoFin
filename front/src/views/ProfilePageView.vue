@@ -1,3 +1,4 @@
+
 <template>
   <div class="profile-container">
     <!-- 사이드바 -->
@@ -110,6 +111,83 @@
         </div>
       </div>
 
+      <!-- 가입 상품 섹션 -->
+      <div v-if="activeMenu === 'subscriptions'" class="content-section">
+        <div class="section-header">
+          <h1>가입 상품 목록</h1>
+        </div>
+
+        <!-- 예금 상품 -->
+        <div class="content-card">
+          <h2 class="product-section-title">예금 상품</h2>
+          <div v-if="subscriptionStore.subscribedDeposits.length === 0" class="empty-state">
+            <div class="empty-icon">💰</div>
+            <p>가입한 예금 상품이 없습니다.</p>
+          </div>
+          <div v-else class="subscribed-products">
+            <div 
+              v-for="product in subscriptionStore.subscribedDeposits" 
+              :key="product.fin_prdt_cd" 
+              class="product-card"
+            >
+              <div class="product-info">
+                <h3>{{ product.fin_prdt_nm }}</h3>
+                <p class="bank-name">{{ product.kor_co_nm }}</p>
+                <div class="product-actions">
+                  <button 
+                    @click="showProductDetail('deposit', product)"
+                    class="detail-btn"
+                  >
+                    상세 정보
+                  </button>
+                  <button 
+                    @click="handleUnsubscribe('deposit', product.fin_prdt_cd)"
+                    class="unsubscribe-btn"
+                  >
+                    구독 취소
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 적금 상품 -->
+        <div class="content-card mt-4">
+          <h2 class="product-section-title">적금 상품</h2>
+          <div v-if="subscriptionStore.subscribedSavings.length === 0" class="empty-state">
+            <div class="empty-icon">🎯</div>
+            <p>가입한 적금 상품이 없습니다.</p>
+          </div>
+          <div v-else class="subscribed-products">
+            <div 
+              v-for="product in subscriptionStore.subscribedSavings" 
+              :key="product.fin_prdt_cd" 
+              class="product-card"
+            >
+              <div class="product-info">
+                <h3>{{ product.fin_prdt_nm }}</h3>
+                <p class="bank-name">{{ product.kor_co_nm }}</p>
+                <div class="product-actions">
+                  <button 
+                    @click="showProductDetail('savings', product)"
+                    class="detail-btn"
+                  >
+                    상세 정보
+                  </button>
+                  <button 
+                    @click="handleUnsubscribe('savings', product.fin_prdt_cd)"
+                    class="unsubscribe-btn"
+                  >
+                    구독 취소
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 좋아요한 게시글 섹션 -->
       <div v-if="activeMenu === 'likes'" class="content-section">
         <div class="section-header">
@@ -159,6 +237,17 @@
         </div>
       </div>
     </main>
+
+    <!-- 상품 상세 정보 모달 -->
+    <ProductDetailModal
+      v-if="activeMenu === 'subscriptions'"
+      :is-open="!!selectedProduct"
+      :product="selectedProduct"
+      :details="productDetails"
+      :is-subscribed="true"
+      @close="closeModal"
+      @toggle-subscription="handleUnsubscribe"
+    />
   </div>
 </template>
 
@@ -167,17 +256,28 @@ import { ref, onMounted, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import ProductDetailModal from '@/components/ProductDetailModal.vue'
+import { useSubscriptionStore } from '@/stores/subscription';
+import { useDepositStore } from '@/stores/deposit';
+import { useSavingsStore } from '@/stores/savings';
 
 const router = useRouter();
 const auth = useAuthStore();
+const subscriptionStore = useSubscriptionStore();
+const depositStore = useDepositStore();
+const savingsStore = useSavingsStore();
+
 const isEditing = ref(false);
 const activeMenu = ref('info');
 const likedArticles = ref([]);
+const selectedProduct = ref(null);
+const productDetails = ref(null);
 
 // 메뉴 아이템 정의
 const menuItems = [
   { id: 'info', icon: '👤', label: '회원정보' },
   { id: 'security', icon: '🔒', label: '보안설정' },
+  { id: 'subscriptions', icon: '💰', label: '가입 상품' },
   { id: 'likes', icon: '❤️', label: '좋아요한 게시글' },
   { id: 'delete', icon: '⚠️', label: '탈퇴하기' }
 ];
@@ -203,20 +303,69 @@ const formatDate = (dateString) => {
   });
 };
 
+// 상품 상세 정보 표시
+const showProductDetail = async (type, product) => {
+  try {
+    selectedProduct.value = { ...product, type }
+    if (type === 'deposit') {
+      const response = await depositStore.getDepositDetails(product.fin_prdt_cd)
+      productDetails.value = {
+        product: response.product,
+        options: response.options
+      }
+    } else {
+      const response = await savingsStore.getSavingsDetails(product.fin_prdt_cd)
+      productDetails.value = {
+        product: response.product,
+        options: response.options
+      }
+    }
+  } catch (error) {
+    console.error('상품 상세 정보를 가져오는데 실패했습니다:', error)
+    selectedProduct.value = null
+    productDetails.value = null
+    alert('상품 정보를 불러오는데 실패했습니다.')
+  }
+}
+
+
+// 구독 취소 처리
+const handleUnsubscribe = async (productType, productId) => {
+  try {
+    const result = await subscriptionStore.toggleSubscription(productType, productId)
+    alert(result.message)
+    await subscriptionStore.fetchSubscriptions()
+  } catch (error) {
+    console.error('구독 취소 실패:', error)
+    alert('구독 취소 중 오류가 발생했습니다.')
+  }
+}
+
+// 모달 닫기
+const closeModal = () => {
+  selectedProduct.value = null
+  productDetails.value = null
+}
+
 // 컴포넌트 마운트 시 사용자 정보 불러오기
 onMounted(async () => {
   try {
     await auth.fetchUserInfo();
+    if (auth.isLogin && activeMenu.value === 'subscriptions') {
+      await subscriptionStore.fetchSubscriptions();
+    }
   } catch (error) {
     console.error('사용자 정보 로딩 실패:', error);
     alert('사용자 정보를 불러오는데 실패했습니다.');
   }
 });
 
-// 메뉴 변경 시 좋아요 게시글 불러오기
+// 메뉴 변경 시 데이터 로드
 watch(activeMenu, async (newValue) => {
   if (newValue === 'likes') {
     await fetchLikedArticles();
+  } else if (newValue === 'subscriptions') {
+    await subscriptionStore.fetchSubscriptions();
   }
 });
 
@@ -270,384 +419,318 @@ const updateProfile = async () => {
       });
       alert(`프로필 업데이트에 실패했습니다: ${errorMessage}`);
     } else {
-      alert('프로필 업데이트에 실패했습니다.');
-    }
-  }
+     alert('프로필 업데이트에 실패했습니다.');
+   }
+ }
 };
 
 // 비밀번호 변경
 const updatePassword = async () => {
-  if (passwordForm.value.new_password1 !== passwordForm.value.new_password2) {
-    alert('새 비밀번호가 일치하지 않습니다.');
-    return;
-  }
+ if (passwordForm.value.new_password1 !== passwordForm.value.new_password2) {
+   alert('새 비밀번호가 일치하지 않습니다.');
+   return;
+ }
 
-  try {
-    await axios.post('http://127.0.0.1:8000/accounts/password/change/', {
-      old_password: passwordForm.value.old_password,
-      new_password1: passwordForm.value.new_password1,
-      new_password2: passwordForm.value.new_password2
-    }, {
-      headers: {
-        Authorization: `Token ${auth.token}`
-      }
-    });
+ try {
+   await axios.post('http://127.0.0.1:8000/accounts/password/change/', {
+     old_password: passwordForm.value.old_password,
+     new_password1: passwordForm.value.new_password1,
+     new_password2: passwordForm.value.new_password2
+   }, {
+     headers: {
+       Authorization: `Token ${auth.token}`
+     }
+   });
 
-    passwordForm.value = {
-      old_password: '',
-      new_password1: '',
-      new_password2: ''
-    };
+   passwordForm.value = {
+     old_password: '',
+     new_password1: '',
+     new_password2: ''
+   };
 
-    alert('비밀번호가 성공적으로 변경되었습니다.');
-    activeMenu.value = 'info';
-  } catch (error) {
-    console.error('비밀번호 변경 실패:', error);
-    if (error.response?.data) {
-      alert(`비밀번호 변경에 실패했습니다: ${JSON.stringify(error.response.data)}`);
-    } else {
-      alert('비밀번호 변경에 실패했습니다.');
-    }
-  }
+   alert('비밀번호가 성공적으로 변경되었습니다.');
+   activeMenu.value = 'info';
+ } catch (error) {
+   console.error('비밀번호 변경 실패:', error);
+   if (error.response?.data) {
+     alert(`비밀번호 변경에 실패했습니다: ${JSON.stringify(error.response.data)}`);
+   } else {
+     alert('비밀번호 변경에 실패했습니다.');
+   }
+ }
 };
 
 // 계정 삭제
 const confirmDelete = async () => {
-  if (confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-    try {
-      await axios.delete('http://127.0.0.1:8000/accounts/delete/', {
-        headers: {
-          Authorization: `Token ${auth.token}`
-        }
-      });
-      
-      auth.logout();
-      router.push({ name: 'home' });
-      alert('계정이 성공적으로 삭제되었습니다.');
-    } catch (error) {
-      console.error('계정 삭제 실패:', error);
-      if (error.response?.data) {
-        alert(`계정 삭제 실패: ${JSON.stringify(error.response.data)}`);
-      } else {
-        alert('계정 삭제에 실패했습니다.');
-      }
-    }
-  }
-};
+ if (confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+   try {
+     await axios.delete('http://127.0.0.1:8000/accounts/delete/', {
+       headers: {
+         Authorization: `Token ${auth.token}`
+       }
+     });
+     
+     auth.logout();
+     router.push({ name: 'home' });
+     alert('계정이 성공적으로 삭제되었습니다.');
+   } catch (error) {
+     console.error('계정 삭제 실패:', error);
+     if (error.response?.data) {
+       alert(`계정 삭제 실패: ${JSON.stringify(error.response.data)}`);
+     } else {
+       alert('계정 삭제에 실패했습니다.');
+     }
+   }
+ }
+}
+
+
 </script>
 
 <style scoped>
 .profile-container {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f8f9fa;
+ display: flex;
+ min-height: 100vh;
+ background-color: #f8f9fa;
 }
 
 .sidebar {
-  width: 280px;
-  background-color: white;
-  padding: 2rem;
-  border-right: 1px solid #e9ecef;
-  display: flex;
-  flex-direction: column;
+ width: 280px;
+ background-color: white;
+ padding: 2rem;
+ border-right: 1px solid #e9ecef;
+ display: flex;
+ flex-direction: column;
 }
 
 .user-info {
-  text-align: center;
-  margin-bottom: 2rem;
+ text-align: center;
+ margin-bottom: 2rem;
 }
 
 .user-avatar {
-  width: 80px;
-  height: 80px;
-  background-color: #2c662f;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  margin: 0 auto 1rem;
+ width: 80px;
+ height: 80px;
+ background-color: #2c662f;
+ color: white;
+ border-radius: 50%;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-size: 2rem;
+ margin: 0 auto 1rem;
 }
 
 .user-name {
-  font-size: 1.2rem;
-  color: #2c3e50;
-  margin: 0;
+ font-size: 1.2rem;
+ color: #2c3e50;
+ margin: 0;
 }
 
 .menu-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+ display: flex;
+ flex-direction: column;
+ gap: 0.5rem;
 }
 
 .menu-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border: none;
-  background: none;
-  border-radius: 8px;
-  color: #495057;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.2s;
+ display: flex;
+ align-items: center;
+ gap: 0.75rem;
+ padding: 0.75rem 1rem;
+ border: none;
+ background: none;
+ border-radius: 8px;
+ color: #495057;
+ font-size: 1rem;
+ cursor: pointer;
+ transition: all 0.2s;
 }
 
 .menu-item:hover {
-  background-color: #f8f9fa;
+ background-color: #f8f9fa;
 }
 
 .menu-item.active {
-  background-color: #e8f5e9;
-  color: #2c662f;
-  font-weight: 500;
+ background-color: #e8f5e9;
+ color: #2c662f;
+ font-weight: 500;
 }
 
 .main-content {
-  flex: 1;
-  padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
+ flex: 1;
+ padding: 2rem;
+ max-width: 800px;
+ margin: 0 auto;
 }
 
-.section-header {
-  margin-bottom: 2rem;
+/* Subscriptions styles */
+.mt-4 {
+ margin-top: 1.5rem;
 }
 
-.section-header h1 {
-  font-size: 1.8rem;
-  color: #2c3e50;
-  margin: 0;
+.product-section-title {
+ font-size: 1.3rem;
+ color: #2c662f;
+ margin-bottom: 1.5rem;
 }
 
-.content-card {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+.subscribed-products {
+ display: grid;
+ grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+ gap: 1rem;
 }
 
-.info-row {
-  margin-bottom: 1.5rem;
+.product-card {
+ background: #f8f9fa;
+ border-radius: 8px;
+ padding: 1.5rem;
+ transition: all 0.3s ease;
 }
 
-.info-row label {
-  display: block;
-  font-weight: 500;
-  color: #6c757d;
-  margin-bottom: 0.5rem;
+.product-card:hover {
+ transform: translateY(-2px);
+ box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.info-row p {
-  margin: 0;
-  font-size: 1rem;
-  color: #2c3e50;
+.product-info h3 {
+ color: #2c3e50;
+ margin: 0 0 0.5rem 0;
+ font-size: 1.1rem;
 }
 
-.form-group {
-  margin-bottom: 1.5rem;
+.bank-name {
+ color: #666;
+ font-size: 0.9rem;
+ margin-bottom: 1rem;
 }
 
-.form-group label {
-  display: block;
-  font-weight: 500;
-  color: #6c757d;
-  margin-bottom: 0.5rem;
+.product-actions {
+ display: flex;
+ gap: 0.5rem;
 }
 
-.form-group input {
+.detail-btn, .unsubscribe-btn {
+ flex: 1;
+ padding: 0.5rem;
+ border: none;
+ border-radius: 4px;
+ font-size: 0.9rem;
+ cursor: pointer;
+ transition: all 0.2s;
+}
+
+.detail-btn {
+ background-color: #2c662f;
+ color: white;
+}
+
+.unsubscribe-btn {
+ background-color: #dc3545;
+ color: white;
+}
+
+.detail-btn:hover, .unsubscribe-btn:hover {
+ opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+ .profile-container {
+   flex-direction: column;
+ }
+
+ .sidebar {
+   width: 100%;
+   border-right: none;
+   border-bottom: 1px solid #e9ecef;
+   padding: 1rem;
+ }
+
+ .user-avatar {
+   width: 60px;
+   height: 60px;
+   font-size: 1.5rem;
+ }
+
+ .main-content {
+   padding: 1rem;
+ }
+
+ .subscribed-products {
+   grid-template-columns: 1fr;
+ }
+
+ .product-actions {
+   flex-direction: column;
+ }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #dee2e6;
-  border-radius: 6px;
-  font-size: 1rem;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #2c662f;
-}
-
-.button-group {
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
-.primary-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: #2c662f;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.primary-btn:hover {
-  background-color: #235024;
-}
-
-.secondary-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: #e9ecef;
-  color: #495057;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.secondary-btn:hover {
-  background-color: #dee2e6;
-}
-
-.danger-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.danger-btn:hover {
-  background-color: #c82333;
-}
-
-.warning {
-  text-align: center;
-}
-
-.warning-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.warning h2 {
-  color: #dc3545;
-  font-size: 1.4rem;
-  margin-bottom: 1rem;
-}
-
-.warning p {
-  color: #6c757d;
-  margin-bottom: 2rem;
-}
-
-/* 좋아요한 게시글 스타일 */
-.liked-articles {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.liked-article {
-  padding: 1rem;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  transition: all 0.2s;
-}
-
-.liked-article:hover {
-  border-color: #2c662f;
-  background-color: #f8f9fa;
-}
-
-.article-link {
-  text-decoration: none;
-  color: inherit;
-  display: block;
-}
-
-.article-link h3 {
-  margin: 0 0 0.5rem 0;
-  color: #2c3e50;
-  font-size: 1.2rem;
-}
-
-.article-excerpt {
-  color: #6c757d;
-  margin: 0 0 0.5rem 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+.modal-content {
+  background: white;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   overflow: hidden;
-  font-size: 0.95rem;
-  line-height: 1.5;
+  animation: modal-appear 0.3s ease-out;
 }
 
-.article-meta {
+.modal-header {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #868e96;
-  font-size: 0.9rem;
 }
 
-.like-count {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 2rem;
-  color: #6c757d;
-}
-
-.empty-state .empty-icon {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-
-.empty-state p {
+.modal-header h3 {
   margin: 0;
-  font-size: 1.1rem;
+  color: #2c662f;
 }
 
-/* 반응형 스타일 */
-@media (max-width: 768px) {
-  .profile-container {
-    flex-direction: column;
-  }
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  max-height: calc(90vh - 80px);
+}
 
-  .sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #e9ecef;
-    padding: 1rem;
-  }
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 15px;
+}
 
-  .user-avatar {
-    width: 60px;
-    height: 60px;
-    font-size: 1.5rem;
-  }
+.option-card {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+}
 
-  .main-content {
-    padding: 1rem;
+@keyframes modal-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
   }
-
-  .content-card {
-    padding: 1rem;
-  }
-
-  .button-group {
-    flex-direction: column;
-  }
-
-  .liked-article {
-    padding: 0.75rem;
-  }
-
-  .article-link h3 {
-    font-size: 1.1rem;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

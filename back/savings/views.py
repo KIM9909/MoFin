@@ -250,3 +250,45 @@ def savings_product_details(request, fin_prdt_cd):
 
     return Response(response_data)
 
+
+@api_view(['POST'])
+def toggle_subscription(request, product_type, fin_prdt_cd):
+    if not request.user.is_authenticated:
+        return Response({'error': '로그인이 필요합니다.'}, status=401)
+    
+    try:
+        if product_type == 'deposit':
+            product = DepositProducts.objects.get(fin_prdt_cd=fin_prdt_cd)
+            if request.user.subscribe_deposits.filter(fin_prdt_cd=fin_prdt_cd).exists():
+                request.user.subscribe_deposits.remove(product)
+                message = '구독이 취소되었습니다.'
+            else:
+                request.user.subscribe_deposits.add(product)
+                message = '구독이 완료되었습니다.'
+        elif product_type == 'savings':
+            product = SavingsProducts.objects.get(fin_prdt_cd=fin_prdt_cd)
+            if request.user.subscribe_savings.filter(fin_prdt_cd=fin_prdt_cd).exists():
+                request.user.subscribe_savings.remove(product)
+                message = '구독이 취소되었습니다.'
+            else:
+                request.user.subscribe_savings.add(product)
+                message = '구독이 완료되었습니다.'
+        else:
+            return Response({'error': '잘못된 상품 타입입니다.'}, status=400)
+        
+        return Response({'message': message}, status=200)
+    except (DepositProducts.DoesNotExist, SavingsProducts.DoesNotExist):
+        return Response({'error': '상품을 찾을 수 없습니다.'}, status=404)
+
+@api_view(['GET'])
+def get_subscriptions(request):
+    if not request.user.is_authenticated:
+        return Response({'error': '로그인이 필요합니다.'}, status=401)
+    
+    deposits = DepositProductsSerializer(request.user.subscribe_deposits.all(), many=True).data
+    savings = SavingsProductsSerializer(request.user.subscribe_savings.all(), many=True).data
+    
+    return Response({
+        'deposits': deposits,
+        'savings': savings
+    })

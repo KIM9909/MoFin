@@ -8,43 +8,44 @@
 
       <div class="modal-body">
         <div class="section">
-          <h3 class="section-title">상품 정보</h3>
+          <h3>상품 정보</h3>
           <div class="info-grid">
             <div class="info-item">
-              <label>기타 유의사항</label>
+              <label>기타 유의사항:</label>
               <p>{{ details?.product?.etc_note }}</p>
             </div>
             <div class="info-item">
-              <label>가입 대상</label>
+              <label>가입 대상:</label>
               <p>{{ details?.product?.join_member }}</p>
             </div>
             <div class="info-item">
-              <label>가입 방법</label>
+              <label>가입 방법:</label>
               <p>{{ details?.product?.join_way }}</p>
             </div>
           </div>
         </div>
 
         <div class="section">
-          <h3 class="section-title">금리 정보</h3>
+          <h3>금리 정보</h3>
           <div class="rates-grid">
             <div v-for="option in details?.options" :key="option.id" class="rate-card">
-              <div class="rate-content">
-                <div class="rate-header">
-                  <span>{{ option.intr_rate_type_nm }}</span>
+              <div class="rate-info">
+                <div class="rate-type">
+                  <span class="label">저축 금리 유형:</span>
+                  <span class="value">{{ option.intr_rate_type_nm }}</span>
                 </div>
                 <div class="rate-details">
-                  <div class="rate-item">
-                    <label>저축 금리</label>
-                    <span class="rate-value">{{ option.intr_rate }}%</span>
+                  <div class="rate">
+                    <span class="label">저축 금리:</span>
+                    <span class="value">{{ option.intr_rate }}%</span>
                   </div>
-                  <div class="rate-item">
-                    <label>우대금리</label>
-                    <span class="rate-value">{{ option.intr_rate2 }}%</span>
+                  <div class="rate">
+                    <span class="label">우대금리:</span>
+                    <span class="value">{{ option.intr_rate2 }}%</span>
                   </div>
-                  <div class="rate-item">
-                    <label>저축 기간</label>
-                    <span>{{ option.save_trm }}개월</span>
+                  <div class="term">
+                    <span class="label">저축 기간:</span>
+                    <span class="value">{{ option.save_trm }}개월</span>
                   </div>
                 </div>
               </div>
@@ -60,7 +61,7 @@
 defineProps({
   isOpen: Boolean,
   product: Object,
-  details: Object,
+  details: Object
 })
 
 const emit = defineEmits(['close'])
@@ -89,19 +90,19 @@ const closeModal = () => {
   background: white;
   width: 90%;
   max-width: 800px;
-  max-height: 90vh;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-height: 90vh;
   overflow: hidden;
 }
 
 .modal-header {
-  padding: 1.5rem;
-  background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eef0f2;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: #f8f9fa;
 }
 
 .modal-header h2 {
@@ -122,22 +123,22 @@ const closeModal = () => {
 .modal-body {
   padding: 1.5rem;
   overflow-y: auto;
-  max-height: calc(90vh - 80px);
+  max-height: calc(90vh - 70px);
 }
 
 .section {
   margin-bottom: 2rem;
 }
 
-.section-title {
+.section h3 {
   color: #2c662f;
-  font-size: 1.2rem;
   margin-bottom: 1rem;
+  font-size: 1.2rem;
 }
 
 .info-grid {
   display: grid;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .info-item {
@@ -147,10 +148,10 @@ const closeModal = () => {
 }
 
 .info-item label {
-  display: block;
   font-weight: 600;
-  color: #495057;
+  display: block;
   margin-bottom: 0.5rem;
+  color: #495057;
 }
 
 .info-item p {
@@ -161,47 +162,35 @@ const closeModal = () => {
 
 .rates-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
 .rate-card {
   background: #f8f9fa;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.rate-content {
   padding: 1rem;
+  border-radius: 8px;
 }
 
-.rate-header {
-  color: #2c662f;
-  font-weight: 600;
-  padding-bottom: 0.75rem;
-  margin-bottom: 0.75rem;
+.rate-type {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid #dee2e6;
 }
 
 .rate-details {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
-.rate-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.rate-item label {
-  color: #495057;
-  font-weight: 500;
-}
-
-.rate-value {
-  color: #2c662f;
+.label {
   font-weight: 600;
+  color: #495057;
+  margin-right: 0.5rem;
+}
+
+.value {
+  color: #2c3e50;
 }
 
 @media (max-width: 768px) {
@@ -209,13 +198,10 @@ const closeModal = () => {
     width: 95%;
     margin: 1rem;
   }
-  
+
   .rates-grid {
     grid-template-columns: 1fr;
   }
-
-  .modal-header h2 {
-    font-size: 1.2rem;
-  }
 }
 </style>
+
