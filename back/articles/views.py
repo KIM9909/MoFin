@@ -1,5 +1,5 @@
 from rest_framework.viewsets import ModelViewSet
-from .models import Articles, Comment
+from .models import Article, Comment
 from .serializers import ArticleSerializer, CommentSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 class ArticleViewSet(ModelViewSet):
-    queryset = Articles.objects.all()
+    queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     authentication_classes = [TokenAuthentication]
 

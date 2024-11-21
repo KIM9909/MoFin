@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Articles, Comment
+from .models import Article, Comment
 
 # CommentSerializer에서 user 정보를 상세히 표시
 class CommentSerializer(serializers.ModelSerializer):
@@ -24,7 +24,7 @@ class ArticleSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()  # 추가
 
     class Meta:
-        model = Articles
+        model = Article
         fields = ['id', 'title', 'content', 'comments', 'created_at', 'updated_at', 'user']
 
     def get_user(self, obj):

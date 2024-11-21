@@ -20,29 +20,34 @@ export const useAuthStore = defineStore('auth', () => {
   setAxiosAuthHeader();
 
   // 회원가입
-  const signUp = (payload) => {
-    axios
-      .post(`${BASE_URL}/accounts/signup/`, payload)
-      .then((res) => {
-        if (res.data) {
-          console.log('회원가입 성공:', res.data);
-          alert('회원가입이 완료되었습니다. 로그인 화면으로 이동합니다.');
-          router.push({ name: 'signIn' }); // 회원가입 후 로그인 페이지로 이동
-        } else {
-          console.error('응답 데이터가 비어있습니다:', res);
-          alert('서버 응답이 예상치 못한 형식입니다. 관리자에게 문의하세요.');
-        }
-      })
-      .catch((err) => {
-        console.error('회원가입 중 오류:', err.response?.data || err.message);
-        alert(
-          `회원가입에 실패했습니다. ${
-            err.response?.data?.non_field_errors || '입력값을 확인해주세요.'
-          }`
-        );
+  const signUp = async (payload) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/accounts/signup/`, {
+        username: payload.username,
+        email: payload.email,
+        password1: payload.password1,
+        password2: payload.password2,
+        nickname: payload.nickname, // 추가
+        birth: payload.birth,      // 추가
+        preference: payload.preference  // 추가
       });
+      
+      console.log('회원가입 성공:', response.data);
+      alert('회원가입이 완료되었습니다. 로그인 화면으로 이동합니다.');
+      router.push({ name: 'signIn' });
+    } catch (error) {
+      console.error('회원가입 실패:', error.response?.data);
+      let errorMessage = '회원가입에 실패했습니다.';
+      if (error.response?.data) {
+        // 에러 메시지 처리
+        Object.keys(error.response.data).forEach(key => {
+          errorMessage = `${key}: ${error.response.data[key].join(' ')}`;
+        });
+      }
+      alert(errorMessage);
+      throw error;
+    }
   };
-  
 
   // 로그인
   const signIn = (payload) => {
