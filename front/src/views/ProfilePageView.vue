@@ -489,248 +489,278 @@ const confirmDelete = async () => {
 
 <style scoped>
 .profile-container {
- display: flex;
- min-height: 100vh;
- background-color: #f8f9fa;
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f7fa;
 }
 
+/* 사이드바 스타일링 */
 .sidebar {
- width: 280px;
- background-color: white;
- padding: 2rem;
- border-right: 1px solid #e9ecef;
- display: flex;
- flex-direction: column;
+  width: 250px;
+  background-color: white;
+  padding: 2rem;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
 }
 
 .user-info {
- text-align: center;
- margin-bottom: 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
 .user-avatar {
- width: 80px;
- height: 80px;
- background-color: #2c662f;
- color: white;
- border-radius: 50%;
- display: flex;
- align-items: center;
- justify-content: center;
- font-size: 2rem;
- margin: 0 auto 1rem;
-}
-
-.user-name {
- font-size: 1.2rem;
- color: #2c3e50;
- margin: 0;
-}
-
-.menu-list {
- display: flex;
- flex-direction: column;
- gap: 0.5rem;
-}
-
-.menu-item {
- display: flex;
- align-items: center;
- gap: 0.75rem;
- padding: 0.75rem 1rem;
- border: none;
- background: none;
- border-radius: 8px;
- color: #495057;
- font-size: 1rem;
- cursor: pointer;
- transition: all 0.2s;
-}
-
-.menu-item:hover {
- background-color: #f8f9fa;
-}
-
-.menu-item.active {
- background-color: #e8f5e9;
- color: #2c662f;
- font-weight: 500;
-}
-
-.main-content {
- flex: 1;
- padding: 2rem;
- max-width: 800px;
- margin: 0 auto;
-}
-
-/* Subscriptions styles */
-.mt-4 {
- margin-top: 1.5rem;
-}
-
-.product-section-title {
- font-size: 1.3rem;
- color: #2c662f;
- margin-bottom: 1.5rem;
-}
-
-.subscribed-products {
- display: grid;
- grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
- gap: 1rem;
-}
-
-.product-card {
- background: #f8f9fa;
- border-radius: 8px;
- padding: 1.5rem;
- transition: all 0.3s ease;
-}
-
-.product-card:hover {
- transform: translateY(-2px);
- box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.product-info h3 {
- color: #2c3e50;
- margin: 0 0 0.5rem 0;
- font-size: 1.1rem;
-}
-
-.bank-name {
- color: #666;
- font-size: 0.9rem;
- margin-bottom: 1rem;
-}
-
-.product-actions {
- display: flex;
- gap: 0.5rem;
-}
-
-.detail-btn, .unsubscribe-btn {
- flex: 1;
- padding: 0.5rem;
- border: none;
- border-radius: 4px;
- font-size: 0.9rem;
- cursor: pointer;
- transition: all 0.2s;
-}
-
-.detail-btn {
- background-color: #2c662f;
- color: white;
-}
-
-.unsubscribe-btn {
- background-color: #dc3545;
- color: white;
-}
-
-.detail-btn:hover, .unsubscribe-btn:hover {
- opacity: 0.9;
-}
-
-@media (max-width: 768px) {
- .profile-container {
-   flex-direction: column;
- }
-
- .sidebar {
-   width: 100%;
-   border-right: none;
-   border-bottom: 1px solid #e9ecef;
-   padding: 1rem;
- }
-
- .user-avatar {
-   width: 60px;
-   height: 60px;
-   font-size: 1.5rem;
- }
-
- .main-content {
-   padding: 1rem;
- }
-
- .subscribed-products {
-   grid-template-columns: 1fr;
- }
-
- .product-actions {
-   flex-direction: column;
- }
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
+  width: 80px;
+  height: 80px;
+  background-color: #10b981;
+  color: white;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  font-size: 2rem;
+  margin: 0 auto 1rem;
 }
 
-.modal-content {
-  background: white;
-  width: 90%;
-  max-width: 800px;
-  max-height: 90vh;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  animation: modal-appear 0.3s ease-out;
+.user-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
 }
 
-.modal-header {
-  padding: 20px;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #eee;
+.menu-list {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.menu-item {
+  display: flex;
   align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  color: #4b5563;
+  transition: all 0.2s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
 }
 
-.modal-header h3 {
-  margin: 0;
-  color: #2c662f;
+.menu-item:hover {
+  background-color: #f3f4f6;
 }
 
-.modal-body {
-  padding: 20px;
+.menu-item.active {
+  background-color: #10b981;
+  color: white;
+}
+
+/* 메인 컨텐츠 영역 */
+.main-content {
+  flex: 1;
+  padding: 2rem;
   overflow-y: auto;
-  max-height: calc(90vh - 80px);
 }
 
-.options-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-top: 15px;
+.content-section {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.option-card {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 15px;
+.section-header {
+  margin-bottom: 2rem;
 }
 
-@keyframes modal-appear {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.section-header h1 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* 카드 스타일링 */
+.content-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 폼 스타일링 */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  border-color: #10b981;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+/* 버튼 스타일링 */
+.primary-btn {
+  background-color: #10b981;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primary-btn:hover {
+  background-color: #4338ca;
+}
+
+.secondary-btn {
+  background-color: #e5e7eb;
+  color: #374151;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.secondary-btn:hover {
+  background-color: #d1d5db;
+}
+
+.danger-btn {
+  background-color: #ef4444;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.danger-btn:hover {
+  background-color: #dc2626;
+}
+
+/* 상품 카드 스타일링 */
+.product-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+}
+
+.product-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.product-info h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.bank-name {
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.product-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.detail-btn, .unsubscribe-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.detail-btn {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.unsubscribe-btn {
+  background-color: #fee2e2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+}
+
+/* 빈 상태 스타일링 */
+.empty-state {
+  text-align: center;
+  padding: 3rem 0;
+  color: #6b7280;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+/* 경고 카드 스타일링 */
+.warning {
+  border: 1px solid #fee2e2;
+  background-color: #fef2f2;
+}
+
+.warning-icon {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* 좋아요한 게시글 스타일링 */
+.liked-article {
+  padding: 1rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.article-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.article-link h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.article-excerpt {
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.article-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: #9ca3af;
 }
 </style>
