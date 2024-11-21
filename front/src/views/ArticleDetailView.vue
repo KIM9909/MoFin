@@ -3,8 +3,10 @@
     <h1>{{ article.title }}</h1>
     <p>{{ article.content }}</p>
     <RouterLink :to="{ name: 'articleList' }">뒤로가기</RouterLink>
-    <button @click="deleteArticle">삭제</button>
-    <RouterLink :to="{ name: 'articleUpdate', params: { id: article.id } }">수정</RouterLink>
+    <div v-if="article.user && article.user.id === authStore.userId">
+      <RouterLink :to="{ name: 'articleUpdate', params: { id: article.id } }">수정</RouterLink>
+      <button @click="deleteArticle">삭제</button>
+    </div>
 
     <h2>댓글</h2>
     <ul>

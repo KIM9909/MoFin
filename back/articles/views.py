@@ -18,6 +18,10 @@ class ArticleViewSet(ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
 
+    def perform_create(self, serializer):
+        """게시글 작성 시 현재 로그인한 사용자를 작성자로 지정"""
+        serializer.save(user=self.request.user)
+
 class CommentViewSet(ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
