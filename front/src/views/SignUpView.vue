@@ -1,161 +1,171 @@
-<!-- SignUpView.vue -->
 <template>
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="card">
-          <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">회원가입</h3>
+  <div class="signup-container">
+    <div class="signup-card">
+      <div class="form-header">
+        <h1>회원가입</h1>
+        <p class="subtitle">MoFin과 함께 스마트한 금융생활을 시작하세요</p>
+      </div>
+
+      <form @submit.prevent="signUp" class="signup-form" novalidate>
+        <!-- 기본 정보 섹션 -->
+        <div class="form-section">
+          <h2 class="section-title">기본 정보</h2>
+          
+          <div class="form-group">
+            <label for="username">아이디 <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">👤</span>
+              <input
+                v-model="credentials.username"
+                type="text"
+                id="username"
+                required
+                placeholder="로그인에 사용할 아이디"
+                class="form-input"
+              >
+            </div>
           </div>
-          <div class="card-body">
-            <form @submit.prevent="signUp" class="needs-validation" novalidate>
-              <!-- 사용자 이름 -->
-              <div class="mb-3">
-                <label for="username" class="form-label">사용자 이름 *</label>
-                <input
-                  v-model="credentials.username"
-                  type="text"
-                  class="form-control"
-                  id="username"
-                  required
-                  placeholder="로그인에 사용할 아이디를 입력하세요"
-                >
-                <div class="invalid-feedback">
-                  사용자 이름을 입력해주세요.
-                </div>
-              </div>
 
-              <!-- 닉네임 -->
-              <div class="mb-3">
-                <label for="nickname" class="form-label">닉네임 *</label>
-                <input
-                  v-model="credentials.nickname"
-                  type="text"
-                  class="form-control"
-                  id="nickname"
-                  required
-                  placeholder="사이트에서 사용할 닉네임을 입력하세요"
-                >
-                <div class="invalid-feedback">
-                  닉네임을 입력해주세요.
-                </div>
-              </div>
+          <div class="form-group">
+            <label for="nickname">닉네임 <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">📝</span>
+              <input
+                v-model="credentials.nickname"
+                type="text"
+                id="nickname"
+                required
+                placeholder="커뮤니티에서 사용할 닉네임"
+                class="form-input"
+              >
+            </div>
+          </div>
 
-              <!-- 이메일 -->
-              <div class="mb-3">
-                <label for="email" class="form-label">이메일 *</label>
-                <input
-                  v-model="credentials.email"
-                  type="email"
-                  class="form-control"
-                  id="email"
-                  required
-                  placeholder="example@email.com"
-                >
-                <div class="invalid-feedback">
-                  올바른 이메일 주소를 입력해주세요.
-                </div>
-              </div>
-
-              <!-- 생년월일 -->
-              <div class="mb-3">
-                <label for="birth" class="form-label">생년월일</label>
-                <input
-                  v-model="credentials.birth"
-                  type="date"
-                  class="form-control"
-                  id="birth"
-                >
-              </div>
-
-              <!-- 선호도 -->
-              <div class="mb-3">
-                <label for="preference" class="form-label">선호도</label>
-                <select 
-                  v-model="credentials.preference"
-                  class="form-select"
-                  id="preference"
-                >
-                  <option value="">선택하세요</option>
-                  <option value="안정형">안정형</option>
-                  <option value="중립형">중립형</option>
-                  <option value="수익형">수익형</option>
-                </select>
-              </div>
-
-              <!-- 비밀번호 -->
-              <div class="mb-3">
-                <label for="password1" class="form-label">비밀번호 *</label>
-                <input
-                  v-model="credentials.password1"
-                  type="password"
-                  class="form-control"
-                  id="password1"
-                  required
-                  placeholder="비밀번호를 입력하세요"
-                >
-                <div class="form-text">
-                  최소 8자 이상, 영문/숫자/특수문자를 포함해야 합니다.
-                </div>
-                <div class="invalid-feedback">
-                  비밀번호를 입력해주세요.
-                </div>
-              </div>
-
-              <!-- 비밀번호 확인 -->
-              <div class="mb-3">
-                <label for="password2" class="form-label">비밀번호 확인 *</label>
-                <input
-                  v-model="credentials.password2"
-                  type="password"
-                  class="form-control"
-                  id="password2"
-                  required
-                  placeholder="비밀번호를 다시 입력하세요"
-                >
-                <div class="invalid-feedback">
-                  비밀번호가 일치하지 않습니다.
-                </div>
-              </div>
-
-              <!-- 약관 동의 -->
-              <div class="mb-3 form-check">
-                <input
-                  v-model="agreeToTerms"
-                  type="checkbox"
-                  class="form-check-input"
-                  id="agreeToTerms"
-                  required
-                >
-                <label class="form-check-label" for="agreeToTerms">
-                  이용약관과 개인정보 처리방침에 동의합니다. *
-                </label>
-                <div class="invalid-feedback">
-                  약관에 동의해주세요.
-                </div>
-              </div>
-
-              <!-- 제출 버튼 -->
-              <div class="d-grid gap-2">
-                <button 
-                  type="submit" 
-                  class="btn btn-primary btn-lg"
-                  :disabled="!isFormValid"
-                >
-                  가입하기
-                </button>
-                <button 
-                  type="button" 
-                  class="btn btn-secondary"
-                  @click="$router.push({ name: 'signIn' })"
-                >
-                  이미 계정이 있으신가요? 로그인하기
-                </button>
-              </div>
-            </form>
+          <div class="form-group">
+            <label for="email">이메일 <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">📧</span>
+              <input
+                v-model="credentials.email"
+                type="email"
+                id="email"
+                required
+                placeholder="example@email.com"
+                class="form-input"
+              >
+            </div>
           </div>
         </div>
-      </div>
+
+        <!-- 추가 정보 섹션 -->
+        <div class="form-section">
+          <h2 class="section-title">추가 정보</h2>
+
+          <div class="form-group">
+            <label for="birth">생년월일</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🎂</span>
+              <input
+                v-model="credentials.birth"
+                type="date"
+                id="birth"
+                class="form-input"
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="preference">주소비처</label>
+            <div class="input-wrapper">
+              <span class="input-icon">👛</span>
+              <select 
+                v-model="credentials.preference"
+                id="preference"
+                class="form-input"
+              >
+                <option value="">선택하세요</option>
+                <option value="쇼핑">쇼핑</option>
+                <option value="식비">식비</option>
+                <option value="주거">주거</option>
+                <option value="교통">교통</option>
+                <option value="쇼핑">쇼핑</option>
+                <option value="카페">카페</option>
+                <option value="교육">교육</option>
+                <option value="운동/헬스">운동/헬스</option>
+                <option value="통신">통신</option>
+                <option value="게임">게임</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 보안 정보 섹션 -->
+        <div class="form-section">
+          <h2 class="section-title">보안 정보</h2>
+
+          <div class="form-group">
+            <label for="password1">비밀번호 <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input
+                v-model="credentials.password1"
+                type="password"
+                id="password1"
+                required
+                placeholder="비밀번호 입력"
+                class="form-input"
+              >
+            </div>
+            <p class="input-hint">최소 8자 이상, 영문/숫자/특수문자 포함</p>
+          </div>
+
+          <div class="form-group">
+            <label for="password2">비밀번호 확인 <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input
+                v-model="credentials.password2"
+                type="password"
+                id="password2"
+                required
+                placeholder="비밀번호 재입력"
+                class="form-input"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- 약관 동의 -->
+        <div class="terms-section">
+          <label class="terms-label">
+            <input
+              v-model="agreeToTerms"
+              type="checkbox"
+              required
+              class="terms-checkbox"
+            >
+            <span>이용약관과 개인정보 처리방침에 동의합니다. <span class="required">*</span></span>
+          </label>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="button-group">
+          <button 
+            type="submit" 
+            class="submit-btn"
+            :disabled="!isFormValid"
+          >
+            가입하기
+          </button>
+          <button 
+            type="button" 
+            class="login-link"
+            @click="$router.push({ name: 'signIn' })"
+          >
+            이미 계정이 있으신가요? 로그인하기
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </template>
@@ -227,15 +237,199 @@ const signUp = async () => {
 </script>
 
 <style scoped>
-.card {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+.signup-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 2rem;
 }
 
-.form-label {
-  font-weight: 500;
+.signup-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  overflow: hidden;
+  animation: slideUp 0.5s ease-out;
 }
 
-.invalid-feedback {
+.form-header {
+  background-color: #2c3e50;
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.form-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin-top: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+}
+
+.signup-form {
+  padding: 2rem;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.section-title {
+  font-size: 1.2rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
   display: block;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.required {
+  color: #e53e3e;
+  margin-left: 0.25rem;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 3rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #2c3e50;
+  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+
+.input-hint {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #718096;
+}
+
+.terms-section {
+  margin: 2rem 0;
+}
+
+.terms-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.terms-checkbox {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.submit-btn {
+  padding: 1rem;
+  background-color: #2c662f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: #235024;
+}
+
+.submit-btn:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+.login-link {
+  padding: 0.75rem;
+  background: none;
+  border: none;
+  color: #2c662f;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.login-link:hover {
+  color: #235024;
+  text-decoration: underline;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .signup-container {
+    padding: 1rem;
+  }
+
+  .signup-card {
+    border-radius: 12px;
+  }
+
+  .form-header {
+    padding: 1.5rem;
+  }
+
+  .signup-form {
+    padding: 1.5rem;
+  }
+
+  .form-input {
+    font-size: 0.9rem;
+  }
 }
 </style>

@@ -1,22 +1,56 @@
 <template>
-  <div class="container">
-    <div class="form-container">
-      <div class="form">
-      <h1>은행 위치 찾기</h1>
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="지역을 입력하세요 (예: 강남구)"
-        />
-        <select v-model="selectedBank">
-          <option value="" disabled selected>은행 선택</option>
-          <option v-for="bank in banks" :key="bank" :value="bank">{{ bank }}</option>
-        </select>
-        <button @click="searchLocations">은행 찾기</button>
-        <button @click="findNearbyBanks">내 주변 은행 찾기</button>
+  <div class="page-container">
+    <div class="search-section">
+      <div class="search-card">
+        <div class="search-header">
+          <h1>은행 위치 찾기</h1>
+          <p class="subtitle">가까운 은행을 쉽고 빠르게 찾아보세요</p>
+        </div>
+
+        <div class="search-form">
+          <div class="form-group">
+            <label>지역 검색</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔍</span>
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="지역을 입력하세요 (예: 강남구)"
+                class="search-input"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>은행 선택</label>
+            <div class="select-wrapper">
+              <span class="input-icon">🏦</span>
+              <select v-model="selectedBank" class="bank-select">
+                <option value="" disabled selected>은행을 선택해주세요</option>
+                <option v-for="bank in banks" :key="bank" :value="bank">
+                  {{ bank }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="button-group">
+            <button @click="searchLocations" class="search-btn primary">
+              <span class="btn-icon">🔍</span>
+              은행 찾기
+            </button>
+            <button @click="findNearbyBanks" class="search-btn secondary">
+              <span class="btn-icon">📍</span>
+              내 주변 은행 찾기
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-    <div id="map"></div>
+
+    <div class="map-section">
+      <div id="map"></div>
+    </div>
   </div>
 </template>
 
@@ -104,36 +138,32 @@ function findNearbyBanks() {
         
         clearMarkers();
         
-        // 사용자 위치 마커 추가
         userMarker = new window.kakao.maps.Marker({
           map: map,
           position: userPosition,
           image: new window.kakao.maps.MarkerImage(
             'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
-            new window.kakao.maps.Size(32, 35),  // 마커 크기를 32x35로 축소
-            { offset: new window.kakao.maps.Point(16, 35) }  // 오프셋도 비율에 맞게 조정
+            new window.kakao.maps.Size(32, 35),
+            { offset: new window.kakao.maps.Point(16, 35) }
           )
         });
 
         map.setCenter(userPosition);
-        map.setLevel(4); // 줌 레벨 조정
+        map.setLevel(4);
 
-        // 주변 은행 검색을 위한 옵션 설정
         const searchOptions = {
           location: userPosition,
-          radius: 2000,  // 2km 반경
+          radius: 2000,
           sort: window.kakao.maps.services.SortBy.DISTANCE
         };
 
         const ps = new window.kakao.maps.services.Places();
-        
-        // 선택된 은행이 있으면 해당 은행만, 없으면 모든 은행 검색
         const searchBank = selectedBank.value || "은행";
         
         ps.keywordSearch(searchBank, (result, status) => {
           if (status === window.kakao.maps.services.Status.OK) {
             const bounds = new window.kakao.maps.LatLngBounds();
-            bounds.extend(userPosition); // 사용자 위치를 범위에 포함
+            bounds.extend(userPosition);
             
             result.forEach(location => {
               addMarker(location);
@@ -144,7 +174,7 @@ function findNearbyBanks() {
           } else {
             alert("주변 은행 정보를 찾을 수 없습니다.");
           }
-        }, searchOptions); // 검색 옵션 적용
+        }, searchOptions);
       },
       error => {
         console.error("사용자 위치를 가져오는데 실패했습니다:", error);
@@ -209,50 +239,184 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.container {
+.page-container {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.form-container {
-  width: 300px;
+.search-section {
+  width: 400px;
+  flex-shrink: 0;
 }
 
-.form {
+.search-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.search-header {
+  background-color: #2c3e50;
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.search-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin-top: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+}
+
+.search-form {
+  padding: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 30px;
-  padding-top: 50px;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.input-wrapper, .select-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+}
+
+.search-input, .bank-select {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 3rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus, .bank-select:focus {
+  outline: none;
+  border-color: #2c3e50;
+  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.search-btn.primary {
+  background-color: #2c662f;
+  color: white;
+}
+
+.search-btn.primary:hover {
+  background-color: #235024;
+  transform: translateY(-2px);
+}
+
+.search-btn.secondary {
+  background-color: #e2e8f0;
+  color: #2c3e50;
+}
+
+.search-btn.secondary:hover {
+  background-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+.btn-icon {
+  font-size: 1.2rem;
+}
+
+.map-section {
+  flex-grow: 1;
+  min-width: 0;
 }
 
 #map {
-  flex-grow: 1;
-  height: 550px;
-  width: 500px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  width: 100%;
+  height: 700px;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-input,
-select,
-button {
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+@media (max-width: 1024px) {
+  .page-container {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .search-section {
+    width: 100%;
+  }
+
+  #map {
+    height: 500px;
+    margin-top: 1rem;
+  }
+
+  .search-header {
+    padding: 1.5rem;
+  }
+
+  .search-form {
+    padding: 1.5rem;
+  }
 }
 
-button {
-  background-color: #4CAF50;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s;
+.search-card {
+  animation: slideIn 0.5s ease-out;
 }
 
-button:hover {
-  background-color: #45a049;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
