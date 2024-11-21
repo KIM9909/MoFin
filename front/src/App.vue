@@ -8,7 +8,6 @@ import HomeView from '@/views/HomeView.vue'
 <template>
   <AppNavBar />
   <div>
-    <h1>MoFin MoFin MoFin</h1>
   </div>
   <RouterView />
 </template>
