@@ -1,51 +1,80 @@
 <template>
-  <div>
-    <h1>{{ article.title }}</h1>
-    <p>{{ article.content }}</p>
-    <RouterLink :to="{ name: 'articleList' }">뒤로가기</RouterLink>
-    <div v-if="article.user && article.user.id === authStore.userId">
-      <RouterLink :to="{ name: 'articleUpdate', params: { id: article.id } }">수정</RouterLink>
-      <button @click="deleteArticle">삭제</button>
-    </div>
-
-    <h2>댓글</h2>
-    <ul>
-      <li v-for="comment in comments" :key="comment.id" class="comment-item">
-        <!-- 수정 모드가 아닐 때 -->
-        <div v-if="editingCommentId !== comment.id">
-          <p>{{ comment.content }}</p>
-          <div class="comment-meta">
-            <span>{{ formatDate(comment.created_at) }}</span>
-            <span>작성자: {{ comment.user.nickname }}</span>
-            <!-- 자신이 작성한 댓글만 수정/삭제 버튼 표시 -->
-            <div v-if="comment.user.id === authStore.userId" class="comment-actions">
-              <button @click="startEdit(comment)">수정</button>
-              <button @click="deleteComment(comment.id)">삭제</button>
-            </div>
-            <!-- <span>작성자: {{ comment.user.nickname }} (ID: {{ comment.user.id }})</span>
-            <span>로그인 사용자 ID: {{ authStore.userId }}</span> -->
-          </div>
+  <div class="article-detail-container">
+    <div class="article-card">
+      <!-- 게시글 헤더 -->
+      <div class="article-header">
+        <h1>{{ article.title }}</h1>
+        <div class="article-meta">
+          <span class="author">작성자: {{ article.user?.nickname }}</span>
+          <span class="separator">•</span>
+          <span class="date">{{ formatDate(article.created_at) }}</span>
         </div>
-        <!-- 수정 모드일 때 -->
-        <div v-else>
+      </div>
+
+      <!-- 게시글 내용 -->
+      <div class="article-content">
+        <p>{{ article.content }}</p>
+      </div>
+
+      <!-- 게시글 작성자 액션 버튼 -->
+      <div class="article-actions">
+        <RouterLink :to="{ name: 'articleList' }" class="back-btn">
+          <span class="icon">←</span> 목록으로
+        </RouterLink>
+        
+        <div v-if="article.user && article.user.id === authStore.userId" class="author-actions">
+          <RouterLink :to="{ name: 'articleUpdate', params: { id: article.id } }" class="edit-btn">
+            수정
+          </RouterLink>
+          <button @click="deleteArticle" class="delete-btn">삭제</button>
+        </div>
+      </div>
+
+      <!-- 댓글 섹션 -->
+      <div class="comments-section">
+        <h2>댓글</h2>
+        
+        <!-- 새 댓글 작성 -->
+        <div class="new-comment">
           <textarea 
-            v-model="editingContent" 
-            class="edit-textarea"
+            v-model="newComment" 
+            placeholder="댓글을 입력하세요"
+            class="comment-textarea"
           ></textarea>
-          <div class="edit-actions">
-            <button @click="updateComment(comment.id)">저장</button>
-            <button @click="cancelEdit">취소</button>
-          </div>
+          <button @click="addComment" class="submit-btn">댓글 작성</button>
         </div>
-      </li>
-    </ul>
 
-    <textarea 
-      v-model="newComment" 
-      placeholder="댓글을 입력하세요"
-      class="new-comment-textarea"
-    ></textarea>
-    <button @click="addComment">댓글 작성</button>
+        <!-- 댓글 목록 -->
+        <ul class="comment-list">
+          <li v-for="comment in comments" :key="comment.id" class="comment-item">
+            <!-- 일반 모드 -->
+            <div v-if="editingCommentId !== comment.id" class="comment-content">
+              <div class="comment-header">
+                <span class="comment-author">{{ comment.user.nickname }}</span>
+                <span class="comment-date">{{ formatDate(comment.created_at) }}</span>
+              </div>
+              <p class="comment-text">{{ comment.content }}</p>
+              <div v-if="comment.user.id === authStore.userId" class="comment-actions">
+                <button @click="startEdit(comment)" class="action-btn edit">수정</button>
+                <button @click="deleteComment(comment.id)" class="action-btn delete">삭제</button>
+              </div>
+            </div>
+            
+            <!-- 수정 모드 -->
+            <div v-else class="comment-edit">
+              <textarea 
+                v-model="editingContent" 
+                class="edit-textarea"
+              ></textarea>
+              <div class="edit-actions">
+                <button @click="updateComment(comment.id)" class="save-btn">저장</button>
+                <button @click="cancelEdit" class="cancel-btn">취소</button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -218,58 +247,237 @@ const formatDate = (dateString) => {
 </script>
 
 <style scoped>
-.comment-item {
-  border-bottom: 1px solid #eee;
-  padding: 1rem 0;
-  list-style: none;
+.article-detail-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
 }
 
-.comment-meta {
-  display: flex;
-  gap: 1rem;
+.article-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.article-header {
+  padding: 2rem;
+  background-color: #2c3e50;
+  color: white;
+}
+
+.article-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.article-meta {
+  margin-top: 1rem;
   font-size: 0.9rem;
-  color: #666;
-  margin-top: 0.5rem;
+  color: #b8c2cc;
 }
 
-.comment-actions {
-  margin-left: auto;
+.separator {
+  margin: 0 0.5rem;
 }
 
-.comment-actions button {
-  margin-left: 0.5rem;
-  padding: 0.25rem 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: #fff;
+.article-content {
+  padding: 2rem;
+  line-height: 1.6;
+  color: #2c3e50;
+}
+
+.article-actions {
+  padding: 1rem 2rem;
+  border-top: 1px solid #edf2f7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.back-btn, .edit-btn, .delete-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.back-btn {
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back-btn:hover {
+  background-color: #edf2f7;
+}
+
+.edit-btn {
+  background-color: #4a5568;
+  color: white;
+  margin-right: 0.5rem;
+}
+
+.delete-btn {
+  background-color: #e53e3e;
+  color: white;
+  border: none;
   cursor: pointer;
 }
 
-.edit-textarea, .new-comment-textarea {
+.comments-section {
+  padding: 2rem;
+  background-color: #f8fafc;
+}
+
+.comments-section h2 {
+  margin: 0 0 1.5rem 0;
+  color: #2c3e50;
+}
+
+.new-comment {
+  margin-bottom: 2rem;
+}
+
+.comment-textarea, .edit-textarea {
   width: 100%;
-  min-height: 60px;
+  min-height: 100px;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.submit-btn {
+  background-color: #2c662f;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.comment-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.comment-item {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.comment-author {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.comment-date {
+  color: #718096;
+  font-size: 0.9rem;
+}
+
+.comment-text {
   margin: 0.5rem 0;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
+  line-height: 1.6;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.action-btn {
+  padding: 0.4rem 0.8rem;
+  border: none;
   border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.action-btn.edit {
+  background-color: #edf2f7;
+  color: #2c3e50;
+}
+
+.action-btn.delete {
+  background-color: #fed7d7;
+  color: #c53030;
 }
 
 .edit-actions {
   display: flex;
   gap: 0.5rem;
   justify-content: flex-end;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
 }
 
-button {
+.save-btn, .cancel-btn {
   padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
+  border: none;
   border-radius: 4px;
-  background: #fff;
   cursor: pointer;
 }
 
-button:hover {
-  background: #f5f5f5;
+.save-btn {
+  background-color: #2c662f;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #e2e8f0;
+  color: #2c3e50;
+}
+
+@media (max-width: 640px) {
+  .article-detail-container {
+    margin: 1rem auto;
+  }
+
+  .article-header {
+    padding: 1.5rem;
+  }
+
+  .article-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .article-content, .comments-section {
+    padding: 1.5rem;
+  }
+
+  .article-actions {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .author-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .edit-btn, .delete-btn {
+    flex: 1;
+    text-align: center;
+  }
 }
 </style>
