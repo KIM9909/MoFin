@@ -67,6 +67,14 @@
                 required
               >
             </div>
+            <div class="form-group">
+              <label>이메일</label>
+              <input
+                v-model="editForm.email"
+                type="email"
+                required
+              >
+            </div>
             <div class="button-group">
               <button type="submit" class="primary-btn">저장</button>
               <button type="button" @click="cancelEditing" class="secondary-btn">
@@ -151,6 +159,7 @@ const activeMenu = ref('info');
 
 const editForm = ref({
   username: '',
+  email: ''
 });
 
 const passwordForm = ref({
@@ -173,6 +182,7 @@ onMounted(async () => {
 const startEditing = () => {
   isEditing.value = true;
   editForm.value.username = auth.nickname;
+  editForm.value.email = auth.email;
 };
 
 // 수정 취소
@@ -184,30 +194,43 @@ const cancelEditing = () => {
 const updateProfile = async () => {
   try {
     await axios.put('http://127.0.0.1:8000/accounts/user/', {
-      username: editForm.value.username
+      username: editForm.value.username,
+      email: editForm.value.email,
     }, {
       headers: {
         Authorization: `Token ${auth.token}`
       }
     });
-    
+
+    // 사용자 정보 업데이트
     await auth.fetchUserInfo();
     isEditing.value = false;
     alert('프로필이 성공적으로 업데이트되었습니다.');
   } catch (error) {
     console.error('프로필 업데이트 실패:', error);
-    alert('프로필 업데이트에 실패했습니다.');
+    if (error.response?.data) {
+      // 에러 메시지 처리
+      let errorMessage = '';
+      Object.keys(error.response.data).forEach(key => {
+        errorMessage += `${key}: ${error.response.data[key].join(', ')} `;
+      });
+      alert(`프로필 업데이트에 실패했습니다: ${errorMessage}`);
+    } else {
+      alert('프로필 업데이트에 실패했습니다.');
+    }
   }
 };
 
 // 비밀번호 변경
 const updatePassword = async () => {
+  // 새로운 비밀번호가 일치하는지 확인
   if (passwordForm.value.new_password1 !== passwordForm.value.new_password2) {
     alert('새 비밀번호가 일치하지 않습니다.');
     return;
   }
 
   try {
+    // 비밀번호 변경 API 호출
     await axios.post('http://127.0.0.1:8000/accounts/password/change/', {
       old_password: passwordForm.value.old_password,
       new_password1: passwordForm.value.new_password1,
@@ -217,18 +240,23 @@ const updatePassword = async () => {
         Authorization: `Token ${auth.token}`
       }
     });
-    
+
+    // 입력 값 초기화
     passwordForm.value = {
       old_password: '',
       new_password1: '',
       new_password2: ''
     };
-    
+
     alert('비밀번호가 성공적으로 변경되었습니다.');
     activeMenu.value = 'info';
   } catch (error) {
     console.error('비밀번호 변경 실패:', error);
-    alert('비밀번호 변경에 실패했습니다.');
+    if (error.response?.data) {
+      alert(`비밀번호 변경에 실패했습니다: ${JSON.stringify(error.response.data)}`);
+    } else {
+      alert('비밀번호 변경에 실패했습니다.');
+    }
   }
 };
 
