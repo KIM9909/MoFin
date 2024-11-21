@@ -31,7 +31,7 @@ const createArticle = () => {
 
   axios({
     method: 'post',
-    url: 'http://127.0.0.1:8000/articles/',
+    url: 'http://127.0.0.1:8000/articles/articles/',
     data: {
       title: title.value,
       content: content.value
