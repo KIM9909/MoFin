@@ -2,7 +2,7 @@
 
 ## 11월 / 18일(월)
 ### [요구사항 명세서]<br>
-![alt text](image.png)
+![alt text](mofin-receipt.png)
 1. 회원 <br>
 -> 회원가입, 로그인, 로그아웃을 나누어서 각자의 기능에 필요한 데이터 및 컴포넌트 배치 구조를 정함
 
@@ -25,7 +25,7 @@
 -> 나이대별, 관심사별, 상황별 금융상품 추천
 
 ### [ERD 작성]
-![alt text](image-1.png)
+![alt text](mofin-erd.png)
 -> 각 필요 기능들을 토대로 PK와 FK를 구분하고 관계차수를 계산해서 ERD를 작성했다.
 
 -> N:M 관계는 중간다리 역할을 하는 중개테이블을 만들어서 서로 참조할 수 있도록 하였다.
@@ -261,3 +261,30 @@
           </div>
         </div>
     ```
+
+## 11월 21일(목)
+### [프로필 페이지 작성, 회원 정보 수정, 비밀번호 변경, 회원 탈퇴 기능]
+#### 프로필 페이지에서 사용자의 기본적인 정보 제공 및 정보 수정 기능 제공
+
+추가적으로 사용자와 금융 상품을 N:M 관계를 가지도록 함으로써 가입 상품 리스트를 프로필 페이지에서
+볼 수 있도록 기능을 구현해야 함. 
+```python
+class User(AbstractUser):
+    nickname = models.CharField(max_length=255, blank=False)
+    birth = models.DateField(blank=True, null=True)
+    preference = models.TextField(blank=True, null=True)
+    # 기존에 serializer로 정의하고 있지 않던  subscribe 필드들
+    # 어떻게 처리할지 알아보는 중에 있음
+    subscribe_deposits = models.ManyToManyField(DepositProducts, blank=True)
+    subscribe_savings = models.ManyToManyField(SavingsProducts, blank=True)
+```
+
+위의 subscribe_deposits 와 subscribe_savings 필드를 정의하고 중개 테이블을 이용해 유저가 가입한 상품 목록을 추가할 예정.
+
+
+하지만 회원가입을 진행하는 과정에서 데이터를 데이터베이스에 등록할 때 제대로 저장되지 않고 있는 문제가 발생함. Registeration_Serializer 와 adapter, UserDetailsSerializer 를 작성하는 과정에서 어떻게 코드를 작성해야 등록되는지 알아보고 있는 상태
+
+추가적으로 이메일에 대한 정보가 회원 프로필에 출력되고 있지 않고 비밀번호 변경 시 현재 비밀번호의 값이 어떤 값이 들어가도 변경이 되는 시스템 결함을 수정해야 함.
+
+#### ERD 수정 및 요구사항 명세서를 새롭게 작성하였음.
+physical name 을 실제 모델에 맞게 수정, 프로젝트 진행사항 체크
