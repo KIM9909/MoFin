@@ -9,6 +9,7 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('token') || null); // 새로고침 시 토큰 복구
   const userId = ref(null); // 현재 로그인한 사용자 ID
   const nickname = ref(""); // 사용자 닉네임
+  const email = ref("")
 
   const setAxiosAuthHeader = () => {
     axios.defaults.headers.common['Authorization'] = token.value
@@ -76,6 +77,8 @@ export const useAuthStore = defineStore('auth', () => {
       .then((res) => {
         userId.value = res.data.pk;
         nickname.value = res.data.username;
+        email.value = res.data.email
+        console.log(res.data)
       })
       .catch((err) => {
         console.error('사용자 정보를 가져오는 중 오류:', err);
@@ -87,6 +90,7 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null;
     userId.value = null;
     nickname.value = "";
+    email.value = ""
     localStorage.removeItem('token');
     setAxiosAuthHeader();
     console.log('로그아웃되었습니다.');
@@ -94,5 +98,5 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isLogin = computed(() => token.value !== null);
 
-  return { signUp, signIn, logout, fetchUserInfo, token, userId, nickname, isLogin };
+  return { signUp, signIn, logout, fetchUserInfo, token, userId, nickname, isLogin, email };
 });
