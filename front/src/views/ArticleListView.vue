@@ -68,6 +68,7 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/auth';
+import { RouterLink } from 'vue-router';
 
 const articles = ref([]);
 const store = useAuthStore();
@@ -198,6 +199,7 @@ onMounted(() => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   height: 100%;
+  border: 1px solid rgb(180, 180, 180);
 }
 
 .article-card:hover {
