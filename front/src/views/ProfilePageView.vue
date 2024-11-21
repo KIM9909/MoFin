@@ -9,28 +9,14 @@
 
       <nav class="menu-list">
         <button 
+          v-for="menu in menuItems"
+          :key="menu.id"
           class="menu-item"
-          :class="{ 'active': activeMenu === 'info' }"
-          @click="activeMenu = 'info'"
+          :class="{ 'active': activeMenu === menu.id }"
+          @click="activeMenu = menu.id"
         >
-          <span class="icon">👤</span>
-          회원정보
-        </button>
-        <button 
-          class="menu-item"
-          :class="{ 'active': activeMenu === 'security' }"
-          @click="activeMenu = 'security'"
-        >
-          <span class="icon">🔒</span>
-          보안설정
-        </button>
-        <button 
-          class="menu-item"
-          :class="{ 'active': activeMenu === 'delete' }"
-          @click="activeMenu = 'delete'"
-        >
-          <span class="icon">⚠️</span>
-          탈퇴하기
+          <span class="icon">{{ menu.icon }}</span>
+          {{ menu.label }}
         </button>
       </nav>
     </aside>
@@ -124,6 +110,36 @@
         </div>
       </div>
 
+      <!-- 좋아요한 게시글 섹션 -->
+      <div v-if="activeMenu === 'likes'" class="content-section">
+        <div class="section-header">
+          <h1>좋아요한 게시글</h1>
+        </div>
+
+        <div class="content-card">
+          <div v-if="likedArticles.length === 0" class="empty-state">
+            <div class="empty-icon">❤️</div>
+            <p>아직 좋아요한 게시글이 없습니다.</p>
+          </div>
+
+          <div v-else class="liked-articles">
+            <div v-for="article in likedArticles" :key="article.id" class="liked-article">
+              <RouterLink 
+                :to="{ name: 'articleDetail', params: { id: article.id }}"
+                class="article-link"
+              >
+                <h3>{{ article.title }}</h3>
+                <p class="article-excerpt">{{ article.content }}</p>
+                <div class="article-meta">
+                  <span class="like-count">❤️ {{ article.like_count }}</span>
+                  <span class="date">{{ formatDate(article.created_at) }}</span>
+                </div>
+              </RouterLink>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 탈퇴하기 섹션 -->
       <div v-if="activeMenu === 'delete'" class="content-section">
         <div class="section-header">
@@ -147,7 +163,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -156,6 +172,15 @@ const router = useRouter();
 const auth = useAuthStore();
 const isEditing = ref(false);
 const activeMenu = ref('info');
+const likedArticles = ref([]);
+
+// 메뉴 아이템 정의
+const menuItems = [
+  { id: 'info', icon: '👤', label: '회원정보' },
+  { id: 'security', icon: '🔒', label: '보안설정' },
+  { id: 'likes', icon: '❤️', label: '좋아요한 게시글' },
+  { id: 'delete', icon: '⚠️', label: '탈퇴하기' }
+];
 
 const editForm = ref({
   username: '',
@@ -168,6 +193,16 @@ const passwordForm = ref({
   new_password2: ''
 });
 
+// 날짜 포맷 함수
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
 // 컴포넌트 마운트 시 사용자 정보 불러오기
 onMounted(async () => {
   try {
@@ -177,6 +212,27 @@ onMounted(async () => {
     alert('사용자 정보를 불러오는데 실패했습니다.');
   }
 });
+
+// 메뉴 변경 시 좋아요 게시글 불러오기
+watch(activeMenu, async (newValue) => {
+  if (newValue === 'likes') {
+    await fetchLikedArticles();
+  }
+});
+
+// 좋아요한 게시글 불러오기
+const fetchLikedArticles = async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/articles/articles/likes/', {
+      headers: {
+        Authorization: `Token ${auth.token}`
+      }
+    });
+    likedArticles.value = response.data;
+  } catch (error) {
+    console.error('좋아요한 게시글을 불러오는데 실패했습니다:', error);
+  }
+};
 
 // 수정 모드 시작
 const startEditing = () => {
@@ -202,14 +258,12 @@ const updateProfile = async () => {
       }
     });
 
-    // 사용자 정보 업데이트
     await auth.fetchUserInfo();
     isEditing.value = false;
     alert('프로필이 성공적으로 업데이트되었습니다.');
   } catch (error) {
     console.error('프로필 업데이트 실패:', error);
     if (error.response?.data) {
-      // 에러 메시지 처리
       let errorMessage = '';
       Object.keys(error.response.data).forEach(key => {
         errorMessage += `${key}: ${error.response.data[key].join(', ')} `;
@@ -223,14 +277,12 @@ const updateProfile = async () => {
 
 // 비밀번호 변경
 const updatePassword = async () => {
-  // 새로운 비밀번호가 일치하는지 확인
   if (passwordForm.value.new_password1 !== passwordForm.value.new_password2) {
     alert('새 비밀번호가 일치하지 않습니다.');
     return;
   }
 
   try {
-    // 비밀번호 변경 API 호출
     await axios.post('http://127.0.0.1:8000/accounts/password/change/', {
       old_password: passwordForm.value.old_password,
       new_password1: passwordForm.value.new_password1,
@@ -241,7 +293,6 @@ const updatePassword = async () => {
       }
     });
 
-    // 입력 값 초기화
     passwordForm.value = {
       old_password: '',
       new_password1: '',
@@ -274,7 +325,7 @@ const confirmDelete = async () => {
       router.push({ name: 'home' });
       alert('계정이 성공적으로 삭제되었습니다.');
     } catch (error) {
-      console.error('계정 삭제 실패:', error.response?.data);
+      console.error('계정 삭제 실패:', error);
       if (error.response?.data) {
         alert(`계정 삭제 실패: ${JSON.stringify(error.response.data)}`);
       } else {
@@ -284,7 +335,6 @@ const confirmDelete = async () => {
   }
 };
 </script>
-
 
 <style scoped>
 .profile-container {
@@ -489,6 +539,79 @@ const confirmDelete = async () => {
   margin-bottom: 2rem;
 }
 
+/* 좋아요한 게시글 스타일 */
+.liked-articles {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.liked-article {
+  padding: 1rem;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.liked-article:hover {
+  border-color: #2c662f;
+  background-color: #f8f9fa;
+}
+
+.article-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.article-link h3 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.article-excerpt {
+  color: #6c757d;
+  margin: 0 0 0.5rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.article-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #868e96;
+  font-size: 0.9rem;
+}
+
+.like-count {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.empty-state .empty-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* 반응형 스타일 */
 @media (max-width: 768px) {
   .profile-container {
     flex-direction: column;
@@ -501,6 +624,12 @@ const confirmDelete = async () => {
     padding: 1rem;
   }
 
+  .user-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
   .main-content {
     padding: 1rem;
   }
@@ -511,6 +640,14 @@ const confirmDelete = async () => {
 
   .button-group {
     flex-direction: column;
+  }
+
+  .liked-article {
+    padding: 0.75rem;
+  }
+
+  .article-link h3 {
+    font-size: 1.1rem;
   }
 }
 </style>

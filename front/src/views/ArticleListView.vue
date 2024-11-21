@@ -1,4 +1,3 @@
-```vue
 <template>
   <div class="article-container">
     <div class="article-header">
@@ -32,19 +31,33 @@
       
       <div v-else class="article-cards">
         <div v-for="article in articles" :key="article.id" class="article-card">
-          <RouterLink
-            v-if="article.id"
-            :to="{ name: 'articleDetail', params: { id: article.id } }"
-            class="card-link"
-          >
-            <div class="card-content">
+          <div class="card-content">
+            <RouterLink
+              v-if="article.id"
+              :to="{ name: 'articleDetail', params: { id: article.id } }"
+              class="card-link"
+            >
               <h3 class="article-title">{{ article.title }}</h3>
               <p class="article-preview">{{ article.content || '내용이 없습니다.' }}</p>
-              <div class="card-footer">
-                <span class="read-more">자세히 보기 →</span>
-              </div>
+            </RouterLink>
+            <div class="card-footer">
+              <button 
+                @click="toggleLike(article)"
+                :class="['like-button', { 'liked': article.is_liked }]"
+                :disabled="!store.isLogin"
+              >
+                <span class="heart-icon">{{ article.is_liked ? '❤️' : '🤍' }}</span>
+                <span class="like-count">{{ article.like_count }}</span>
+              </button>
+              <RouterLink
+                v-if="article.id"
+                :to="{ name: 'articleDetail', params: { id: article.id } }"
+                class="read-more"
+              >
+                자세히 보기 →
+              </RouterLink>
             </div>
-          </RouterLink>
+          </div>
         </div>
       </div>
     </div>
@@ -59,25 +72,47 @@ import { useAuthStore } from '@/stores/auth';
 const articles = ref([]);
 const store = useAuthStore();
 
-onMounted(() => {
-  axios({
-    method: 'get',
-    url: 'http://127.0.0.1:8000/articles/articles/',
-    headers: store.token ? { Authorization: `Token ${store.token}` } : {}
-  })
-    .then((response) => {
-      if (Array.isArray(response.data)) {
-        articles.value = response.data;
-      } else if (response.data.results) {
-        articles.value = response.data.results;
-      } else {
-        console.error('올바르지 않은 API 데이터 구조:', response.data);
-        articles.value = [];
-      }
-    })
-    .catch((error) => {
-      console.error('게시글 데이터를 가져오는 중 오류가 발생했습니다:', error);
+const fetchArticles = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: 'http://127.0.0.1:8000/articles/articles/',
+      headers: store.token ? { Authorization: `Token ${store.token}` } : {}
     });
+    
+    if (Array.isArray(response.data)) {
+      articles.value = response.data;
+    } else if (response.data.results) {
+      articles.value = response.data.results;
+    }
+  } catch (error) {
+    console.error('게시글 데이터를 가져오는 중 오류가 발생했습니다:', error);
+  }
+};
+
+const toggleLike = async (article) => {
+  if (!store.isLogin) {
+    alert('좋아요를 누르려면 로그인이 필요합니다.');
+    return;
+  }
+
+  try {
+    const response = await axios({
+      method: 'post',
+      url: `http://127.0.0.1:8000/articles/articles/${article.id}/like/`,
+      headers: { Authorization: `Token ${store.token}` }
+    });
+    
+    article.is_liked = response.data.is_liked;
+    article.like_count = response.data.like_count;
+  } catch (error) {
+    console.error('좋아요 처리 중 오류가 발생했습니다:', error);
+    alert('좋아요 처리 중 오류가 발생했습니다.');
+  }
+};
+
+onMounted(() => {
+  fetchArticles();
 });
 </script>
 
@@ -252,5 +287,49 @@ onMounted(() => {
     padding: 0 1rem;
   }
 }
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .like-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .like-button:hover:not(:disabled) {
+    background-color: #fff5f5;
+    border-color: #ff8787;
+  }
+
+  .like-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .like-button.liked {
+    background-color: #fff5f5;
+    border-color: #ff8787;
+  }
+
+  .heart-icon {
+    font-size: 1.2rem;
+  }
+
+  .like-count {
+    font-size: 0.9rem;
+    color: #495057;
+  }
 </style>
 ```
