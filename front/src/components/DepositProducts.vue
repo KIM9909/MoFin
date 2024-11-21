@@ -1,73 +1,83 @@
+```vue
+<!-- components/DepositProducts.vue -->
 <template>
-  <div>
-    <!-- 예금 상품 기본 정보 -->
-    <p>금융 상품명: {{ deposit_product.fin_prdt_nm }}</p>
-    <p>금융 회사명: {{ deposit_product.kor_co_nm }}</p>
-    <p>공시 제출월: {{ deposit_product.dcls_month }}</p>
-    
-    <!-- 상세 정보 보기 버튼 -->
-    <button @click="toggleDetails(deposit_product.fin_prdt_cd)">
-      {{ details ? "닫기" : "상세 보기" }}
-    </button>
-
-    <!-- 상세 정보 토글 -->
-    <div v-if="details">
-      <h3>상세 정보</h3>
-      <p>기타 유의사항: {{ details.product.etc_note }}</p>
-      <p>가입 대상: {{ details.product.join_member }}</p>
-      <p>가입 방법: {{ details.product.join_way }}</p>
-
-      <h4>옵션 정보</h4>
-      <ul>
-        <li v-for="option in details.options" :key="option.id">
-          <p>저축 금리 유형명: {{ option.intr_rate_type_nm }}</p>
-          <p>저축 금리: {{ option.intr_rate }}%</p>
-          <p>최고 우대금리: {{ option.intr_rate2 }}%</p>
-          <p>저축 기간: {{ option.save_trm }}개월</p>
-        </li>
-      </ul>
+  <div class="product-card">
+    <div class="product-header">
+      <h3>{{ deposit_product.fin_prdt_nm }}</h3>
+      <p class="bank-name">{{ deposit_product.kor_co_nm }}</p>
+      <p class="submission-date">공시 제출월: {{ deposit_product.dcls_month }}</p>
     </div>
     
-    <hr>
+    <button class="detail-btn" @click="showDetails">
+      상세 보기
+    </button>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import { useDepositStore } from '@/stores/deposit'
 
-defineProps({
-  deposit_product: Object, // 부모로부터 deposit_product 객체를 받음
+const props = defineProps({
+  deposit_product: {
+    type: Object,
+    required: true
+  }
 })
 
-const store = useDepositStore()
-const details = ref(null) // 상세 정보를 저장할 변수
+const emit = defineEmits(['show-detail'])
 
-// 상세 정보 토글 함수
-const toggleDetails = async (fin_prdt_cd) => {
-  if (details.value) {
-    // 상세 정보가 이미 표시 중이면 닫기
-    details.value = null
-  } else {
-    // 상세 정보가 닫혀 있으면 가져오기
-    details.value = await store.getDepositDetails(fin_prdt_cd)
-  }
+const showDetails = () => {
+  emit('show-detail', { product: props.deposit_product, type: 'deposit' })
 }
 </script>
 
 <style scoped>
-/* 버튼 스타일 */
-button {
-  margin: 10px 0;
-  padding: 8px 12px;
+.product-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.product-header {
+  margin-bottom: 15px;
+}
+
+.product-header h3 {
+  color: #2c662f;
+  margin-bottom: 10px;
+}
+
+.bank-name {
+  color: #666;
+  font-size: 0.9em;
+  margin-bottom: 5px;
+}
+
+.submission-date {
+  color: #888;
+  font-size: 0.8em;
+}
+
+.detail-btn {
+  width: 100%;
+  padding: 10px;
   background-color: #4caf50;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-button:hover {
+.detail-btn:hover {
   background-color: #45a049;
 }
 </style>
+```
