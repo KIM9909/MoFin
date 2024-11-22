@@ -1,4 +1,3 @@
-
 <template>
   <div class="profile-container">
     <!-- 사이드바 -->
@@ -124,28 +123,37 @@
             <div class="empty-icon">💰</div>
             <p>가입한 예금 상품이 없습니다.</p>
           </div>
-          <div v-else class="subscribed-products">
-            <div 
-              v-for="product in subscriptionStore.subscribedDeposits" 
-              :key="product.fin_prdt_cd" 
-              class="product-card"
-            >
-              <div class="product-info">
-                <h3>{{ product.fin_prdt_nm }}</h3>
-                <p class="bank-name">{{ product.kor_co_nm }}</p>
-                <div class="product-actions">
-                  <button 
-                    @click="showProductDetail('deposit', product)"
-                    class="detail-btn"
-                  >
-                    상세 정보
-                  </button>
-                  <button 
-                    @click="handleUnsubscribe('deposit', product.fin_prdt_cd)"
-                    class="unsubscribe-btn"
-                  >
-                    가입 취소
-                  </button>
+          <div v-else>
+            <!-- 금리 비교 차트 -->
+            <InterestRateChart 
+              :products="subscriptionStore.subscribedDeposits"
+              :details="depositDetails"
+              type="deposit"
+            />
+            <!-- 상품 목록 -->
+            <div class="subscribed-products mt-4">
+              <div 
+                v-for="product in subscriptionStore.subscribedDeposits" 
+                :key="product.fin_prdt_cd" 
+                class="product-card"
+              >
+                <div class="product-info">
+                  <h3>{{ product.fin_prdt_nm }}</h3>
+                  <p class="bank-name">{{ product.kor_co_nm }}</p>
+                  <div class="product-actions">
+                    <button 
+                      @click="showProductDetail('deposit', product)"
+                      class="detail-btn"
+                    >
+                      상세 정보
+                    </button>
+                    <button 
+                      @click="handleUnsubscribe('deposit', product.fin_prdt_cd)"
+                      class="unsubscribe-btn"
+                    >
+                      가입 취소
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -159,28 +167,37 @@
             <div class="empty-icon">🎯</div>
             <p>가입한 적금 상품이 없습니다.</p>
           </div>
-          <div v-else class="subscribed-products">
-            <div 
-              v-for="product in subscriptionStore.subscribedSavings" 
-              :key="product.fin_prdt_cd" 
-              class="product-card"
-            >
-              <div class="product-info">
-                <h3>{{ product.fin_prdt_nm }}</h3>
-                <p class="bank-name">{{ product.kor_co_nm }}</p>
-                <div class="product-actions">
-                  <button 
-                    @click="showProductDetail('savings', product)"
-                    class="detail-btn"
-                  >
-                    상세 정보
-                  </button>
-                  <button 
-                    @click="handleUnsubscribe('savings', product.fin_prdt_cd)"
-                    class="unsubscribe-btn"
-                  >
-                    가입 취소
-                  </button>
+          <div v-else>
+            <!-- 금리 비교 차트 -->
+            <InterestRateChart 
+              :products="subscriptionStore.subscribedSavings"
+              :details="savingsDetails"
+              type="savings"
+            />
+            <!-- 상품 목록 -->
+            <div class="subscribed-products mt-4">
+              <div 
+                v-for="product in subscriptionStore.subscribedSavings" 
+                :key="product.fin_prdt_cd" 
+                class="product-card"
+              >
+                <div class="product-info">
+                  <h3>{{ product.fin_prdt_nm }}</h3>
+                  <p class="bank-name">{{ product.kor_co_nm }}</p>
+                  <div class="product-actions">
+                    <button 
+                      @click="showProductDetail('savings', product)"
+                      class="detail-btn"
+                    >
+                      상세 정보
+                    </button>
+                    <button 
+                      @click="handleUnsubscribe('savings', product.fin_prdt_cd)"
+                      class="unsubscribe-btn"
+                    >
+                      가입 취소
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -251,15 +268,17 @@
   </div>
 </template>
 
+
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import ProductDetailModal from '@/components/ProductDetailModal.vue'
+import ProductDetailModal from '@/components/ProductDetailModal.vue';
 import { useSubscriptionStore } from '@/stores/subscription';
 import { useDepositStore } from '@/stores/deposit';
 import { useSavingsStore } from '@/stores/savings';
+import InterestRateChart from '@/components/InterestRateChart.vue';
 
 const router = useRouter();
 const auth = useAuthStore();
@@ -272,153 +291,205 @@ const activeMenu = ref('info');
 const likedArticles = ref([]);
 const selectedProduct = ref(null);
 const productDetails = ref(null);
+const depositDetails = ref({});
+const savingsDetails = ref({});
 
-// 메뉴 아이템 정의
-const menuItems = [
-  { id: 'info', icon: '👤', label: '회원정보' },
-  { id: 'security', icon: '🔒', label: '보안설정' },
-  { id: 'subscriptions', icon: '💰', label: '가입 상품' },
-  { id: 'likes', icon: '❤️', label: '좋아요한 게시글' },
-  { id: 'delete', icon: '⚠️', label: '탈퇴하기' }
-];
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  
+  const date = new Date(dateString);
+  const options = { 
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  };
+  
+  return new Date(dateString).toLocaleDateString('ko-KR', options);
+};
 
+// 폼 초기화 추가
 const editForm = ref({
-  username: '',
-  email: ''
+ username: '',
+ email: ''
 });
 
 const passwordForm = ref({
-  old_password: '',
-  new_password1: '',
-  new_password2: ''
+ old_password: '',
+ new_password1: '',
+ new_password2: ''
 });
 
-// 날짜 포맷 함수
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+// 메뉴 아이템 정의
+const menuItems = [
+ { id: 'info', icon: '👤', label: '회원정보' },
+ { id: 'security', icon: '🔒', label: '보안설정' },
+ { id: 'subscriptions', icon: '💰', label: '가입 상품' },
+ { id: 'likes', icon: '❤️', label: '좋아요한 게시글' },
+ { id: 'delete', icon: '⚠️', label: '탈퇴하기' }
+];
+
+// 상품별 상세 정보 로드 함수
+const loadProductDetails = async (products, type) => {
+ const details = {};
+ for (const product of products) {
+   try {
+     let response;
+     if (type === 'deposit') {
+       response = await depositStore.getDepositDetails(product.fin_prdt_cd);
+     } else {
+       response = await savingsStore.getSavingsDetails(product.fin_prdt_cd);
+     }
+     details[product.fin_prdt_cd] = response;
+   } catch (error) {
+     console.error(`상품 상세 정보 로드 실패 (${product.fin_prdt_cd}):`, error);
+   }
+ }
+ return details;
 };
 
 // 상품 상세 정보 표시
 const showProductDetail = async (type, product) => {
-  try {
-    selectedProduct.value = { ...product, type }
-    if (type === 'deposit') {
-      const response = await depositStore.getDepositDetails(product.fin_prdt_cd)
-      productDetails.value = {
-        product: response.product,
-        options: response.options
-      }
-    } else {
-      const response = await savingsStore.getSavingsDetails(product.fin_prdt_cd)
-      productDetails.value = {
-        product: response.product,
-        options: response.options
-      }
-    }
-  } catch (error) {
-    console.error('상품 상세 정보를 가져오는데 실패했습니다:', error)
-    selectedProduct.value = null
-    productDetails.value = null
-    alert('상품 정보를 불러오는데 실패했습니다.')
-  }
+ try {
+   selectedProduct.value = { ...product, type }
+   if (type === 'deposit') {
+     const response = await depositStore.getDepositDetails(product.fin_prdt_cd)
+     productDetails.value = {
+       product: response.product,
+       options: response.options
+     }
+   } else {
+     const response = await savingsStore.getSavingsDetails(product.fin_prdt_cd)
+     productDetails.value = {
+       product: response.product,
+       options: response.options
+     }
+   }
+ } catch (error) {
+   console.error('상품 상세 정보를 가져오는데 실패했습니다:', error)
+   selectedProduct.value = null
+   productDetails.value = null
+   alert('상품 정보를 불러오는데 실패했습니다.')
+ }
 }
-
 
 // 가입 취소 처리
 const handleUnsubscribe = async (productType, productId) => {
-  try {
-    const result = await subscriptionStore.toggleSubscription(productType, productId)
-    alert(result.message)
-    await subscriptionStore.fetchSubscriptions()
-  } catch (error) {
-    console.error('가입 취소 실패:', error)
-    alert('가입 취소 중 오류가 발생했습니다.')
-  }
+ try {
+   const result = await subscriptionStore.toggleSubscription(productType, productId)
+   alert(result.message)
+   await subscriptionStore.fetchSubscriptions()
+ } catch (error) {
+   console.error('가입 취소 실패:', error)
+   alert('가입 취소 중 오류가 발생했습니다.')
+ }
 }
 
 // 모달 닫기
 const closeModal = () => {
-  selectedProduct.value = null
-  productDetails.value = null
+ selectedProduct.value = null
+ productDetails.value = null
 }
 
-// 컴포넌트 마운트 시 사용자 정보 불러오기
+// 컴포넌트 마운트 시 초기 데이터 로드
 onMounted(async () => {
-  try {
-    await auth.fetchUserInfo();
-    if (auth.isLogin && activeMenu.value === 'subscriptions') {
-      await subscriptionStore.fetchSubscriptions();
-    }
-  } catch (error) {
-    console.error('사용자 정보 로딩 실패:', error);
-    alert('사용자 정보를 불러오는데 실패했습니다.');
-  }
+ try {
+   await auth.fetchUserInfo();
+   if (auth.isLogin && activeMenu.value === 'subscriptions') {
+     await subscriptionStore.fetchSubscriptions();
+     // 초기 상세 정보 로드
+     if (subscriptionStore.subscribedDeposits.length > 0) {
+       depositDetails.value = await loadProductDetails(
+         subscriptionStore.subscribedDeposits, 
+         'deposit'
+       );
+     }
+     if (subscriptionStore.subscribedSavings.length > 0) {
+       savingsDetails.value = await loadProductDetails(
+         subscriptionStore.subscribedSavings, 
+         'savings'
+       );
+     }
+   }
+ } catch (error) {
+   console.error('데이터 로딩 실패:', error);
+   alert('데이터를 불러오는데 실패했습니다.');
+ }
 });
 
 // 메뉴 변경 시 데이터 로드
 watch(activeMenu, async (newValue) => {
-  if (newValue === 'likes') {
-    await fetchLikedArticles();
-  } else if (newValue === 'subscriptions') {
-    await subscriptionStore.fetchSubscriptions();
-  }
+ if (newValue === 'subscriptions') {
+   await subscriptionStore.fetchSubscriptions();
+   // 상세 정보 로드
+   if (subscriptionStore.subscribedDeposits.length > 0) {
+     depositDetails.value = await loadProductDetails(
+       subscriptionStore.subscribedDeposits, 
+       'deposit'
+     );
+   }
+   if (subscriptionStore.subscribedSavings.length > 0) {
+     savingsDetails.value = await loadProductDetails(
+       subscriptionStore.subscribedSavings, 
+       'savings'
+     );
+   }
+ } else if (newValue === 'likes') {
+   await fetchLikedArticles();
+ }
 });
 
 // 좋아요한 게시글 불러오기
 const fetchLikedArticles = async () => {
-  try {
-    const response = await axios.get('http://127.0.0.1:8000/articles/articles/likes/', {
-      headers: {
-        Authorization: `Token ${auth.token}`
-      }
-    });
-    likedArticles.value = response.data;
-  } catch (error) {
-    console.error('좋아요한 게시글을 불러오는데 실패했습니다:', error);
-  }
+ try {
+   const response = await axios.get('http://127.0.0.1:8000/articles/articles/likes/', {
+     headers: {
+       Authorization: `Token ${auth.token}`
+     }
+   });
+   likedArticles.value = response.data;
+ } catch (error) {
+   console.error('좋아요한 게시글을 불러오는데 실패했습니다:', error);
+ }
 };
 
 // 수정 모드 시작
 const startEditing = () => {
-  isEditing.value = true;
-  editForm.value.username = auth.nickname;
-  editForm.value.email = auth.email;
+ isEditing.value = true;
+ editForm.value.username = auth.nickname;
+ editForm.value.email = auth.email;
 };
 
 // 수정 취소
 const cancelEditing = () => {
-  isEditing.value = false;
+ isEditing.value = false;
 };
 
 // 프로필 업데이트
 const updateProfile = async () => {
-  try {
-    await axios.put('http://127.0.0.1:8000/accounts/user/', {
-      username: editForm.value.username,
-      email: editForm.value.email,
-    }, {
-      headers: {
-        Authorization: `Token ${auth.token}`
-      }
-    });
+ try {
+   await axios.put('http://127.0.0.1:8000/accounts/user/', {
+     username: editForm.value.username,
+     email: editForm.value.email,
+   }, {
+     headers: {
+       Authorization: `Token ${auth.token}`
+     }
+   });
 
-    await auth.fetchUserInfo();
-    isEditing.value = false;
-    alert('프로필이 성공적으로 업데이트되었습니다.');
-  } catch (error) {
-    console.error('프로필 업데이트 실패:', error);
-    if (error.response?.data) {
-      let errorMessage = '';
-      Object.keys(error.response.data).forEach(key => {
-        errorMessage += `${key}: ${error.response.data[key].join(', ')} `;
-      });
-      alert(`프로필 업데이트에 실패했습니다: ${errorMessage}`);
-    } else {
+   await auth.fetchUserInfo();
+   isEditing.value = false;
+   alert('프로필이 성공적으로 업데이트되었습니다.');
+ } catch (error) {
+   console.error('프로필 업데이트 실패:', error);
+   if (error.response?.data) {
+     let errorMessage = '';
+     Object.keys(error.response.data).forEach(key => {
+       errorMessage += `${key}: ${error.response.data[key].join(', ')} `;
+     });
+     alert(`프로필 업데이트에 실패했습니다: ${errorMessage}`);
+   } else {
      alert('프로필 업데이트에 실패했습니다.');
    }
  }
@@ -483,11 +554,21 @@ const confirmDelete = async () => {
    }
  }
 }
-
-
 </script>
 
 <style scoped>
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.product-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+}
+
 .profile-container {
   display: flex;
   min-height: 100vh;
