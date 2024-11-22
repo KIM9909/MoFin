@@ -4,7 +4,15 @@
     <!-- 사이드바 -->
     <aside class="sidebar">
       <div class="user-info">
-        <div class="user-avatar">{{ auth.nickname?.charAt(0) }}</div>
+        <div class="user-avatar">
+          <img 
+            v-if="auth.profile_img_url" 
+            :src="auth.profile_img_url" 
+            alt="Profile"
+            class="avatar-image"
+          >
+          <span v-else>{{ auth.nickname?.charAt(0) }}</span>
+        </div>
         <h2 class="user-name">{{ auth.nickname }}</h2>
       </div>
 
@@ -31,19 +39,56 @@
         </div>
 
         <div class="content-card">
-          <div v-if="!isEditing">
-            <div class="info-row">
-              <label>사용자 이름</label>
-              <p>{{ auth.nickname }}</p>
+        <div v-if="!isEditing">
+          <div class="profile-image-section">
+            <div class="current-image">
+              <img 
+                v-if="auth.profile_img_url" 
+                :src="auth.profile_img_url" 
+                alt="Profile"
+                class="profile-preview"
+              >
+              <div v-else class="profile-placeholder">
+                {{ auth.nickname?.charAt(0) }}
+              </div>
             </div>
-            <div class="info-row">
-              <label>이메일</label>
-              <p>{{ auth.email }}</p>
+            <div class="image-upload">
+              <input 
+                type="file" 
+                ref="fileInput" 
+                @change="handleImageChange" 
+                accept="image/*"
+                class="file-input"
+                hidden
+              >
+              <button 
+                @click="$refs.fileInput.click()"
+                class="upload-btn"
+              >
+                이미지 변경
+              </button>
+              <button 
+                v-if="auth.profile_img_url"
+                @click="removeProfileImage"
+                class="remove-btn"
+              >
+                이미지 삭제
+              </button>
             </div>
-            <button @click="startEditing" class="primary-btn">
-              정보 수정
-            </button>
           </div>
+          <!-- 기존 정보 표시 부분 -->
+          <div class="info-row">
+            <label>사용자 이름</label>
+            <p>{{ auth.nickname }}</p>
+          </div>
+          <div class="info-row">
+            <label>이메일</label>
+            <p>{{ auth.email }}</p>
+          </div>
+          <button @click="startEditing" class="primary-btn">
+            정보 수정
+          </button>
+        </div>
 
           <form v-else @submit.prevent="updateProfile" class="edit-form">
             <div class="form-group">
@@ -484,6 +529,58 @@ const confirmDelete = async () => {
  }
 }
 
+const handleImageChange = async (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+  
+  // 파일 크기 체크 (5MB 제한)
+  if (file.size > 5 * 1024 * 1024) {
+    alert('파일 크기는 5MB를 초과할 수 없습니다.')
+    return
+  }
+  
+  try {
+    const formData = new FormData()
+    formData.append('profile_img', file)
+    
+    await axios.patch('http://127.0.0.1:8000/accounts/user/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Token ${auth.token}`
+      }
+    })
+    
+    await auth.fetchUserInfo()
+    alert('프로필 이미지가 업데이트되었습니다.')
+  } catch (error) {
+    console.error('이미지 업로드 실패:', error)
+    alert('이미지 업로드에 실패했습니다.')
+  }
+  
+  // 파일 입력 초기화
+  event.target.value = ''
+}
+
+const removeProfileImage = async () => {
+  if (!confirm('프로필 이미지를 삭제하시겠습니까?')) return
+  
+  try {
+    const formData = new FormData()
+    formData.append('profile_img', '')
+    
+    await axios.patch('http://127.0.0.1:8000/accounts/user/', formData, {
+      headers: {
+        'Authorization': `Token ${auth.token}`
+      }
+    })
+    
+    await auth.fetchUserInfo()
+    alert('프로필 이미지가 삭제되었습니다.')
+  } catch (error) {
+    console.error('이미지 삭제 실패:', error)
+    alert('이미지 삭제에 실패했습니다.')
+  }
+}
 
 </script>
 
@@ -762,5 +859,90 @@ const confirmDelete = async () => {
   gap: 1rem;
   font-size: 0.875rem;
   color: #9ca3af;
+}
+
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  background-color: #10b981;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto 1rem;
+  overflow: hidden;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-image-section {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.current-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-placeholder {
+  color: white;
+  font-size: 3rem;
+}
+
+.image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.upload-btn {
+  background-color: #10b981;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.upload-btn:hover {
+  background-color: #059669;
+}
+
+.remove-btn {
+  background-color: #ef4444;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.remove-btn:hover {
+  background-color: #dc2626;
 }
 </style>

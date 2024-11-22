@@ -10,7 +10,7 @@ export const useAuthStore = defineStore('auth', () => {
   const userId = ref(null); // 현재 로그인한 사용자 ID
   const nickname = ref(""); // 사용자 닉네임
   const email = ref("")
-
+  const profile_img_url = ref("")
   const setAxiosAuthHeader = () => {
     axios.defaults.headers.common['Authorization'] = token.value
       ? `Token ${token.value}`
@@ -23,15 +23,17 @@ export const useAuthStore = defineStore('auth', () => {
   // 회원가입
   const signUp = async (payload) => {
     try {
-      const response = await axios.post(`${BASE_URL}/accounts/signup/`, {
-        username: payload.username,
-        email: payload.email,
-        password1: payload.password1,
-        password2: payload.password2,
-        nickname: payload.nickname, // 추가
-        birth: payload.birth,      // 추가
-        preference: payload.preference  // 추가
-      });
+      const response = await axios.post(
+        `${BASE_URL}/accounts/signup/`, 
+        payload,
+        {
+          headers: {
+            'Content-Type': payload instanceof FormData ? 
+              'multipart/form-data' : 
+              'application/json'
+          }
+        }
+      );
       
       console.log('회원가입 성공:', response.data);
       alert('회원가입이 완료되었습니다. 로그인 화면으로 이동합니다.');
@@ -40,7 +42,6 @@ export const useAuthStore = defineStore('auth', () => {
       console.error('회원가입 실패:', error.response?.data);
       let errorMessage = '회원가입에 실패했습니다.';
       if (error.response?.data) {
-        // 에러 메시지 처리
         Object.keys(error.response.data).forEach(key => {
           errorMessage = `${key}: ${error.response.data[key].join(' ')}`;
         });
@@ -71,18 +72,17 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   // 사용자 정보 가져오기
-  const fetchUserInfo = () => {
-    axios
-      .get(`${BASE_URL}/accounts/user/`)
-      .then((res) => {
-        userId.value = res.data.pk;
-        nickname.value = res.data.username;
-        email.value = res.data.email
-        console.log(res.data)
-      })
-      .catch((err) => {
-        console.error('사용자 정보를 가져오는 중 오류:', err);
-      });
+  const fetchUserInfo = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/accounts/user/`);
+      userId.value = res.data.pk;
+      nickname.value = res.data.username;
+      email.value = res.data.email;
+      profile_img_url.value = res.data.profile_img;  // 추가
+      console.log(res.data);
+    } catch (err) {
+      console.error('사용자 정보를 가져오는 중 오류:', err);
+    }
   };
 
   // 로그아웃
@@ -98,5 +98,5 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isLogin = computed(() => token.value !== null);
 
-  return { signUp, signIn, logout, fetchUserInfo, token, userId, nickname, isLogin, email };
+  return { signUp, signIn, logout, fetchUserInfo, token, userId, nickname, isLogin, email, profile_img_url };
 });
