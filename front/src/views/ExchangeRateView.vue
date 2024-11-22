@@ -139,18 +139,25 @@ export default {
     },
   },
   methods: {
-    async fetchExchangeRate() {
+        async fetchExchangeRate() {
       this.conversionDirection = this.selectedDirection;
       this.targetCurrency = this.selectedCurrency;
       this.calculationAmount = this.inputAmount;
 
       try {
+        const today = new Date();
+        const formattedDate = today.toISOString().split("T")[0].replace(/-/g, "");
+        
         const response = await axios.get("http://127.0.0.1:8000/api/exchange-rate/", {
           params: {
             target: this.targetCurrency,
-            date: new Date().toISOString().split("T")[0].replace(/-/g, ""),
+            date: formattedDate
           },
         });
+
+        if (response.data.error) {
+          throw new Error(response.data.error);
+        }
 
         let rate = parseFloat(response.data.rate.replace(",", ""));
         if (this.targetCurrency === "JPY(100)") {
@@ -166,8 +173,10 @@ export default {
           this.exchangeResult = (this.calculationAmount * rate).toFixed(2);
         }
         this.exchangeResult = parseFloat(this.exchangeResult);
+        
       } catch (error) {
         console.error("환율 정보를 가져오는데 실패했습니다.", error);
+        alert("환율 정보를 가져오는데 실패했습니다. 잠시 후 다시 시도해주세요.");
         this.exchangeResult = null;
       }
     },

@@ -334,4 +334,3 @@ onMounted(() => {
     color: #495057;
   }
 </style>
-```

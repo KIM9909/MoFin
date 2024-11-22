@@ -14,7 +14,7 @@ export const useSubscriptionStore = defineStore('subscription', () => {
       subscribedSavings.value = response.data.savings
       return response.data
     } catch (error) {
-      console.error('구독 정보를 가져오는데 실패했습니다:', error)
+      console.error('가입 정보를 가져오는데 실패했습니다:', error)
       throw error
     }
   }
@@ -25,7 +25,7 @@ export const useSubscriptionStore = defineStore('subscription', () => {
       await fetchSubscriptions()
       return response.data
     } catch (error) {
-      console.error('구독 토글 실패:', error)
+      console.error('가입 토글 실패:', error)
       throw error
     }
   }

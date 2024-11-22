@@ -15,7 +15,7 @@
         :class="{ 'subscribed': isSubscribed }"
         @click="handleSubscribe"
       >
-        {{ isSubscribed ? '구독 취소' : '구독하기' }}
+        {{ isSubscribed ? '가입 취소' : '가입하기' }}
       </button>
     </div>
   </div>
@@ -45,6 +45,12 @@ const handleSubscribe = () => {
 </script>
 
 <style scoped>
+.product-card {
+  border: 1px solid rgb(180, 180, 180);
+  padding: 1.2rem;
+  border-radius: 12px;
+}
+
 .button-group {
   display: flex;
   gap: 10px;
@@ -59,9 +65,9 @@ const handleSubscribe = () => {
 }
 
 .detail-btn {
-  background-color: #46a3ff;
-  color: white;
-  border: none;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
 }
 
 .detail-btn:hover {
@@ -69,13 +75,15 @@ const handleSubscribe = () => {
 }
 
 .subscribe-btn {
-  background-color: #2c662f;
-  color: white;
-  border: none;
+  background-color: #5c9c5f;
+  color: rgb(255, 255, 255);
+  border: 1px solid rgb(93, 167, 93);
 }
 
 .subscribe-btn.subscribed {
-  background-color: #dc3545;
+  background-color: #fee2e2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
 }
 
 .subscribe-btn:hover {
