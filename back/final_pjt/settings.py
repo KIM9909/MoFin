@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'exchange',
     'savings',
     'articles.apps.ArticlesConfig',
+    'recommendation',
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
@@ -188,3 +189,7 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'username'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
