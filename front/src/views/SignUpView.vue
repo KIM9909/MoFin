@@ -125,15 +125,9 @@
                 class="form-input"
               >
                 <option value="">선택하세요</option>
-                <option value="쇼핑">쇼핑</option>
-                <option value="식비">식비</option>
-                <option value="주거">주거</option>
-                <option value="교통">교통</option>
-                <option value="카페">카페</option>
-                <option value="교육">교육</option>
-                <option value="운동/헬스">운동/헬스</option>
-                <option value="통신">통신</option>
-                <option value="게임">게임</option>
+                <option value="안정형">안정추구형</option>
+                <option value="수익추구형">수익추구형</option>
+                <option value="주거">위험회피형</option>
               </select>
             </div>
           </div>
