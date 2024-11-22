@@ -67,6 +67,13 @@
                 </div>
               </v-col>
             </v-row>
+            
+            <!-- CTA 버튼 섹션 -->
+            <div class="cta-section">
+              <button @click="$router.push({ name: 'signUp' })" class="cta-btn">
+                지금 가입하고 시작하세요
+              </button>
+            </div>
           </v-card>
         </v-col>
       </v-row>
@@ -80,13 +87,18 @@
 
 <style scoped>
 .home-container {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: url('/background-image.jpg') no-repeat center center fixed;
+  background-size: cover;
   min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
 }
 
 .main-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(15px);
   border-radius: 24px;
   overflow: hidden;
   padding: 3rem 2rem;
@@ -94,42 +106,43 @@
 
 .logo-section {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
   animation: fadeInDown 0.8s ease-out;
 }
 
 .mofin-logo {
-  width: 220px;
+  width: 200px;
   height: auto;
   transition: transform 0.3s ease;
 }
 
 .mofin-logo:hover {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .header-content {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 3rem;
   animation: fadeIn 1s ease-out;
 }
 
 .welcome-title {
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   font-weight: 700;
   color: #2c662f;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   line-height: 1.2;
 }
 
 .welcome-subtitle {
-  font-size: 1.5rem;
-  color: #666;
+  font-size: 1.6rem;
+  color: #555;
   font-weight: 500;
 }
 
 .features-grid {
   animation: fadeInUp 1.2s ease-out;
+  margin-bottom: 3rem;
 }
 
 .feature-card {
@@ -147,7 +160,7 @@
 
 .feature-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
   border-color: #2c662f;
 }
 
@@ -172,7 +185,7 @@
 }
 
 .feature-card h3 {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   color: #2c662f;
   margin-bottom: 1rem;
   font-weight: 600;
@@ -184,6 +197,28 @@
   margin: 0;
 }
 
+.cta-section {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.cta-btn {
+  background: linear-gradient(135deg, #28a745, #218838);
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cta-btn:hover {
+  background: linear-gradient(135deg, #218838, #1e7e34);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* 애니메이션 키프레임 */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -218,11 +253,11 @@
   }
 
   .welcome-title {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
 
   .welcome-subtitle {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
   }
 
   .mofin-logo {
@@ -252,6 +287,11 @@
 
   .feature-card h3 {
     font-size: 1.2rem;
+  }
+
+  .cta-btn {
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
   }
 }
 </style>
