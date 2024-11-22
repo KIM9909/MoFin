@@ -1,4 +1,75 @@
 # 10-pjt
+# MoFin (Money & Finance)
+
+## 프로젝트 개요
+- 프로젝트 기간: 2023.11.18 ~ 2023.11.26
+- 금융 상품 추천 및 금융 정보 제공 서비스
+- Django REST Framework + Vue.js 기반의 풀스택 웹 애플리케이션
+
+### 주요 기능
+- 금융 상품(예금/적금) 조회 및 비교
+- 실시간 환율 계산
+- 주변 은행 검색
+- 금융 커뮤니티(게시판)
+- 개인화된 금융 상품 추천
+
+## 기술 스택
+
+### Frontend
+- Vue 3
+- Pinia (상태 관리)
+- Vue Router
+- Axios
+
+### Backend
+- Django 4.2
+- Django REST Framework
+- SQLite3
+- dj-rest-auth (인증)
+
+### External APIs
+- 금융감독원 금융상품 API
+- 한국수출입은행 환율 API
+- Kakao Maps API
+
+## 설치 및 실행
+
+### Backend 설정
+
+### 가상환경 생성 및 활성화
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+### 패키지 설치
+pip install -r requirements.txt
+
+### 데이터베이스 마이그레이션
+python manage.py migrate
+
+### 서버 실행
+python manage.py runserver
+
+### 패키지 설치
+npm install
+
+### 개발 서버 실행
+npm run dev
+
+## 프로젝트 구조
+```markdown
+project-root/
+├── backend/
+│   ├── accounts/
+│   ├── articles/
+│   ├── exchange/
+│   └── savings/
+└── frontend/
+├── src/
+│   ├── components/
+│   ├── views/
+│   └── stores/
+└── public/
+```
 
 ## 11월 / 18일(월)
 ### [요구사항 명세서]<br>
@@ -288,3 +359,10 @@ class User(AbstractUser):
 
 #### ERD 수정 및 요구사항 명세서를 새롭게 작성하였음.
 physical name 을 실제 모델에 맞게 수정, 프로젝트 진행사항 체크
+
+#### 예금과 적금 상품을 구독하고 프로필 페이지에 추가
+회원 프로필 페이지에서 가입 상품 버튼을 클릭하면 예금 상품과 적금 상품을 각각 나눠서 어떤 상품에 가입했는지 추가
+- 가입 상품 페이지에서도 상세 정보 보기 페이지와 구독 및 취소 버튼까지 활성화
+
+#### settings 에서 CustomUserDetailsSerializer 등록
+토큰을 이용한 USER 정보 가져오기 

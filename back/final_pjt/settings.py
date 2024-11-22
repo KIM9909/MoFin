@@ -174,6 +174,7 @@ AUTH_USER_MODEL = 'accounts.User'
 # settings.py
 REST_AUTH = {
     'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
+    'USER_DETAILS_SERIALIZER': 'accounts.serializers.CustomUserDetailsSerializer',
 }
 
 ACCOUNT_ADAPTER = 'accounts.models.CustomAccountAdapter'
