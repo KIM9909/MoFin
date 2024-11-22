@@ -144,7 +144,7 @@
                     @click="handleUnsubscribe('deposit', product.fin_prdt_cd)"
                     class="unsubscribe-btn"
                   >
-                    구독 취소
+                    가입 취소
                   </button>
                 </div>
               </div>
@@ -179,7 +179,7 @@
                     @click="handleUnsubscribe('savings', product.fin_prdt_cd)"
                     class="unsubscribe-btn"
                   >
-                    구독 취소
+                    가입 취소
                   </button>
                 </div>
               </div>
@@ -329,15 +329,15 @@ const showProductDetail = async (type, product) => {
 }
 
 
-// 구독 취소 처리
+// 가입 취소 처리
 const handleUnsubscribe = async (productType, productId) => {
   try {
     const result = await subscriptionStore.toggleSubscription(productType, productId)
     alert(result.message)
     await subscriptionStore.fetchSubscriptions()
   } catch (error) {
-    console.error('구독 취소 실패:', error)
-    alert('구독 취소 중 오류가 발생했습니다.')
+    console.error('가입 취소 실패:', error)
+    alert('가입 취소 중 오류가 발생했습니다.')
   }
 }
 
