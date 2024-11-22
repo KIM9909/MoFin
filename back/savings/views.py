@@ -280,6 +280,7 @@ def toggle_subscription(request, product_type, fin_prdt_cd):
     except (DepositProducts.DoesNotExist, SavingsProducts.DoesNotExist):
         return Response({'error': '상품을 찾을 수 없습니다.'}, status=404)
 
+
 @api_view(['GET'])
 def get_subscriptions(request):
     if not request.user.is_authenticated:

@@ -77,7 +77,7 @@ const router = createRouter({
       name: 'profile',
       component: () => import('@/views/ProfilePageView.vue'),
       meta: { requiresAuth: true }
-    }
+    },
   ]
 })
 
