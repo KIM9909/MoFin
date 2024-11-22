@@ -8,7 +8,7 @@
           <span class="author">작성자: {{ article.user?.nickname }}</span>
           <span class="separator">•</span>
           <span class="date">{{ formatDate(article.created_at) }}</span>
-          <span class="separator">•</span>
+          <!-- <span class="separator">•</span> -->
           <button 
             @click="toggleLike"
             :class="['like-button', { 'liked': article.is_liked }]"
@@ -41,7 +41,7 @@
 
       <!-- 댓글 섹션 -->
       <div class="comments-section">
-        <h2>댓글</h2>
+        <h4>댓글</h4>
         
         <!-- 새 댓글 작성 -->
         <div class="new-comment">
