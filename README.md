@@ -96,7 +96,7 @@ project-root/
 -> 나이대별, 관심사별, 상황별 금융상품 추천
 
 ### [ERD 작성]
-![alt text](mofin-erd.PNG)
+![alt text](mofin-erd2.PNG)
 -> 각 필요 기능들을 토대로 PK와 FK를 구분하고 관계차수를 계산해서 ERD를 작성했다.
 
 -> N:M 관계는 중간다리 역할을 하는 중개테이블을 만들어서 서로 참조할 수 있도록 하였다.
