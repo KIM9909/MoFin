@@ -3,10 +3,10 @@
 const currentYear = new Date().getFullYear()
 
 const links = [
-  { text: '회사소개', url: '#' },
-  { text: '개인정보처리방침', url: '#' },
-  { text: '이용약관', url: '#' },
-  { text: '고객센터', url: '#' },
+  { text: '회사소개', url: 'https://www.ssafy.com/ksp/jsp/swp/swpMain.jsp' },
+  { text: '개인정보처리방침', url: 'https://www.ssafy.com/ksp/jsp/swp/etc/swpPrivacy.jsp' },
+  { text: '이용약관', url: 'https://www.ssafy.com/ksp/jsp/swp/etc/swpPolicy.jsp' },
+  { text: '고객센터', url: 'https://callcenter.kftc.or.kr/' },
   { text: '사이트맵', url: '#' }
 ]
 
