@@ -25,3 +25,23 @@ class UserDeleteView(APIView):
                 {"detail": str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+
+from rest_framework.decorators import api_view, permission_classes
+from .serializers import UserUpdateSerializer
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_user(request):
+    user = request.user
+    serializer = UserUpdateSerializer(
+        user, 
+        data=request.data, 
+        context={'request': request},
+        partial=True
+    )
+    
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

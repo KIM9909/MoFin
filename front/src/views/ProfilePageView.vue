@@ -513,31 +513,38 @@ const cancelEditing = () => {
 
 // 프로필 업데이트
 const updateProfile = async () => {
- try {
-   await axios.put('http://127.0.0.1:8000/accounts/user/', {
-     username: editForm.value.username,
-     email: editForm.value.email,
-   }, {
-     headers: {
-       Authorization: `Token ${auth.token}`
-     }
-   });
+  try {
+    // 현재 값과 다른 경우에만 업데이트할 데이터 포함
+    const updateData = {};
+    if (editForm.value.username !== auth.nickname) {
+      updateData.username = editForm.value.username;
+    }
+    if (editForm.value.email !== auth.email) {
+      updateData.email = editForm.value.email;
+    }
 
-   await auth.fetchUserInfo();
-   isEditing.value = false;
-   alert('프로필이 성공적으로 업데이트되었습니다.');
- } catch (error) {
-   console.error('프로필 업데이트 실패:', error);
-   if (error.response?.data) {
-     let errorMessage = '';
-     Object.keys(error.response.data).forEach(key => {
-       errorMessage += `${key}: ${error.response.data[key].join(', ')} `;
-     });
-     alert(`프로필 업데이트에 실패했습니다: ${errorMessage}`);
-   } else {
-     alert('프로필 업데이트에 실패했습니다.');
-   }
- }
+    await axios.put('http://127.0.0.1:8000/accounts/update/', updateData, {
+      headers: {
+        Authorization: `Token ${auth.token}`,
+        'Content-Type': 'application/json',
+      }
+    });
+
+    await auth.fetchUserInfo();
+    isEditing.value = false;
+    alert('프로필이 성공적으로 업데이트되었습니다.');
+  } catch (error) {
+    console.error('프로필 업데이트 실패:', error);
+    if (error.response?.data) {
+      let errorMessage = '';
+      Object.keys(error.response.data).forEach(key => {
+        errorMessage += `${key}: ${error.response.data[key].join(', ')} `;
+      });
+      alert(`프로필 업데이트에 실패했습니다: ${errorMessage}`);
+    } else {
+      alert('프로필 업데이트에 실패했습니다.');
+    }
+  }
 };
 
 // 비밀번호 변경

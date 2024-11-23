@@ -2,7 +2,11 @@ from rest_framework import serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from dj_rest_auth.serializers import UserDetailsSerializer
 from .models import User
+from django.contrib.auth import get_user_model
+from rest_framework.validators import UniqueValidator
 from savings.models import SavingsProducts, DepositProducts
+from django.contrib.auth.password_validation import validate_password
+
 
 class CustomRegisterSerializer(RegisterSerializer):
     nickname = serializers.CharField(required=True)
@@ -56,3 +60,42 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
             'profile_img', 'profile_img_url'
         )
         read_only_fields = ('email',)
+
+
+User = get_user_model()
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    username = serializers.CharField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'nickname')
+        extra_kwargs = {
+            'nickname': {'required': False}
+        }
+
+    def validate(self, attrs):
+        user = self.context['request'].user
+        
+        # 현재 사용자의 username과 동일하다면 유일성 검사를 건너뜀
+        if attrs.get('username') == user.username:
+            attrs.pop('username', None)
+            
+        # 현재 사용자의 email과 동일하다면 유일성 검사를 건너뜀
+        if attrs.get('email') == user.email:
+            attrs.pop('email', None)
+            
+        return attrs
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
