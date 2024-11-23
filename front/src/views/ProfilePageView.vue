@@ -78,11 +78,31 @@
           <!-- 기존 정보 표시 부분 -->
           <div class="info-row">
             <label>사용자 이름</label>
+            <p>{{ auth.username }}</p>
+          </div>
+          <div class="info-row">
+            <label>닉네임</label>
             <p>{{ auth.nickname }}</p>
           </div>
           <div class="info-row">
             <label>이메일</label>
             <p>{{ auth.email }}</p>
+          </div>
+          <div class="info-row">
+            <label>생일</label>
+            <p>{{ auth.userDetails.birth }}</p>
+          </div>
+          <div class="info-row">
+            <label>연간 소득</label>
+            <p>{{ auth.userDetails.annual_income }}</p>
+          </div>
+          <div class="info-row">
+            <label>자산</label>
+            <p>{{ auth.userDetails.total_assets }}</p>
+          </div>
+          <div class="info-row">
+            <label>선호도</label>
+            <p>{{ auth.userDetails.preference }}</p>
           </div>
           <button @click="startEditing" class="primary-btn">
             정보 수정
@@ -91,9 +111,9 @@
 
           <form v-else @submit.prevent="updateProfile" class="edit-form">
             <div class="form-group">
-              <label>사용자 이름</label>
+              <label>닉네임</label>
               <input
-                v-model="editForm.username"
+                v-model="editForm.nickname"
                 type="text"
                 required
               >
@@ -105,6 +125,46 @@
                 type="email"
                 required
               >
+            </div>
+            <div class="form-group">
+              <label>생일</label>
+              <input
+                v-model="editForm.birth"
+                type="date"
+                required
+              >
+            </div>
+            <div class="form-group">
+              <label>연간 소득</label>
+              <input
+                v-model="editForm.annual_income"
+                type="number"
+                required
+              >
+            </div>
+            <div class="form-group">
+              <label>자산</label>
+              <input
+                v-model="editForm.total_assets"
+                type="number"
+                required
+              >
+            </div>
+            <div class="form-group">
+              <label>선호도</label>
+              <div class="select-wrapper">
+                <span class="select-icon">👛</span>
+                <select
+                  v-model="editForm.preference"
+                  class="form-select"
+                  required
+                >
+                  <option value="">선택하세요</option>
+                  <option value="안정형">안정형</option>
+                  <option value="위험회피형">위험회피형</option>
+                  <option value="수익추구형">수익추구형</option>
+                </select>
+              </div>
             </div>
             <div class="button-group">
               <button type="submit" class="primary-btn">저장</button>
@@ -356,8 +416,12 @@ const formatDate = (dateString) => {
 
 // 폼 초기화 추가
 const editForm = ref({
- username: '',
- email: ''
+ nickname: '',
+ email: '',
+ birth: null,
+ preference: null,
+ annual_income: null,
+ total_assets: null,
 });
 
 const passwordForm = ref({
@@ -501,9 +565,13 @@ const fetchLikedArticles = async () => {
 
 // 수정 모드 시작
 const startEditing = () => {
- isEditing.value = true;
- editForm.value.username = auth.nickname;
- editForm.value.email = auth.email;
+ isEditing.value = true
+ editForm.value.nickname = auth.nickname
+ editForm.value.email = auth.email
+ editForm.value.birth = auth.userDetails.birth
+ editForm.value.preference = auth.userDetails.preference
+ editForm.value.annual_income = auth.userDetails.annual_income
+ editForm.value.total_assets = auth.userDetails.total_assets
 };
 
 // 수정 취소
@@ -516,11 +584,35 @@ const updateProfile = async () => {
   try {
     // 현재 값과 다른 경우에만 업데이트할 데이터 포함
     const updateData = {};
-    if (editForm.value.username !== auth.nickname) {
-      updateData.username = editForm.value.username;
+    
+    // nickname이 변경된 경우
+    if (editForm.value.nickname !== auth.nickname) {
+      updateData.nickname = editForm.value.nickname;
     }
+    
+    // email이 변경된 경우
     if (editForm.value.email !== auth.email) {
       updateData.email = editForm.value.email;
+    }
+    
+    // birth가 변경된 경우
+    if (editForm.value.birth !== auth.userDetails.birth) {
+      updateData.birth = editForm.value.birth;
+    }
+    
+    // preference가 변경된 경우
+    if (editForm.value.preference !== auth.userDetails.preference) {
+      updateData.preference = editForm.value.preference;
+    }
+    
+    // annual_income이 변경된 경우
+    if (editForm.value.annual_income !== auth.userDetails.annual_income) {
+      updateData.annual_income = editForm.value.annual_income;
+    }
+    
+    // total_assets이 변경된 경우
+    if (editForm.value.total_assets !== auth.userDetails.total_assets) {
+      updateData.total_assets = editForm.value.total_assets;
     }
 
     await axios.put('http://127.0.0.1:8000/accounts/update/', updateData, {
@@ -1034,5 +1126,50 @@ const removeProfileImage = async () => {
 
 .remove-btn:hover {
   background-color: #dc2626;
+}
+
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.select-icon {
+  position: absolute;
+  left: 1rem;
+  font-size: 1.25rem;
+  pointer-events: none;
+}
+
+.form-select {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 3rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  appearance: none;
+  background-color: white;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #374151;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+}
+
+/* 셀렉트 박스의 화살표 커스터마이징 */
+.form-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+.form-select option {
+  padding: 0.5rem;
 }
 </style>

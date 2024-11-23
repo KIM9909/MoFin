@@ -30,6 +30,7 @@ class UserDeleteView(APIView):
 from rest_framework.decorators import api_view, permission_classes
 from .serializers import UserUpdateSerializer
 
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_user(request):
@@ -43,5 +44,14 @@ def update_user(request):
     
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data)
+        return Response({
+            'pk': user.pk,
+            'email': user.email,
+            'nickname': user.nickname,
+            'birth': user.birth,
+            'preference': user.preference,
+            'annual_income': user.annual_income,
+            'total_assets': user.total_assets,
+            'profile_img': user.profile_img.url if user.profile_img else None
+        })
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
