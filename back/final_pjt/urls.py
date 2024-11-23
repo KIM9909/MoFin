@@ -12,4 +12,5 @@ urlpatterns = [
     path('', include('exchange.urls')),
     path('savings/', include('savings.urls')),
     path('articles/', include('articles.urls')),
+    path('recommendations/', include('recommendations.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

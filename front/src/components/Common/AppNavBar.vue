@@ -12,6 +12,8 @@
         <RouterLink :to="{ name: 'location' }" class="nav-link">근처 은행 찾기</RouterLink>
         <RouterLink :to="{ name: 'exchangeRate' }" class="nav-link">환율 계산</RouterLink>
         <RouterLink :to="{ name: 'articleList' }" class="nav-link">게시판</RouterLink>
+        <RouterLink :to="{ name: 'recommendations' }" class="nav-link">상품 추천</RouterLink>
+        <RouterLink :to="{ name: 'financeStatus' }" class="nav-link">재정 상태</RouterLink>
       </div>
 
       <!-- 인증 관련 버튼 -->
