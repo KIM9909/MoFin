@@ -37,11 +37,11 @@ environ.Env.read_env(
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 API_KEY = env('API_KEY')
-
+EXIMBANK_API_KEY = env('EXIMBANK_API_KEY')
+KOSIS_API_KEY = env('KOSIS_API_KEY')
 
 ALLOWED_HOSTS = []
 
-EXIMBANK_API_KEY = "XilWCA67tSYmLpY9laZOja3jimRDmYm3"
 
 
 # Application definition
