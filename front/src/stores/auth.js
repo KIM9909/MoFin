@@ -6,12 +6,13 @@ import { useRouter } from 'vue-router';
 export const useAuthStore = defineStore('auth', () => {
   const router = useRouter();
   const BASE_URL = 'http://127.0.0.1:8000';
-  const token = ref(localStorage.getItem('token') || null); // 새로고침 시 토큰 복구
-  const userId = ref(null); // 현재 로그인한 사용자 ID
-  const nickname = ref(""); // 사용자 닉네임
-  const email = ref("")
-  const profile_img_url = ref("")
-  const userDetails = ref(null)
+  const token = ref(localStorage.getItem('token') || null);
+  const userId = ref(null);
+  const nickname = ref("");
+  const email = ref("");
+  const profile_img_url = ref("");
+  const userDetails = ref(null);
+
   const setAxiosAuthHeader = () => {
     axios.defaults.headers.common['Authorization'] = token.value
       ? `Token ${token.value}`
@@ -20,6 +21,17 @@ export const useAuthStore = defineStore('auth', () => {
 
   // 초기화 시 헤더 설정
   setAxiosAuthHeader();
+
+  // 토큰이 있다면 사용자 정보 가져오기
+  if (token.value) {
+    fetchUserInfo().catch(error => {
+      console.error('초기 사용자 정보 로딩 실패:', error);
+      // 토큰이 유효하지 않은 경우 로그아웃 처리
+      if (error.response?.status === 401) {
+        logout();
+      }
+    });
+  }
 
   // 회원가입
   const signUp = async (payload) => {
@@ -53,33 +65,32 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   // 로그인
-  const signIn = (payload) => {
-    axios
-      .post(`${BASE_URL}/accounts/login/`, payload)
-      .then((res) => {
-        token.value = res.data.key;
-        localStorage.setItem('token', res.data.key); // 토큰 저장
-        setAxiosAuthHeader();
-
-        // 로그인 후 사용자 정보 가져오기
-        fetchUserInfo();
-
-        console.log('로그인이 완료되었습니다.');
-        router.push({ name: 'home' });
-      })
-      .catch((err) => {
-        console.error('로그인 중 오류:', err);
-      });
+  const signIn = async (payload) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/accounts/login/`, payload);
+      token.value = res.data.key;
+      localStorage.setItem('token', res.data.key);
+      setAxiosAuthHeader();
+      
+      // 로그인 후 사용자 정보 가져오기
+      await fetchUserInfo();
+      
+      console.log('로그인이 완료되었습니다.');
+      router.push({ name: 'home' });
+    } catch (err) {
+      console.error('로그인 중 오류:', err);
+      throw err;
+    }
   };
 
   // 사용자 정보 가져오기
-  const fetchUserInfo = async () => {
+  async function fetchUserInfo() {
     try {
       const res = await axios.get(`${BASE_URL}/accounts/user/`);
       userId.value = res.data.pk;
       nickname.value = res.data.username;
       email.value = res.data.email;
-      profile_img_url.value = res.data.profile_img;  // 추가
+      profile_img_url.value = res.data.profile_img;
       userDetails.value = {
         birth: res.data.birth,
         preference: res.data.preference,
@@ -89,6 +100,7 @@ export const useAuthStore = defineStore('auth', () => {
       console.log('사용자 정보 로드 완료:', res.data);
     } catch (err) {
       console.error('사용자 정보를 가져오는 중 오류:', err);
+      throw err;
     }
   };
 
@@ -97,7 +109,9 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null;
     userId.value = null;
     nickname.value = "";
-    email.value = ""
+    email.value = "";
+    profile_img_url.value = "";
+    userDetails.value = null;
     localStorage.removeItem('token');
     setAxiosAuthHeader();
     console.log('로그아웃되었습니다.');
@@ -105,5 +119,17 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isLogin = computed(() => token.value !== null);
 
-  return { signUp, signIn, logout, fetchUserInfo, token, userId, nickname, isLogin, email, profile_img_url, userDetails };
+  return { 
+    signUp, 
+    signIn, 
+    logout, 
+    fetchUserInfo, 
+    token, 
+    userId, 
+    nickname, 
+    isLogin, 
+    email, 
+    profile_img_url, 
+    userDetails 
+  };
 });

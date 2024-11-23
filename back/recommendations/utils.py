@@ -46,7 +46,7 @@ def get_life_cycle_recommendation(age: int) -> Dict[str, Any]:
 
 def get_income_level_recommendation(annual_income: int) -> Dict[str, Any]:
     """소득 수준별 추천 로직"""
-    if annual_income >= 80000:  # 8천만원 이상
+    if annual_income >= 8000:  # 8천만원 이상
         return {
             'level': '고소득층',
             'description': '적극적인 자산 운용이 가능한 소득 수준입니다.',
@@ -54,7 +54,7 @@ def get_income_level_recommendation(annual_income: int) -> Dict[str, Any]:
             'deposit_priority': ['고액예치', 'VIP혜택'],
             'savings_priority': ['고금리', '장기저축']
         }
-    elif annual_income >= 30000:  # 3천만원 이상
+    elif annual_income >= 3000:  # 3천만원 이상
         return {
             'level': '중위소득층',
             'description': '안정적인 저축과 투자가 가능한 소득 수준입니다.',
