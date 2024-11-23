@@ -17,10 +17,58 @@ app.use(express.json());
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const db = new sqlite3.Database(dbPath);
         const { message } = req.body;
-        
-        // 필요한 정보만 조회하도록 수정
+
+        // 먼저 사용자의 의도를 파악
+        const intentCheck = await openai.chat.completions.create({
+            model: 'gpt-3.5-turbo',
+            messages: [
+                {
+                    role: 'system',
+                    content: `당신은 금융상품 전문 상담사입니다. 
+사용자의 메시지를 분석하여 금융상품 추천이 필요한지 판단해주세요.
+다음과 같은 경우 추천이 필요하다고 판단하세요:
+- 상품 추천을 직접적으로 요청하는 경우
+- 예금/적금 가입에 대해 문의하는 경우
+- 금리나 수익률에 대해 문의하는 경우
+응답은 "YES" 또는 "NO"로만 해주세요.`
+                },
+                {
+                    role: 'user',
+                    content: message
+                }
+            ],
+            temperature: 0.1,
+            max_tokens: 10
+        });
+
+        const needsRecommendation = intentCheck.choices[0].message.content.trim().toUpperCase() === 'YES';
+
+        if (!needsRecommendation) {
+            // 일반적인 응대
+            const generalResponse = await openai.chat.completions.create({
+                model: 'gpt-3.5-turbo',
+                messages: [
+                    {
+                        role: 'system',
+                        content: `당신은 친절한 금융상품 전문 상담사입니다. 
+고객의 문의사항에 대해 전문적이고 친절하게 응대해주세요.
+단, 구체적인 금융상품 추천은 하지 말아주세요.`
+                    },
+                    {
+                        role: 'user',
+                        content: message
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 500
+            });
+
+            return res.json({ message: generalResponse.choices[0].message.content });
+        }
+
+        // 금융상품 추천이 필요한 경우
+        const db = new sqlite3.Database(dbPath);
         const query = `
             SELECT 
                 d.kor_co_nm as bank_name,
