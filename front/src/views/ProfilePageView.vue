@@ -77,31 +77,31 @@
           </div>
           <!-- 기존 정보 표시 부분 -->
           <div class="info-row">
-            <label>사용자 이름</label>
+            <label class="fw-bold">사용자 이름</label>
             <p>{{ auth.username }}</p>
           </div>
           <div class="info-row">
-            <label>닉네임</label>
+            <label class="fw-bold">닉네임</label>
             <p>{{ auth.nickname }}</p>
           </div>
           <div class="info-row">
-            <label>이메일</label>
+            <label class="fw-bold">이메일</label>
             <p>{{ auth.email }}</p>
           </div>
           <div class="info-row">
-            <label>생일</label>
+            <label class="fw-bold">생일</label>
             <p>{{ auth.userDetails.birth }}</p>
           </div>
           <div class="info-row">
-            <label>연간 소득</label>
+            <label class="fw-bold">연간 소득</label>
             <p>{{ auth.userDetails.annual_income }}</p>
           </div>
           <div class="info-row">
-            <label>자산</label>
+            <label class="fw-bold">자산</label>
             <p>{{ auth.userDetails.total_assets }}</p>
           </div>
           <div class="info-row">
-            <label>선호도</label>
+            <label class="fw-bold">선호도</label>
             <p>{{ auth.userDetails.preference }}</p>
           </div>
           <button @click="startEditing" class="primary-btn">
