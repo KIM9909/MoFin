@@ -116,7 +116,7 @@
           </div>
 
           <div class="form-group">
-            <label for="preference">주소비처</label>
+            <label for="preference">선호도</label>
             <div class="input-wrapper">
               <span class="input-icon">👛</span>
               <select

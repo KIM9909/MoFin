@@ -8,6 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
   const BASE_URL = 'http://127.0.0.1:8000';
   const token = ref(localStorage.getItem('token') || null);
   const userId = ref(null);
+  const username = ref("");
   const nickname = ref("");
   const email = ref("");
   const profile_img_url = ref("");
@@ -88,7 +89,8 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const res = await axios.get(`${BASE_URL}/accounts/user/`);
       userId.value = res.data.pk;
-      nickname.value = res.data.username;
+      username.value = res.data.username
+      nickname.value = res.data.nickname;
       email.value = res.data.email;
       profile_img_url.value = res.data.profile_img;
       userDetails.value = {
@@ -108,6 +110,7 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = () => {
     token.value = null;
     userId.value = null;
+    username.value = "";
     nickname.value = "";
     email.value = "";
     profile_img_url.value = "";
@@ -125,7 +128,8 @@ export const useAuthStore = defineStore('auth', () => {
     logout, 
     fetchUserInfo, 
     token, 
-    userId, 
+    userId,
+    username,
     nickname, 
     isLogin, 
     email, 

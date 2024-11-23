@@ -69,25 +69,19 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         required=True,
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
-    username = serializers.CharField(
-        required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())]
-    )
+    nickname = serializers.CharField(required=False)
+    birth = serializers.DateField(required=False, allow_null=True)
+    preference = serializers.CharField(required=False, allow_null=True)
+    annual_income = serializers.IntegerField(required=False, allow_null=True)
+    total_assets = serializers.IntegerField(required=False, allow_null=True)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'nickname')
-        extra_kwargs = {
-            'nickname': {'required': False}
-        }
+        fields = ('email', 'nickname', 'birth', 'preference', 'annual_income', 'total_assets')
 
     def validate(self, attrs):
         user = self.context['request'].user
         
-        # 현재 사용자의 username과 동일하다면 유일성 검사를 건너뜀
-        if attrs.get('username') == user.username:
-            attrs.pop('username', None)
-            
         # 현재 사용자의 email과 동일하다면 유일성 검사를 건너뜀
         if attrs.get('email') == user.email:
             attrs.pop('email', None)
