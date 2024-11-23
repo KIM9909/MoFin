@@ -193,74 +193,66 @@ export default {
 
 <style scoped>
 .calculator-container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f6f8fb 0%, #e9ecef 100%);
-  padding: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: -30px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  background: transparent;
+  min-height: auto;
+  margin-top: 0;
 }
 
 .calculator-wrapper {
   width: 100%;
-  max-width: 800px;
-  animation: slideUp 0.5s ease-out;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .main-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
+  transition: transform 0.3s ease;
 }
 
 .header-section {
-  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
-  padding: 2.5rem;
+  padding: 24px;
   text-align: center;
 }
 
-.header-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  animation: bounce 2s infinite;
-}
-
 .header-section h1 {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 600;
   margin: 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
 }
 
 .subtitle {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
 }
 
 .calculator-form {
-  padding: 2rem;
+  padding: 24px;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: 20px;
+  margin-bottom: 24px;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 20px;
 }
 
 .label-text {
   display: block;
-  font-size: 0.9rem;
-  color: #64748b;
-  margin-bottom: 0.5rem;
+  font-size: 14px;
+  color: #047857;
+  margin-bottom: 8px;
   font-weight: 500;
 }
 
@@ -270,27 +262,32 @@ export default {
 
 .select-icon {
   position: absolute;
-  left: 1rem;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 1.2rem;
+  font-size: 16px;
 }
 
 select, .amount-input input {
   width: 100%;
-  padding: 0.8rem 1rem 0.8rem 3rem;
-  border: 1px solid #e2e8f0;
+  padding: 12px 16px 12px 40px;
+  border: 1px solid #d1fae5;
   border-radius: 12px;
-  font-size: 1rem;
+  font-size: 14px;
   background: white;
   transition: all 0.3s ease;
   appearance: none;
+  color: #065f46;
+}
+
+select:hover, .amount-input input:hover {
+  border-color: #6ee7b7;
 }
 
 select:focus, .amount-input input:focus {
   outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
 .amount-input {
@@ -299,161 +296,208 @@ select:focus, .amount-input input:focus {
 
 .currency-icon {
   position: absolute;
-  left: 1rem;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 1.2rem;
+  font-size: 16px;
 }
 
 .currency-code {
   position: absolute;
-  right: 1rem;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: #64748b;
+  color: #047857;
   font-weight: 500;
 }
 
 .calculate-button {
   width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  padding: 12px;
+  background: linear-gradient(135deg, #34d399 0%, #059669 100%);
   color: white;
   border: none;
   border-radius: 12px;
-  font-size: 1.1rem;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 8px;
+  box-shadow: 0 4px 6px rgba(5, 150, 105, 0.1);
 }
 
 .calculate-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+  box-shadow: 0 6px 12px rgba(5, 150, 105, 0.2);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
 .button-icon {
-  font-size: 1.2rem;
+  font-size: 16px;
 }
 
 .result-section {
-  padding: 0 2rem 2rem 2rem;
+  padding: 0 24px 24px 24px;
 }
 
 .result-card {
-  background: #f8fafc;
-  border-radius: 16px;
+  background: #f0fdf4;
+  border-radius: 12px;
   overflow: hidden;
   animation: fadeIn 0.5s ease-out;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .result-header {
-  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
-  padding: 1rem;
+  padding: 12px;
   font-weight: 600;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .result-content {
-  padding: 2rem;
+  padding: 24px;
 }
 
 .conversion-display {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  gap: 24px;
+  margin-bottom: 20px;
 }
 
 .original-amount, .converted-amount {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 16px 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .amount {
-  font-size: 1.5rem;
+  font-size: 20px;
   font-weight: 700;
-  color: #2c3e50;
+  color: #064e3b;
 }
 
 .currency {
-  font-size: 0.9rem;
-  color: #64748b;
-  margin-top: 0.25rem;
+  font-size: 14px;
+  color: #047857;
+  margin-top: 4px;
 }
 
 .conversion-arrow {
-  color: #3498db;
-  font-size: 1.5rem;
+  color: #059669;
+  font-size: 20px;
 }
 
 .exchange-rate {
   text-align: center;
-  color: #64748b;
-  font-size: 0.9rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e2e8f0;
+  color: #047857;
+  font-size: 14px;
+  padding-top: 16px;
+  border-top: 1px solid #d1fae5;
+  background: white;
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-@keyframes slideUp {
-  from {
+@keyframes fadeIn {
+  from { 
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
-  to {
+  to { 
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
 }
 
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-10px);
-  }
-  60% {
-    transform: translateY(-5px);
-  }
+.result-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.result-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  /* animation: shimmer 2s infinite; */
+  transform: skewX(-20deg);
 }
 
 @media (max-width: 768px) {
   .calculator-container {
-    padding: 1rem;
+    padding: 16px;
   }
 
   .form-grid {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 16px;
   }
 
   .header-section {
-    padding: 2rem;
+    padding: 20px;
   }
 
-  .header-section h1 {
-    font-size: 1.5rem;
+  .calculator-form {
+    padding: 20px;
+  }
+
+  .result-section {
+    padding: 0 20px 20px 20px;
   }
 
   .amount {
-    font-size: 1.2rem;
+    font-size: 18px;
+  }
+
+  .header-section h1 {
+    font-size: 20px;
+  }
+
+  .main-card {
+    margin: 0 8px;
+  }
+
+  .conversion-display {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .conversion-arrow {
+    transform: rotate(90deg);
   }
 }
 </style>

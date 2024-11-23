@@ -17,6 +17,7 @@
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "lockdown": "^0.0.8-dev",
+    "lucide-react": "^0.460.0",
     "lucide-vue-next": "^0.460.0",
     "openai": "^4.73.0",
     "pinia": "^2.2.6",

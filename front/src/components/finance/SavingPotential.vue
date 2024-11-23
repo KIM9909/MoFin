@@ -1,102 +1,87 @@
 <template>
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <h2 class="text-2xl font-semibold mb-6">저축 잠재력 분석</h2>
-  
-      <!-- 월 저축 목표 -->
-      <div class="grid md:grid-cols-2 gap-6 mb-8">
-        <div class="bg-blue-50 rounded-lg p-4">
-          <h3 class="text-sm font-medium text-blue-800 mb-2">추천 월 저축액</h3>
-          <p class="text-2xl font-bold text-blue-600">
-            {{ formatCurrency(statusData.recommended_monthly_saving) }}
-          </p>
-          <p class="text-sm text-blue-600 mt-1">
-            연간 {{ formatCurrency(statusData.recommended_monthly_saving * 12) }}
-          </p>
-        </div>
-  
-        <div class="bg-green-50 rounded-lg p-4">
-          <h3 class="text-sm font-medium text-green-800 mb-2">예상 10년 후 자산</h3>
-          <p class="text-2xl font-bold text-green-600">
-            {{ formatCurrency(calculateFutureAsset()) }}
-          </p>
-          <p class="text-sm text-green-600 mt-1">
-            현재 대비 {{ calculateGrowthRate() }}% 성장
-          </p>
-        </div>
+  <div class="analysis-container">
+    <h2 class="main-title">저축 잠재력 분석</h2>
+
+    <!-- 월 저축 목표 -->
+    <div class="goals-grid">
+      <div class="goal-card savings-card">
+        <h3 class="goal-label">추천 월 저축액</h3>
+        <p class="goal-value">
+          {{ formatCurrency(statusData.recommended_monthly_saving) }}
+        </p>
+        <p class="goal-subtext">
+          연간 {{ formatCurrency(statusData.recommended_monthly_saving * 12) }}
+        </p>
       </div>
-  
-      <!-- 저축 전략 제안 -->
-      <div class="bg-gray-50 rounded-lg p-4">
-        <h3 class="font-medium text-gray-800 mb-4">맞춤형 저축 전략</h3>
-        
-        <div class="space-y-4">
-          <!-- 단기 목표 -->
-          <div>
-            <h4 class="text-sm font-medium text-gray-600 mb-2">단기 목표 (1년)</h4>
-            <div class="flex items-center">
-              <div class="flex-1">
-                <div class="h-2 bg-gray-200 rounded">
-                  <div
-                    class="h-2 bg-blue-500 rounded"
-                    :style="{ width: '25%' }"
-                  ></div>
-                </div>
-              </div>
-              <span class="ml-4 text-sm font-medium">
-                {{ formatCurrency(statusData.recommended_monthly_saving * 12) }}
-              </span>
-            </div>
-          </div>
-  
-          <!-- 중기 목표 -->
-          <div>
-            <h4 class="text-sm font-medium text-gray-600 mb-2">중기 목표 (5년)</h4>
-            <div class="flex items-center">
-              <div class="flex-1">
-                <div class="h-2 bg-gray-200 rounded">
-                  <div
-                    class="h-2 bg-green-500 rounded"
-                    :style="{ width: '50%' }"
-                  ></div>
-                </div>
-              </div>
-              <span class="ml-4 text-sm font-medium">
-                {{ formatCurrency(statusData.recommended_monthly_saving * 12 * 5) }}
-              </span>
-            </div>
-          </div>
-  
-          <!-- 장기 목표 -->
-          <div>
-            <h4 class="text-sm font-medium text-gray-600 mb-2">장기 목표 (10년)</h4>
-            <div class="flex items-center">
-              <div class="flex-1">
-                <div class="h-2 bg-gray-200 rounded">
-                  <div
-                    class="h-2 bg-purple-500 rounded"
-                    :style="{ width: '75%' }"
-                  ></div>
-                </div>
-              </div>
-              <span class="ml-4 text-sm font-medium">
-                {{ formatCurrency(calculateFutureAsset()) }}
-              </span>
-            </div>
-          </div>
-        </div>
-  
-        <!-- 저축 조언 -->
-        <div class="mt-6 text-sm text-gray-600">
-          <p class="mb-2">💡 추천 저축 전략:</p>
-          <ul class="list-disc list-inside space-y-1">
-            <li>월 수입의 {{ calculateSavingRatio() }}%를 저축하는 것을 목표로 하세요.</li>
-            <li>예금과 적금을 {{ getSavingDistributionTip() }}</li>
-            <li>{{ getAgeBasedTip() }}</li>
-          </ul>
-        </div>
+
+      <div class="goal-card future-card">
+        <h3 class="goal-label">예상 10년 후 자산</h3>
+        <p class="goal-value">
+          {{ formatCurrency(calculateFutureAsset()) }}
+        </p>
+        <p class="goal-subtext">
+          현재 대비 {{ calculateGrowthRate() }}% 성장
+        </p>
       </div>
     </div>
-  </template>
+
+    <!-- 저축 전략 제안 -->
+    <div class="strategy-container">
+      <h3 class="strategy-title">맞춤형 저축 전략</h3>
+      
+      <div class="strategy-goals">
+        <!-- 단기 목표 -->
+        <div class="goal-item">
+          <h4 class="goal-period">단기 목표 (1년)</h4>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill short-term"></div>
+            </div>
+            <span class="progress-value">
+              {{ formatCurrency(statusData.recommended_monthly_saving * 12) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- 중기 목표 -->
+        <div class="goal-item">
+          <h4 class="goal-period">중기 목표 (5년)</h4>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill mid-term"></div>
+            </div>
+            <span class="progress-value">
+              {{ formatCurrency(statusData.recommended_monthly_saving * 12 * 5) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- 장기 목표 -->
+        <div class="goal-item">
+          <h4 class="goal-period">장기 목표 (10년)</h4>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill long-term"></div>
+            </div>
+            <span class="progress-value">
+              {{ formatCurrency(calculateFutureAsset()) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 저축 조언 -->
+      <div class="advice-section">
+        <p class="advice-title">💡 추천 저축 전략:</p>
+        <ul class="advice-list">
+          <li>월 수입의 {{ calculateSavingRatio() }}%를 저축하는 것을 목표로 하세요.</li>
+          <li>예금과 적금을 {{ getSavingDistributionTip() }}</li>
+          <li>{{ getAgeBasedTip() }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
   
   <script setup>
   import { defineProps } from 'vue'
@@ -166,3 +151,208 @@
     }
   }
   </script>
+
+<style scoped>
+.analysis-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  transition: transform 0.3s ease;
+}
+
+.analysis-container:hover {
+  transform: translateY(-2px);
+}
+
+.main-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 24px;
+}
+
+.goals-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+@media (min-width: 768px) {
+  .goals-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.goal-card {
+  border-radius: 12px;
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.goal-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.savings-card {
+  background: linear-gradient(135deg, #eef6ff 0%, #dbeafe 100%);
+}
+
+.future-card {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+}
+
+.goal-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.goal-value {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.savings-card .goal-value {
+  color: #2563eb;
+}
+
+.future-card .goal-value {
+  color: #059669;
+}
+
+.goal-subtext {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.savings-card .goal-subtext {
+  color: #2563eb;
+}
+
+.future-card .goal-subtext {
+  color: #059669;
+}
+
+.strategy-container {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.strategy-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 20px;
+}
+
+.strategy-goals {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.goal-item {
+  animation: slideIn 0.5s ease-out;
+}
+
+.goal-period {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 8px;
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease-in-out;
+}
+
+.short-term {
+  background: #3b82f6;
+  width: 25%;
+}
+
+.mid-term {
+  background: #10b981;
+  width: 50%;
+}
+
+.long-term {
+  background: #8b5cf6;
+  width: 75%;
+}
+
+.progress-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+  min-width: 100px;
+  text-align: right;
+}
+
+.advice-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.advice-title {
+  font-size: 14px;
+  color: #4b5563;
+  margin-bottom: 12px;
+}
+
+.advice-list {
+  list-style-type: disc;
+  padding-left: 20px;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.advice-list li {
+  margin-bottom: 8px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+</style>

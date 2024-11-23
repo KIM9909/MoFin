@@ -32,13 +32,13 @@ const links = [
       <div class="company-info">
         <p>
           사업자등록번호: 123-45-67890 | 
-          대표: 김홍범 | 
+          공동 대표: 김홍범, 윤상묵 | 
           Tel: 010-5062-1874 | 
           Email: fkdldj48@naver.com
         </p>
         <p>
-          주소: 서울특별시 중구 을지로 100번길 123 | 
-          Copyright © {{ currentYear }} Your Company. All Rights Reserved.
+          주소: 광주 광산구 하남산단6번로 107, 삼성전자 | 
+          Copyright © {{ currentYear }} MoFin. All Rights Reserved.
         </p>
       </div>
     </div>
