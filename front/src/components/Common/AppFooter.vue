@@ -7,7 +7,6 @@ const links = [
   { text: '개인정보처리방침', url: 'https://www.ssafy.com/ksp/jsp/swp/etc/swpPrivacy.jsp' },
   { text: '이용약관', url: 'https://www.ssafy.com/ksp/jsp/swp/etc/swpPolicy.jsp' },
   { text: '고객센터', url: 'https://callcenter.kftc.or.kr/' },
-  { text: '사이트맵', url: '#' }
 ]
 
 
