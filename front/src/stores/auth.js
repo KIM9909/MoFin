@@ -11,6 +11,7 @@ export const useAuthStore = defineStore('auth', () => {
   const nickname = ref(""); // 사용자 닉네임
   const email = ref("")
   const profile_img_url = ref("")
+  const userDetails = ref(null)
   const setAxiosAuthHeader = () => {
     axios.defaults.headers.common['Authorization'] = token.value
       ? `Token ${token.value}`
@@ -79,7 +80,13 @@ export const useAuthStore = defineStore('auth', () => {
       nickname.value = res.data.username;
       email.value = res.data.email;
       profile_img_url.value = res.data.profile_img;  // 추가
-      console.log(res.data);
+      userDetails.value = {
+        birth: res.data.birth,
+        preference: res.data.preference,
+        annual_income: res.data.annual_income,
+        total_assets: res.data.total_assets
+      };
+      console.log('사용자 정보 로드 완료:', res.data);
     } catch (err) {
       console.error('사용자 정보를 가져오는 중 오류:', err);
     }
@@ -98,5 +105,5 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isLogin = computed(() => token.value !== null);
 
-  return { signUp, signIn, logout, fetchUserInfo, token, userId, nickname, isLogin, email, profile_img_url };
+  return { signUp, signIn, logout, fetchUserInfo, token, userId, nickname, isLogin, email, profile_img_url, userDetails };
 });

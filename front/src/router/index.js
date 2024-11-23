@@ -11,6 +11,9 @@ import ArticleCreateView from '@/views/ArticleCreateView.vue'
 import ArticleUpdateView from '@/views/ArticleUpdateView.vue'
 import ProductView from '@/views/ProductView.vue'
 import SignOutView from '@/views/SignOutView.vue'
+import RecommendationView from '@/views/RecommendationView.vue'
+import FinanceStatusView from '@/views/FinanceStatusView.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -78,6 +81,18 @@ const router = createRouter({
       component: () => import('@/views/ProfilePageView.vue'),
       meta: { requiresAuth: true }
     },
+    {
+      path: '/recommendations',
+      name: 'recommendations',
+      component: RecommendationView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/finance-status',
+      name: 'financeStatus',
+      component: FinanceStatusView,
+      meta: { requiresAuth: true }
+    }
   ]
 })
 

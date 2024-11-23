@@ -125,9 +125,9 @@
                 class="form-input"
               >
                 <option value="">선택하세요</option>
-                <option value="안정형">안정추구형</option>
+                <option value="안정형">안정형</option>
+                <option value="위험회피형">위험회피형</option>
                 <option value="수익추구형">수익추구형</option>
-                <option value="주거">위험회피형</option>
               </select>
             </div>
           </div>
