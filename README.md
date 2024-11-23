@@ -106,10 +106,10 @@ project-root/
 - #### 목표
     Custom User와 Serializer를 이용해서 DRF를 통해 Vue와 연동시켜 회원가입 기능을 구현하는 것
 
-- #### 문제점 1
+- ### 문제점 1
     Django Rest Framework 서버의 회원가입 url에서 기존 폼을 제외한 추가 작성 폼을 추가하지 못하는 어려움 발생
 
-- #### 해결방안
+- ### 해결방안
     serializers.py에 RegisterSerailizer를 import 받아서 CustomRegisterSerailizer에 상속 후 입력 폼을 추가하였다.
     ```python
     from rest_framework import serializers
@@ -146,10 +146,10 @@ project-root/
     ```
 
 
-- #### 문제점 2
+- ### 문제점 2
     입력 폼은 추가 했지만, 여전히 DB에는 저장이 되지 않는 문제 발생!
 
-- #### 해결방안
+- ### 해결방안
     models.py에 DefaultAccountAdapter를 import 받아와서 CustomAccountAdapter를 만들어줌
     ```python
     from allauth.account.adapter import DefaultAccountAdapter
@@ -194,15 +194,15 @@ project-root/
     ```
 ## 11 / 19일(화)
 ### [근처 은행 위치 정보 가져오기] - 홍범
-- #### 목표<br>
+- ### 목표<br>
 1. KAKAO MAP API를 받아와서 사용자로 하여금 찾고자 하는 위치를 입력하게 하고, 찾고자 하는 은행을 선택하고 "은행 찾기" 버튼을 누르면 해당 위치의 주변에 있는 은행들을 지도상에 표시
 
 2. 사용자의 위치정보를 GPS로 받아서 사용자가 있는 곳을 기반해서 주위에 있는 선택한 은행들을 지도상에 표시
 
-- #### 문제점 1
+- ### 문제점 1
     위치와 은행을 어떻게 입력시켜야 지도상에서 정보를 받아올 수 있을지 난관 봉착
 
-- #### 해결방안
+- ### 해결방안
     keywordSearch라는 함수를 이용해서 위치 검색어와 선택한 은행의 단어 일부가 일치하면 카카오맵의 Place정보와 일치하는 결과를 받을 수 있었음
     ```JavaScript
     const ps = new window.kakao.maps.services.Places();
@@ -215,10 +215,10 @@ project-root/
         });
     ```
 
-- #### 문제점 2
+- ### 문제점 2
     어떻게 사용자의 위치를 받아올 것이며, 사용자의 위치를 어떻게 표시할지 고민
 
-- #### 해결방안
+- ### 해결방안
     geolocation을 활용해서 현재 위치의 위도와 경도 정보를 받아온 후 LatLng 함수를 통해서 해당 위도와 경도를 저장
     ```javascript
     if (navigator.geolocation) {
@@ -230,7 +230,7 @@ project-root/
     ```
 
 ### [환율 계산기 기능 구현] - 홍범
-- #### 목표
+- ### 목표
 1. 한국 수출입 은행에서 환율 정보 API를 받아오기
 
 
@@ -239,10 +239,10 @@ project-root/
 
 3. 반대로 타국통화를 입력하면 자국통화로 계산해주기
 
-- #### 문제점1
+- ### 문제점1
     변환 방향을 설정해줄 때 어떤 기준으로 통화 계산이 달라질지 고민
 
-- #### 해결방안
+- ### 해결방안
     변환 방향 설정 시 value를 각각 부여하고 v-model로 감싼 후 추후에 v-if로 조건을 걸어주면서 결과 필터링
     ```html
     <label for="conversion-direction">변환 방향:</label>
@@ -264,10 +264,10 @@ project-root/
     </div>
     ```
 
-- #### 문제점2
+- ### 문제점2
     데이터중 ,로 구분되어있는 통화때문에 데이터를 받아오지 못하는 상황 발생
 
-- #### 해결방안
+- ### 해결방안
     parseFloat으로 데이터를 응답받을 때 ,를 여백없는 빈 공간으로 만든 후 받아옴
     ```javascript
     let rate = parseFloat(response.data.rate.replace(",", ""))
@@ -275,13 +275,13 @@ project-root/
 
 ## 11월 20일(수)
 ### [게시판 기능 및 댓글 기능 구현] - 홍범
-- #### 목표
+- ### 목표
     유저들이 서로 게시글을 올려 게시글을 작성하고, 댓글을 달아서 소통할 수 있는 자유게시판 구축
 
-- #### 문제점 1
+- ### 문제점 1
     전체 게시글 조회 및 상세 게시글 조회 시 데이터를 받아오지 못하는 문제 발생
 
-- #### 해결방안
+- ### 해결방안
     url을 Django서버로 받아와서 제대로된 url에 요청 및 응답을 받을 수 있도록 수정
     ```javaScript
     onMounted(() => {
@@ -306,10 +306,10 @@ project-root/
     });
     ``` 
 
-- #### 문제점 2
+- ### 문제점 2
     댓글 수정 및 삭제 시 작성한 사용자에게만 버튼이 보이도록 구현
 
-- #### 해결방안
+- ### 해결방안
     로그인할 때 사용자 정보를 auth.js에서 fetchUserInfo 함수를 통해 userId(pk)를 가져옴.
     그 다음 현재 접속한 사용자(authStore.userId)와 댓글을 작성한 사용자(user.id)와 같으면 삭제 및 수정 버튼이 보이도록 구현
     ```html
@@ -365,4 +365,91 @@ physical name 을 실제 모델에 맞게 수정, 프로젝트 진행사항 체�
 - 가입 상품 페이지에서도 상세 정보 보기 페이지와 구독 및 취소 버튼까지 활성화
 
 #### settings 에서 CustomUserDetailsSerializer 등록
-토큰을 이용한 USER 정보 가져오기 
+토큰을 이용한 USER 정보 가져오기
+
+## 11월 22일(금)
+### [챗봇 기능 구현] - 홍범
+
+- ### 목표
+    챗봇을 사용함으로써 사용자가 직접 요청한 조건의 상품을 알맞게 추천 받을 수 있도록 금융 상품 추천
+
+- ### 문제점 1
+    서버와 GPT의 호환 문제
+
+- ### 해결방안
+    front 프로젝트 최상위 폴더에서 server 폴더를 새로 만든 후 그 안에 server.js 파일을 만들고 API KEY관리를 위해 .env 파일을 생성.<br>
+    ```bash
+    npm init -y
+    npm install express cors openai dotenv
+    cd server
+    node server.js
+    npm install --save-dev concurrently
+    npm run dev:all
+    ```
+    그후 Component에 ChatBot폴더와 ChatBot.vue 파일을 만든 후 백엔드 서버 요청 로직과 챗봇의 전체적인 디자인을 관리
+    ```bash
+    npm install lucide-vue-next
+    ```  
+
+- ### 문제점 2
+    Django 프로젝트의 Sqlite DB에 있는 금융 상품을 챗봇에게 학습
+
+- ### 해결방안
+    sqlite의 DB와 연결하도록 sqlite를 따로 설치하고, 경로를 지정
+    ```bash
+    npm install sqlite
+    ```
+    ```javascript
+    const dbPath = path.resolve(__dirname, '../../back/db.sqlite3')
+            const db = new sqlite3.Database(dbPath);
+            const query = `
+                SELECT 
+                    d.kor_co_nm as bank_name,
+                    d.fin_prdt_nm as product_name,
+                    ROUND(o.intr_rate, 2) as base_rate,
+                    ROUND(o.intr_rate2, 2) as prime_rate,
+                    o.save_trm as term
+                FROM savings_depositproducts d
+                LEFT JOIN savings_depositoptions o 
+                ON d.fin_prdt_cd = o.fin_prdt_cd
+                ORDER BY o.intr_rate2 DESC
+                LIMIT 10
+            `;
+
+            db.all(query, [], async (err, products) => {
+                if (err) {
+                    console.error('DB 오류:', err);
+                    db.close();
+                    return res.status(500).json({ error: err.message });
+                }
+
+                const completion = await openai.chat.completions.create({
+                    model: 'gpt-3.5-turbo',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: `...`
+                        },
+                        {
+                            role: 'user',
+                            content: `현재 상품 목록: ${JSON.stringify(products)}\n\n문의사항: ${message}`
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 500
+                });
+
+                db.close();
+                res.json({ message: completion.choices[0].message.content });
+            });
+        } catch (error) {
+            console.error('오류:', error);
+            res.json({ 
+                message: "..." 
+            });
+        }
+    });
+    ```
+    -> Django DB와 연결 및 학습
+
+## 11월 23일(토)
