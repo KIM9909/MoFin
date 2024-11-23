@@ -2,33 +2,42 @@
   <nav class="navbar">
     <div class="nav-container">
       <!-- 로고 영역 -->
-      <RouterLink :to="{ name: 'home' }" class="logo">
-        MoFin
-      </RouterLink>
-
-      <!-- 메인 네비게이션 -->
-      <div class="nav-links">
-        <RouterLink :to="{ name: 'products' }" class="nav-link">상품 조회</RouterLink>
-        <RouterLink :to="{ name: 'location' }" class="nav-link">근처 은행 찾기</RouterLink>
-        <RouterLink :to="{ name: 'exchangeRate' }" class="nav-link">환율 계산</RouterLink>
-        <RouterLink :to="{ name: 'articleList' }" class="nav-link">게시판</RouterLink>
-        <RouterLink :to="{ name: 'recommendations' }" class="nav-link">상품 추천</RouterLink>
-        <RouterLink :to="{ name: 'financeStatus' }" class="nav-link">재정 상태</RouterLink>
+      <div class="nav-top">
+        <RouterLink :to="{ name: 'home' }" class="logo">
+          MoFin
+        </RouterLink>
+        
+        <!-- 햄버거 메뉴 버튼 -->
+        <button class="menu-toggle" @click="isMenuOpen = !isMenuOpen">
+          <span class="hamburger" :class="{ 'active': isMenuOpen }"></span>
+        </button>
       </div>
 
-      <!-- 인증 관련 버튼 -->
-      <div class="auth-buttons">
-        <template v-if="!authStore.isLogin">
-          <RouterLink :to="{ name: 'signIn' }" class="auth-btn login">로그인</RouterLink>
-          <RouterLink :to="{ name: 'signUp' }" class="auth-btn signup">회원가입</RouterLink>
-        </template>
-        <template v-else>
-          <RouterLink :to="{ name: 'profile' }" class="profile-link">
-            <span class="profile-icon">👤</span>
-            {{ authStore.nickname }}
-          </RouterLink>
-          <RouterLink :to="{ name: 'signOut' }" class="auth-btn logout">로그아웃</RouterLink>
-        </template>
+      <!-- 메인 네비게이션 -->
+      <div class="nav-content" :class="{ 'active': isMenuOpen }">
+        <div class="nav-links">
+          <RouterLink :to="{ name: 'products' }" class="nav-link" @click="isMenuOpen = false">상품 조회</RouterLink>
+          <RouterLink :to="{ name: 'location' }" class="nav-link" @click="isMenuOpen = false">근처 은행 찾기</RouterLink>
+          <RouterLink :to="{ name: 'exchangeRate' }" class="nav-link" @click="isMenuOpen = false">환율 계산</RouterLink>
+          <RouterLink :to="{ name: 'articleList' }" class="nav-link" @click="isMenuOpen = false">게시판</RouterLink>
+          <RouterLink :to="{ name: 'recommendations' }" class="nav-link" @click="isMenuOpen = false">상품 추천</RouterLink>
+          <RouterLink :to="{ name: 'financeStatus' }" class="nav-link" @click="isMenuOpen = false">재정 상태</RouterLink>
+        </div>
+
+        <!-- 인증 관련 버튼 -->
+        <div class="auth-buttons">
+          <template v-if="!authStore.isLogin">
+            <RouterLink :to="{ name: 'signIn' }" class="auth-btn login" @click="isMenuOpen = false">로그인</RouterLink>
+            <RouterLink :to="{ name: 'signUp' }" class="auth-btn signup" @click="isMenuOpen = false">회원가입</RouterLink>
+          </template>
+          <template v-else>
+            <RouterLink :to="{ name: 'profile' }" class="profile-link" @click="isMenuOpen = false">
+              <span class="profile-icon">👤</span>
+              {{ authStore.nickname }}
+            </RouterLink>
+            <RouterLink :to="{ name: 'signOut' }" class="auth-btn logout" @click="isMenuOpen = false">로그아웃</RouterLink>
+          </template>
+        </div>
       </div>
     </div>
   </nav>
@@ -39,64 +48,138 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { ref, onBeforeUnmount, onMounted } from 'vue'
 
 const authStore = useAuthStore()
+const isMenuOpen = ref(false)
+
+// 화면 크기가 변경될 때 메뉴 상태 관리
+const handleResize = () => {
+  if (window.innerWidth > 1024) {
+    isMenuOpen.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+})
 </script>
 
 <style scoped>
 .navbar {
   background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 0.5rem 2rem;  /* 패딩 줄임 */
+  padding: 0 2rem;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  height: 60px;  /* 고정 높이 설정 */
-}
-
-.nav-spacer {
-  height: 60px;  /* navbar의 높이와 동일하게 설정 */
+  height: 60px;
 }
 
 .nav-container {
   max-width: 1200px;
   margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-top {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
 .logo {
-  font-size: 2rem;  /* 폰트 크기 줄임 */
+  font-size: 1.8rem;
   font-weight: bold;
   color: #2c662f;
   text-decoration: none;
-  padding: 0.25rem 0.75rem;  /* 패딩 줄임 */
+  padding: 0.25rem 0.75rem;
   border-radius: 6px;
   transition: background-color 0.3s;
-  margin-right: 40px;
 }
 
 .logo:hover {
   background-color: #f0f9f0;
 }
 
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.hamburger {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #2c662f;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 2px;
+  background: #2c662f;
+  transition: all 0.3s ease;
+}
+
+.hamburger::before {
+  top: -6px;
+}
+
+.hamburger::after {
+  bottom: -6px;
+}
+
+.hamburger.active {
+  background: transparent;
+}
+
+.hamburger.active::before {
+  transform: rotate(45deg);
+  top: 0;
+}
+
+.hamburger.active::after {
+  transform: rotate(-45deg);
+  bottom: 0;
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
 .nav-links {
   display: flex;
-  gap: 1.1rem;  /* gap 줄임 */
+  gap: 1rem;
   align-items: center;
 }
 
 .nav-link {
   color: #333;
   text-decoration: none;
-  padding: 0.25rem 0.75rem;  /* 패딩 줄임 */
+  padding: 0.25rem 0.75rem;
   border-radius: 6px;
   transition: all 0.3s ease;
-  font-size: 1.2rem;  /* 폰트 크기 줄임 */
+  font-size: 1rem;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -106,17 +189,18 @@ const authStore = useAuthStore()
 
 .auth-buttons {
   display: flex;
-  gap: 0.75rem;  /* gap 줄임 */
+  gap: 0.75rem;
   align-items: center;
 }
 
 .auth-btn {
-  padding: 0.25rem 1rem;  /* 패딩 줄임 */
+  padding: 0.25rem 1rem;
   border-radius: 6px;
   text-decoration: none;
   font-weight: 500;
   transition: all 0.3s ease;
-  font-size: 0.9rem;  /* 폰트 크기 줄임 */
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .login {
@@ -150,13 +234,14 @@ const authStore = useAuthStore()
 .profile-link {
   display: flex;
   align-items: center;
-  gap: 0.3rem;  /* gap 줄임 */
+  gap: 0.3rem;
   color: #333;
   text-decoration: none;
-  padding: 0.25rem 0.75rem;  /* 패딩 줄임 */
+  padding: 0.25rem 0.75rem;
   border-radius: 6px;
   transition: all 0.3s ease;
-  font-size: 0.9rem;  /* 폰트 크기 줄임 */
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .profile-link:hover {
@@ -164,40 +249,102 @@ const authStore = useAuthStore()
 }
 
 .profile-icon {
-  font-size: 1rem;  /* 아이콘 크기 줄임 */
+  font-size: 1rem;
 }
 
-/* 반응형 디자인 */
-@media (max-width: 768px) {
+/* Large screens (1024px 이상) */
+@media (min-width: 1025px) {
+  .nav-content {
+    display: flex !important;
+  }
+}
+
+/* Medium screens (768px - 1024px) */
+@media (max-width: 1024px) {
   .navbar {
-    padding: 0.5rem;
-    height: auto;  /* 모바일에서는 자동 높이 */
+    height: auto;
+    min-height: 60px;
   }
 
   .nav-container {
     flex-direction: column;
-    gap: 0.5rem;
+    align-items: stretch;
+    padding: 0.5rem 0;
+  }
+
+  .nav-top {
+    padding: 0 1rem;
+    justify-content: space-between;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-content {
+    display: none;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+    background: white;
+    border-top: 1px solid #eee;
+  }
+
+  .nav-content.active {
+    display: flex;
   }
 
   .nav-links {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.3rem;
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .nav-link {
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem;
   }
 
   .auth-buttons {
+    flex-direction: column;
     width: 100%;
-    justify-content: center;
-    padding-bottom: 0.5rem;
+    gap: 0.5rem;
   }
 
-  .nav-link, .auth-btn {
-    padding: 0.25rem 0.5rem;
+  .auth-btn, .profile-link {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+/* Small screens (768px 이하) */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+  }
+
+  .nav-link {
+    font-size: 0.9rem;
+  }
+
+  .auth-btn {
     font-size: 0.85rem;
   }
+}
 
+.nav-spacer {
+  height: 60px;
+}
+
+@media (max-width: 1024px) {
   .nav-spacer {
-    height: 120px;  /* 모바일에서는 더 큰 여백 */
+    height: 60px;
   }
 }
 </style>
