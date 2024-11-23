@@ -10,7 +10,7 @@
             <th class="th-product">상품명</th>
             <th class="th-rate">최고금리</th>
             <th class="th-method">가입방법</th>
-            <th class="th-subscribe">구독</th>
+            <th class="th-subscribe">가입</th>
           </tr>
         </thead>
         <tbody>
