@@ -261,18 +261,18 @@ def toggle_subscription(request, product_type, fin_prdt_cd):
             product = DepositProducts.objects.get(fin_prdt_cd=fin_prdt_cd)
             if request.user.subscribe_deposits.filter(fin_prdt_cd=fin_prdt_cd).exists():
                 request.user.subscribe_deposits.remove(product)
-                message = '구독이 취소되었습니다.'
+                message = '가입이 취소되었습니다.'
             else:
                 request.user.subscribe_deposits.add(product)
-                message = '구독이 완료되었습니다.'
+                message = '가입이 완료되었습니다.'
         elif product_type == 'savings':
             product = SavingsProducts.objects.get(fin_prdt_cd=fin_prdt_cd)
             if request.user.subscribe_savings.filter(fin_prdt_cd=fin_prdt_cd).exists():
                 request.user.subscribe_savings.remove(product)
-                message = '구독이 취소되었습니다.'
+                message = '가입이 취소되었습니다.'
             else:
                 request.user.subscribe_savings.add(product)
-                message = '구독이 완료되었습니다.'
+                message = '가입이 완료되었습니다.'
         else:
             return Response({'error': '잘못된 상품 타입입니다.'}, status=400)
         
