@@ -148,7 +148,7 @@ onMounted(() => {
 }
 
 .create-btn {
-  background-color: #2c662f;
+  background-color: #5c9c5f;
   color: white;
   padding: 0.8rem 1.5rem;
   border-radius: 8px;
@@ -160,7 +160,7 @@ onMounted(() => {
 }
 
 .create-btn:hover {
-  background-color: #235024;
+  background-color: #538d56;
   transform: translateY(-2px);
 }
 

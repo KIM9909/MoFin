@@ -238,7 +238,7 @@ td {
 }
 
 .subscribe-button.subscribed:hover {
-  background-color: #bfdbfe;
+  background-color: #ffcaca;
 }
 
 /* 반응형 디자인 */

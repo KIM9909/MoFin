@@ -384,7 +384,7 @@ const formatDate = (dateString) => {
 }
 
 .submit-btn {
-  background-color: #2c662f;
+  background-color: #5c9c5f;
   color: white;
   padding: 0.75rem 1.5rem;
   border: none;
@@ -468,7 +468,7 @@ const formatDate = (dateString) => {
 }
 
 .save-btn {
-  background-color: #2c662f;
+  background-color: #5c9c5f;
   color: white;
 }
 
