@@ -54,7 +54,7 @@ def get_income_level_recommendation(annual_income: int) -> Dict[str, Any]:
             'deposit_priority': ['고액예치', 'VIP혜택'],
             'savings_priority': ['고금리', '장기저축']
         }
-    elif annual_income >= 3000:  # 3천만원 이상
+    elif annual_income >= 5000:  # 5천만원 이상
         return {
             'level': '중위소득층',
             'description': '안정적인 저축과 투자가 가능한 소득 수준입니다.',
@@ -84,7 +84,7 @@ def get_asset_based_recommendation(total_assets: int) -> Dict[str, Any]:
             'deposit_priority': ['프리미엄', 'VIP상품'],
             'savings_priority': ['고액예치', '특별우대']
         }
-    elif total_assets >= 30000:  # 3억 이상
+    elif total_assets >= 50000:  # 5억 이상
         return {
             'level': '중자산층',
             'description': '안정성과 수익성의 균형을 맞추어 자산을 운용하세요.',
