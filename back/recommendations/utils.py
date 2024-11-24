@@ -1,48 +1,86 @@
 from datetime import date
 from typing import Dict, Any
 
+# 금리 구간 상수 정의
+DEPOSIT_RATE_RANGES = {
+    'high': (3.1, 3.55),    # 고금리
+    'medium': (2.6, 3.1),   # 중금리
+    'low': (2.15, 2.6)      # 저금리
+}
+
+SAVINGS_RATE_RANGES = {
+    'high': (7.0, 8.0),     # 고금리
+    'medium': (4.0, 7.0),   # 중금리
+    'low': (2.0, 4.0)       # 저금리
+}
+
+# 생애주기별 선호 금리 정의
+LIFECYCLE_PREFERENCES = {
+    '청년기': {'deposit': 'high', 'savings': 'high'},
+    '사회초년기': {'deposit': 'medium', 'savings': 'high'},
+    '자산형성기': {'deposit': 'high', 'savings': 'high'},
+    '자산안정기': {'deposit': 'medium', 'savings': 'medium'},
+    '노년기': {'deposit': 'medium', 'savings': 'low'}
+}
+
 def calculate_age(birth_date: date) -> int:
     """생년월일로부터 나이 계산"""
     today = date.today()
     return today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
 
+def classify_deposit_rate(rate: float) -> str:
+    """예금 금리 수준 분류"""
+    if rate >= DEPOSIT_RATE_RANGES['high'][0]:
+        return 'high'
+    elif rate >= DEPOSIT_RATE_RANGES['medium'][0]:
+        return 'medium'
+    else:
+        return 'low'
+
+def classify_savings_rate(rate: float) -> str:
+    """적금 금리 수준 분류"""
+    if rate >= SAVINGS_RATE_RANGES['high'][0]:
+        return 'high'
+    elif rate >= SAVINGS_RATE_RANGES['medium'][0]:
+        return 'medium'
+    else:
+        return 'low'
+
 def get_life_cycle_recommendation(age: int) -> Dict[str, Any]:
     """연령대별 생애주기 추천 로직"""
     if age < 30:
-        return {
-            'cycle': '청년기',
-            'description': '자산 형성 초기 단계로, 유동성과 안정성을 동시에 고려해야 합니다.',
-            'deposit_priority': ['높은 금리', '낮은 예치금액'],
-            'savings_priority': ['자유입출금', '단기저축']
-        }
+        cycle = '청년기'
+        description = '자산 형성 초기 단계로, 유동성과 안정성을 동시에 고려해야 합니다.'
+        deposit_priority = ['높은 금리', '낮은 예치금액']
+        savings_priority = ['높은 금리', '자유입출금']
     elif age < 40:
-        return {
-            'cycle': '사회초년기',
-            'description': '소득이 발생하기 시작하는 시기로, 저축습관 형성이 중요합니다.',
-            'deposit_priority': ['중금리', '중기예치'],
-            'savings_priority': ['정기적금', '고금리']
-        }
+        cycle = '사회초년기'
+        description = '소득이 발생하기 시작하는 시기로, 저축습관 형성이 중요합니다.'
+        deposit_priority = ['중금리', '안정성']
+        savings_priority = ['높은 금리', '정기적금']
     elif age < 50:
-        return {
-            'cycle': '자산형성기',
-            'description': '자산을 적극적으로 늘려나가야 하는 시기입니다.',
-            'deposit_priority': ['고금리', '장기예치'],
-            'savings_priority': ['고금리', '장기저축']
-        }
+        cycle = '자산형성기'
+        description = '자산을 적극적으로 늘려나가야 하는 시기입니다.'
+        deposit_priority = ['높은 금리', '장기예치']
+        savings_priority = ['높은 금리', '장기저축']
     elif age < 65:
-        return {
-            'cycle': '자산안정기',
-            'description': '안정적인 자산 운용이 필요한 시기입니다.',
-            'deposit_priority': ['안정성', '중장기예치'],
-            'savings_priority': ['원금보장', '이자수익']
-        }
+        cycle = '자산안정기'
+        description = '안정적인 자산 운용이 필요한 시기입니다.'
+        deposit_priority = ['중금리', '안정성']
+        savings_priority = ['중금리', '원금보장']
     else:
-        return {
-            'cycle': '노년기',
-            'description': '안전한 자산 관리가 최우선인 시기입니다.',
-            'deposit_priority': ['안정성', '단기예치'],
-            'savings_priority': ['원금보장', '수시입출금']
-        }
+        cycle = '노년기'
+        description = '안전한 자산 관리가 최우선인 시기입니다.'
+        deposit_priority = ['중금리', '단기예치']
+        savings_priority = ['저금리', '수시입출금']
+
+    return {
+        'cycle': cycle,
+        'description': description,
+        'preferred_rates': LIFECYCLE_PREFERENCES[cycle],
+        'deposit_priority': deposit_priority,
+        'savings_priority': savings_priority
+    }
 
 def get_income_level_recommendation(annual_income: int) -> Dict[str, Any]:
     """소득 수준별 추천 로직"""

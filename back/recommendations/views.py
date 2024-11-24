@@ -1,4 +1,3 @@
-# recommendations/views.py
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -8,8 +7,42 @@ from .utils import (
     calculate_age,
     get_life_cycle_recommendation,
     get_income_level_recommendation,
-    get_asset_based_recommendation
+    get_asset_based_recommendation,
+    classify_deposit_rate,
+    classify_savings_rate
 )
+
+def calculate_product_score(rate: float, rate_level: str, preferred_rate: str, life_cycle: str) -> float:
+    """상품 점수 계산 함수"""
+    # 기본 점수 (금리대별 점수)
+    base_scores = {
+        'high': 1.0,
+        'medium': 0.8,
+        'low': 0.6
+    }
+    
+    # 생애주기별 선호도에 따른 가중치
+    lifecycle_weights = {
+        '청년기': {'high': 1.3, 'medium': 0.8, 'low': 0.6},
+        '사회초년기': {'high': 0.8, 'medium': 1.3, 'low': 0.7},
+        '자산형성기': {'high': 1.3, 'medium': 0.8, 'low': 0.6},
+        '자산안정기': {'high': 0.8, 'medium': 1.3, 'low': 0.7},
+        '노년기': {'high': 0.7, 'medium': 1.3, 'low': 1.0}
+    }
+    
+    # 기본 점수 계산
+    base_score = base_scores[rate_level]
+    
+    # 생애주기 가중치 적용
+    lifecycle_weight = lifecycle_weights[life_cycle][rate_level]
+    
+    # 선호 금리대 보너스
+    preferred_bonus = 1.2 if rate_level == preferred_rate else 1.0
+    
+    # 최종 점수 계산
+    final_score = base_score * lifecycle_weight * preferred_bonus
+    
+    return final_score
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -30,7 +63,7 @@ def get_recommendations(request):
         income_level = get_income_level_recommendation(user.annual_income)
         asset_based = get_asset_based_recommendation(user.total_assets)
 
-        # 예금 상품 추천 (소득 수준에 따른 필터링)
+        # 예금 상품 추천
         deposit_products = DepositProducts.objects.all()
         if income_level['level'] == '서민층':
             deposit_products = deposit_products.filter(join_deny__in=[1, 2])
@@ -44,8 +77,8 @@ def get_recommendations(request):
         else:
             savings_products = savings_products.filter(join_deny=1)
 
-        # 예금 상품 금리 정보 포함
-        deposits_with_rates = []
+        # 예금 상품 금리 정보와 점수 계산
+        deposits_with_scores = []
         for deposit in deposit_products:
             max_rate = 0
             options = DepositOptions.objects.filter(product=deposit)
@@ -55,7 +88,17 @@ def get_recommendations(request):
                     if rate and rate > max_rate:
                         max_rate = rate
                 
-                deposits_with_rates.append({
+                rate_level = classify_deposit_rate(max_rate)
+                preferred_rate = life_cycle['preferred_rates']['deposit']
+                
+                score = calculate_product_score(
+                    rate=max_rate,
+                    rate_level=rate_level,
+                    preferred_rate=preferred_rate,
+                    life_cycle=life_cycle['cycle']
+                )
+                
+                deposits_with_scores.append({
                     'product': {
                         'fin_prdt_cd': deposit.fin_prdt_cd,
                         'kor_co_nm': deposit.kor_co_nm,
@@ -63,11 +106,14 @@ def get_recommendations(request):
                         'join_way': deposit.join_way,
                         'etc_note': deposit.etc_note
                     },
-                    'max_rate': max_rate
+                    'max_rate': max_rate,
+                    'rate_level': rate_level,
+                    'score': score,
+                    'preferred': rate_level == preferred_rate
                 })
 
-        # 적금 상품 금리 정보 포함
-        savings_with_rates = []
+        # 적금 상품 금리 정보와 점수 계산
+        savings_with_scores = []
         for savings in savings_products:
             max_rate = 0
             options = SavingsOptions.objects.filter(product=savings)
@@ -77,7 +123,17 @@ def get_recommendations(request):
                     if rate and rate > max_rate:
                         max_rate = rate
                 
-                savings_with_rates.append({
+                rate_level = classify_savings_rate(max_rate)
+                preferred_rate = life_cycle['preferred_rates']['savings']
+                
+                score = calculate_product_score(
+                    rate=max_rate,
+                    rate_level=rate_level,
+                    preferred_rate=preferred_rate,
+                    life_cycle=life_cycle['cycle']
+                )
+                
+                savings_with_scores.append({
                     'product': {
                         'fin_prdt_cd': savings.fin_prdt_cd,
                         'kor_co_nm': savings.kor_co_nm,
@@ -85,19 +141,22 @@ def get_recommendations(request):
                         'join_way': savings.join_way,
                         'etc_note': savings.etc_note
                     },
-                    'max_rate': max_rate
+                    'max_rate': max_rate,
+                    'rate_level': rate_level,
+                    'score': score,
+                    'preferred': rate_level == preferred_rate
                 })
 
-        # 금리 순으로 정렬
-        deposits_with_rates.sort(key=lambda x: x['max_rate'], reverse=True)
-        savings_with_rates.sort(key=lambda x: x['max_rate'], reverse=True)
+        # 점수 기준으로 정렬
+        deposits_with_scores.sort(key=lambda x: x['score'], reverse=True)
+        savings_with_scores.sort(key=lambda x: x['score'], reverse=True)
 
         response_data = {
             'life_cycle': life_cycle,
             'income_level': income_level,
             'asset_based': asset_based,
-            'recommended_deposits': deposits_with_rates[:5],
-            'recommended_savings': savings_with_rates[:5],
+            'recommended_deposits': deposits_with_scores[:5],
+            'recommended_savings': savings_with_scores[:5],
             'investment_suggestion': {
                 'monthly_savings': income_level['recommended_amount'] // 12,
                 'deposit_ratio': asset_based['investment_ratio']['deposits'],
@@ -114,8 +173,7 @@ def get_recommendations(request):
         return Response({
             'error': f'추천 정보 생성 중 오류가 발생했습니다: {str(e)}'
         }, status=500)
-    
-
+        
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_personal_finance_status(request):
