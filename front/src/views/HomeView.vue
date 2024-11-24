@@ -98,7 +98,7 @@
 
 /* 히어로 섹션 */
 .hero-section {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: white; /* 변경된 부분 */
   padding: 4rem 0;
   position: relative;
 }
@@ -140,7 +140,7 @@
 
 /* 버튼 스타일 */
 .btn-primary-gradient {
-  background: linear-gradient(135deg, #2c662f 0%, #218838 100%);
+  background: #218838;
   color: white;
   padding: 0.8rem 1.8rem;
   border: none;
@@ -172,7 +172,7 @@
 /* 특징 섹션 */
 .features-section {
   padding: 5rem 0;
-  background: white;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); /* 변경된 부분 */
 }
 
 .section-title {
@@ -226,7 +226,7 @@
 
 /* CTA 섹션 */
 .cta-section {
-  background: #f8f9fa;
+  background: white; /* 변경된 부분 */
   padding: 3rem 0;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
@@ -260,7 +260,7 @@
 }
 
 .cta-button {
-  background: linear-gradient(to right, #2c662f, #3d8e41);
+  background: #3d8e41;
   color: white;
   border: none;
   padding: 0.75rem 2rem;
