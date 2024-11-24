@@ -176,12 +176,12 @@ const updateArticle = () => {
 }
 
 .submit-btn {
-  background-color: #2c662f;
+  background-color: #5c9c5f;
   color: white;
 }
 
 .submit-btn:hover {
-  background-color: #235024;
+  background-color: #559258;
 }
 
 .cancel-btn {

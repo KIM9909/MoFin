@@ -1115,7 +1115,7 @@ const removeProfileImage = async () => {
 }
 
 .remove-btn {
-  background-color: #ef4444;
+  background-color: #f16262;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
@@ -1125,7 +1125,7 @@ const removeProfileImage = async () => {
 }
 
 .remove-btn:hover {
-  background-color: #dc2626;
+  background-color: #e15151;
 }
 
 .select-wrapper {

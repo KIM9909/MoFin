@@ -345,9 +345,9 @@ onMounted(async () => {
 }
 
 .filter-btn.active-btn {
-  background-color: #2c662f;
+  background-color: #5c9c5f;
   color: white;
-  border-color: #2c662f;
+  border-color: #5c9c5f;
   box-shadow: 0 2px 4px rgba(44, 102, 47, 0.2);
 }
 

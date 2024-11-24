@@ -215,7 +215,7 @@ export default {
 }
 
 .header-section {
-  background: #10b981 0%;
+  background: #5c9c5f 0%;
   color: white;
   padding: 24px;
   text-align: center;
@@ -314,7 +314,7 @@ select:focus, .amount-input input:focus {
 .calculate-button {
   width: 100%;
   padding: 12px;
-  background: #34d399;
+  background: #5c9c5f;
   color: white;
   border: none;
   border-radius: 12px;
@@ -332,7 +332,7 @@ select:focus, .amount-input input:focus {
 .calculate-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(5, 150, 105, 0.2);
-  background: #10b981;
+  background: #558f58;
 }
 
 .button-icon {
@@ -352,7 +352,7 @@ select:focus, .amount-input input:focus {
 }
 
 .result-header {
-  background: #34d399;
+  background: #5c9c5f;
   color: white;
   padding: 12px;
   font-weight: 600;

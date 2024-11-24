@@ -346,12 +346,12 @@ onMounted(async () => {
 }
 
 .search-btn.primary {
-  background-color: #2c662f;
+  background-color: #5c9c5f;
   color: white;
 }
 
 .search-btn.primary:hover {
-  background-color: #235024;
+  background-color: #518e54;
   transform: translateY(-2px);
 }
 

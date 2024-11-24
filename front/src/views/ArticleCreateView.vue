@@ -194,13 +194,13 @@ const createArticle = () => {
 }
 
 .submit-btn {
-  background-color: #2c662f;
+  background-color: #5c9c5f;
   color: white;
   border: none;
 }
 
 .submit-btn:hover {
-  background-color: #235024;
+  background-color: #518e54;
 }
 
 /* 입력 필드 플레이스홀더 스타일 */
