@@ -2,7 +2,6 @@
   <div class="recommendation-container">
     <h2 class="main-title">소득 기반 맞춤 추천</h2>
 
-    <!-- 소득 수준 정보 -->
     <div class="income-status">
       <div class="income-header">
         <span class="income-level">
@@ -11,20 +10,17 @@
       </div>
     </div>
 
-    <!-- 투자 제안 -->
     <div class="suggestions-grid">
-      <!-- 월 저축 추천 -->
       <div class="suggestion-card savings-card">
         <h3 class="suggestion-title">월 저축 추천 금액</h3>
         <div class="amount-display">
-          {{ formatCurrency(investmentSuggestion.monthly_savings) }}
+          {{ formatCurrency(statusData.recommended_monthly_saving) }}
         </div>
         <p class="amount-subtitle">
-          연간 추천 저축액: {{ formatCurrency(investmentSuggestion.monthly_savings * 12) }}
+          연간 추천 저축액: {{ formatCurrency(statusData.recommended_monthly_saving * 12) }}
         </p>
       </div>
 
-      <!-- 자산 배분 추천 -->
       <div class="suggestion-card allocation-card">
         <h3 class="suggestion-title">추천 자산 배분</h3>
         <div class="allocation-container">
@@ -47,14 +43,20 @@
 </template>
 
 <script setup>
-// import { defineProps } from 'vue'
-
 const props = defineProps({
   incomeInfo: {
     type: Object,
     required: true
   },
   investmentSuggestion: {
+    type: Object,
+    required: true,
+    default: () => ({
+      deposit_ratio: 0.6,
+      savings_ratio: 0.4
+    })
+  },
+  statusData: {
     type: Object,
     required: true
   }
