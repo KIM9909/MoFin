@@ -7,7 +7,7 @@
           <!-- 로고 섹션 (크기 축소) -->
           <div class="col-12 text-center mb-4">
             <img 
-              src="/MoFinLogo.png" 
+              src="/MoFinLogo2.png" 
               alt="MoFin Logo" 
               class="mofin-logo"
             />
@@ -117,7 +117,7 @@
 
 /* 로고 스타일 수정 */
 .mofin-logo {
- width: 150px; /* 로고 크기 축소 */
+ width: 200px; /* 로고 크기 축소 */
  height: auto;
  margin-bottom: 2rem;
  transition: transform 0.3s ease;
