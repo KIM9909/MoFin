@@ -116,8 +116,8 @@ def get_asset_based_recommendation(total_assets: int) -> Dict[str, Any]:
             'level': '고자산층',
             'description': 'VIP 전용 상품과 프리미엄 서비스를 활용하세요.',
             'investment_ratio': {
-                'deposits': 0.4,
-                'savings': 0.6
+                'deposits': 0.6,
+                'savings': 0.4
             },
             'deposit_priority': ['프리미엄', 'VIP상품'],
             'savings_priority': ['고액예치', '특별우대']
@@ -138,8 +138,8 @@ def get_asset_based_recommendation(total_assets: int) -> Dict[str, Any]:
             'level': '일반층',
             'description': '안정적인 자산 증식을 위해 정기적인 저축을 유지하세요.',
             'investment_ratio': {
-                'deposits': 0.6,
-                'savings': 0.4
+                'deposits': 0.4,
+                'savings': 0.6
             },
             'deposit_priority': ['안정성', '유동성'],
             'savings_priority': ['소액저축', '단기저축']
