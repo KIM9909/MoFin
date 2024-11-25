@@ -37,6 +37,7 @@
             <IncomeSection
               :income-info="recommendationStore.recommendations.income_level"
               :investment-suggestion="recommendationStore.recommendations.investment_suggestion"
+              :status-data="recommendationStore.financeStatus"
             />
           </div>
 
