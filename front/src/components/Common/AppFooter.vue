@@ -32,8 +32,8 @@ const links = [
         <p>
           사업자등록번호: 123-45-67890 | 
           공동 대표: 김홍범, 윤상묵 | 
-          Tel: 010-5062-1874 | 
-          Email: fkdldj48@naver.com
+          Tel: 010-5062-OOOO | 
+          Email: ssafy12@naver.com
         </p>
         <p>
           주소: 광주 광산구 하남산단6번로 107, 삼성전자 | 
