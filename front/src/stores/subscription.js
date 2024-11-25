@@ -35,12 +35,19 @@ export const useSubscriptionStore = defineStore('subscription', () => {
     return products.some(product => product.fin_prdt_cd === fin_prdt_cd)
   }
 
+  // 구독 상태 초기화 함수 추가
+  const resetSubscriptions = () => {
+    subscribedDeposits.value = []
+    subscribedSavings.value = []
+  }
+
   return {
     subscribedDeposits,
     subscribedSavings,
     fetchSubscriptions,
     toggleSubscription,
-    isSubscribed
+    isSubscribed,
+    resetSubscriptions
   }
 },
 {

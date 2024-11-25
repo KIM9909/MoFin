@@ -17,10 +17,10 @@
       <div class="goal-card future-card">
         <h3 class="goal-label">예상 10년 후 자산</h3>
         <p class="goal-value">
-          {{ formatCurrency(calculateFutureAsset()) }}
+          {{ formatCurrency(calculateFutureAsset(10)) }}
         </p>
         <p class="goal-subtext">
-          현재 대비 {{ calculateGrowthRate() }}% 성장
+          현재 대비 {{ calculateGrowthRate(10) }}% 성장
         </p>
       </div>
     </div>
@@ -51,7 +51,7 @@
               <div class="progress-fill mid-term"></div>
             </div>
             <span class="progress-value">
-              {{ formatCurrency(statusData.recommended_monthly_saving * 12 * 5) }}
+              {{ formatCurrency(calculateFutureAsset(5)) }}
             </span>
           </div>
         </div>
@@ -64,7 +64,7 @@
               <div class="progress-fill long-term"></div>
             </div>
             <span class="progress-value">
-              {{ formatCurrency(calculateFutureAsset()) }}
+              {{ formatCurrency(calculateFutureAsset(10)) }}
             </span>
           </div>
         </div>
@@ -100,54 +100,53 @@
     }).format(value * 10000)
   }
   
-  const calculateFutureAsset = () => {
-    const monthlyAmount = props.statusData.recommended_monthly_saving
-    const currentAsset = props.statusData.user_asset
-    const years = 10
-    const estimatedReturn = 0.05 // 연 5% 수익률 가정
-    
-    // 복리 계산
-    const futureValue = currentAsset * Math.pow(1 + estimatedReturn, years) +
-      monthlyAmount * 12 * ((Math.pow(1 + estimatedReturn, years) - 1) / estimatedReturn)
-    
-    return Math.round(futureValue)
-  }
+  const calculateFutureAsset = (years = 10) => {
+    const monthlyAmount = props.statusData.recommended_monthly_saving;
+    const currentAsset = props.statusData.user_asset;
+    const estimatedReturn = 0.038; // 연 3.8% 수익률 가정
+
+    // 단리 계산
+    const futureValue = currentAsset * (1 + estimatedReturn * years) + 
+      monthlyAmount * 12 * years * (1 + (estimatedReturn * years) / 2);
+
+    return Math.round(futureValue);
+  };
   
-  const calculateGrowthRate = () => {
-    const futureAsset = calculateFutureAsset()
-    const currentAsset = props.statusData.user_asset
-    return Math.round((futureAsset / currentAsset - 1) * 100)
+  const calculateGrowthRate = (years = 10) => {
+    const futureAsset = calculateFutureAsset(years);
+    const currentAsset = props.statusData.user_asset;
+    return Math.round((futureAsset / currentAsset - 1) * 100);
   }
   
   const calculateSavingRatio = () => {
-    const monthlyIncome = props.statusData.annual_income / 12
-    const monthlySaving = props.statusData.recommended_monthly_saving
-    return Math.round((monthlySaving / monthlyIncome) * 100)
+    const monthlyIncome = props.statusData.annual_income / 12;
+    const monthlySaving = props.statusData.recommended_monthly_saving;
+    return Math.round((monthlySaving / monthlyIncome) * 100);
   }
   
   const getSavingDistributionTip = () => {
-    const age = parseInt(props.statusData.age_group)
+    const age = parseInt(props.statusData.age_group);
     if (age < 30) {
-      return '6:4의 비율로 분산 투자하는 것을 추천드립니다.'
+      return '6:4의 비율로 분산 투자하는 것을 추천드립니다.';
     } else if (age < 40) {
-      return '7:3의 비율로 분산 투자하는 것을 추천드립니다.'
+      return '7:3의 비율로 분산 투자하는 것을 추천드립니다.';
     } else if (age < 50) {
-      return '5:5의 비율로 안정적으로 운용하는 것을 추천드립니다.'
+      return '5:5의 비율로 안정적으로 운용하는 것을 추천드립니다.';
     } else {
-      return '8:2의 비율로 안정적으로 운용하는 것을 추천드립니다.'
+      return '8:2의 비율로 안정적으로 운용하는 것을 추천드립니다.';
     }
   }
   
   const getAgeBasedTip = () => {
-    const age = parseInt(props.statusData.age_group)
+    const age = parseInt(props.statusData.age_group);
     if (age < 30) {
-      return '청년층의 경우, 정기적금을 통한 자산 형성이 중요합니다.'
+      return '청년층의 경우, 정기적금을 통한 자산 형성이 중요합니다.';
     } else if (age < 40) {
-      return '자산 형성기에는 고금리 상품을 적극 활용하세요.'
+      return '자산 형성기에는 고금리 상품을 적극 활용하세요.';
     } else if (age < 50) {
-      return '자산 안정기에는 안정적인 수익률의 상품을 선택하세요.'
+      return '자산 안정기에는 안정적인 수익률의 상품을 선택하세요.';
     } else {
-      return '은퇴 준비를 위해 안정적인 예금 상품 비중을 높이세요.'
+      return '은퇴 준비를 위해 안정적인 예금 상품 비중을 높이세요.';
     }
   }
   </script>

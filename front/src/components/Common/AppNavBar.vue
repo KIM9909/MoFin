@@ -35,7 +35,14 @@
               <span class="profile-icon">👤</span>
               {{ authStore.nickname }}
             </RouterLink>
-            <RouterLink :to="{ name: 'signOut' }" class="auth-btn logout" exact @click="isMenuOpen = false">로그아웃</RouterLink>
+            <RouterLink 
+            :to="{ name: 'signOut' }" 
+            class="auth-btn logout" 
+            exact 
+            @click="handleLogout"
+          >
+            로그아웃
+          </RouterLink>
           </template>
         </div>
       </div>
@@ -48,24 +55,31 @@
  <script setup>
  import { RouterLink } from 'vue-router'
  import { useAuthStore } from '@/stores/auth'
+ import { useSubscriptionStore } from '@/stores/subscription'  // 추가
  import { ref, onBeforeUnmount, onMounted } from 'vue'
  
  const authStore = useAuthStore()
+ const subscriptionStore = useSubscriptionStore()  // 추가
  const isMenuOpen = ref(false)
  
- // 화면 크기가 변경될 때 메뉴 상태 관리
+ // 로그아웃 핸들러 추가
+ const handleLogout = () => {
+   isMenuOpen.value = false
+   subscriptionStore.resetSubscriptions()  // 구독 상태 초기화
+ }
+ 
  const handleResize = () => {
-  if (window.innerWidth > 1024) {
-    isMenuOpen.value = false
-  }
+   if (window.innerWidth > 1024) {
+     isMenuOpen.value = false
+   }
  }
  
  onMounted(() => {
-  window.addEventListener('resize', handleResize)
+   window.addEventListener('resize', handleResize)
  })
  
  onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize)
+   window.removeEventListener('resize', handleResize)
  })
  </script>
  
