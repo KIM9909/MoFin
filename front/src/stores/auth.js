@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router';
 export const useAuthStore = defineStore('auth', () => {
   const router = useRouter();
   const BASE_URL = 'http://127.0.0.1:8000';
-  const token = ref(null);  // 초기값을 null로 설정
+  const token = ref(localStorage.getItem('token') || null);
   const userId = ref(null);
   const username = ref("");
   const nickname = ref("");
@@ -20,29 +20,19 @@ export const useAuthStore = defineStore('auth', () => {
       : '';
   };
 
-  // 토큰 유효성 검증 및 설정
-  const validateAndSetToken = async () => {
-    const savedToken = localStorage.getItem('token');
-    if (!savedToken) return;
-    
-    try {
-      // 토큰 유효성 검증 API 호출
-      await axios.post(`${BASE_URL}/accounts/token/verify/`, {
-        token: savedToken
-      });
-      token.value = savedToken;
-      setAxiosAuthHeader();
-      await fetchUserInfo();
-    } catch (error) {
-      console.error('토큰 검증 실패:', error);
-      logout();  // 유효하지 않은 토큰이면 로그아웃
-    }
-  };
+  // 초기화 시 헤더 설정
+  setAxiosAuthHeader();
 
-  // 초기화 시 토큰 검증
-  validateAndSetToken().catch(error => {
-    console.error('초기 토큰 검증 실패:', error);
-  });
+  // 토큰이 있다면 사용자 정보 가져오기
+  if (token.value) {
+    fetchUserInfo().catch(error => {
+      console.error('초기 사용자 정보 로딩 실패:', error);
+      // 토큰이 유효하지 않은 경우 로그아웃 처리
+      if (error.response?.status === 401) {
+        logout();
+      }
+    });
+  }
 
   // 회원가입
   const signUp = async (payload) => {
@@ -128,7 +118,6 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('token');
     setAxiosAuthHeader();
     console.log('로그아웃되었습니다.');
-    router.push({ name: 'home' });  // 로그아웃 후 홈으로 이동
   };
 
   const isLogin = computed(() => token.value !== null);

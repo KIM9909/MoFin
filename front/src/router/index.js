@@ -97,8 +97,11 @@ const router = createRouter({
 })
 
 // 라우터 가드 수정
-router.beforeEach((to, from) => {
+router.beforeEach((to, from, next) => {
   const store = useAuthStore()
+
+  window.scrollTo(0,0)
+  next()
   
   // 기존 로직
   if ((to.name === 'signUp' || to.name === 'signIn') && (store.isLogin)) {
