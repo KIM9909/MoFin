@@ -603,4 +603,95 @@ class User(AbstractUser):
 
     버튼의 색상을 통일해보았습니다.
 
+# 상품추천 알고리즘에 대한 설명
+### 생애주기 분류 단계
+### utils.py의 get_life_cycle_recommendation 함수
+```python
+if age < 30:
+    cycle = '청년기'
+elif age < 40:
+    cycle = '사회초년기'
+elif age < 50:
+    cycle = '자산형성기'
+elif age < 65:
+    cycle = '자산안정기'
+else:
+    cycle = '노년기'
+```
+### 생애주기별 금리 선호도 정의
+### utils.py의 LIFECYCLE_PREFERENCES 상수
+```python
+LIFECYCLE_PREFERENCES = {
+    '청년기': {'deposit': 'high', 'savings': 'high'},
+    '사회초년기': {'deposit': 'medium', 'savings': 'high'},
+    '자산형성기': {'deposit': 'high', 'savings': 'high'},
+    '자산안정기': {'deposit': 'medium', 'savings': 'medium'},
+    '노년기': {'deposit': 'medium', 'savings': 'low'}
+}
+```
 
+### 상품별 금리 수준 분류
+### utils.py의 상수 정의
+```python
+DEPOSIT_RATE_RANGES = {
+    'high': (3.1, 3.55),    # 고금리
+    'medium': (2.6, 3.1),   # 중금리
+    'low': (2.15, 2.6)      # 저금리
+}
+
+SAVINGS_RATE_RANGES = {
+    'high': (7.0, 8.0),     # 고금리
+    'medium': (4.0, 7.0),   # 중금리
+    'low': (2.0, 4.0)       # 저금리
+}
+```
+### 상품 점수 계산
+### views.py의 calculate_product_score 함수
+```python
+def calculate_product_score(rate: float, rate_level: str, preferred_rate: str, life_cycle: str) -> float:
+    # 1. 기본 점수 (금리대별)
+    base_scores = {
+        'high': 1.0,
+        'medium': 0.8,
+        'low': 0.6
+    }
+    
+    # 2. 생애주기별 가중치
+    lifecycle_weights = {
+        '청년기': {'high': 1.3, 'medium': 0.8, 'low': 0.6},
+        '사회초년기': {'high': 0.8, 'medium': 1.3, 'low': 0.7},
+        ...
+    }
+    
+    # 3. 최종 점수 계산
+    base_score = base_scores[rate_level]
+    lifecycle_weight = lifecycle_weights[life_cycle][rate_level]
+    preferred_bonus = 1.2 if rate_level == preferred_rate else 1.0
+    
+    return base_score * lifecycle_weight * preferred_bonus
+```
+
+### 추천 상품 필터링 및 정렬
+### views.py의 get_recommendations 함수
+### 1. 소득 수준에 따른 필터링
+```python
+if income_level['level'] == '서민층':
+    deposit_products = deposit_products.filter(join_deny__in=[1, 2])
+else:
+    deposit_products = deposit_products.filter(join_deny=1)
+```
+### 2. 각 상품의 최고 금리 계산
+```python
+for deposit in deposit_products:
+    max_rate = max(option.intr_rate2 or option.intr_rate for option in options)
+```
+### 3. 점수 계산 및 정렬
+```python
+deposits_with_scores.sort(key=lambda x: x['score'], reverse=True)
+```
+
+
+## 후기
+- 윤상묵
+
+프로젝트를 처음 해보는 사람으로서 프로젝트를 시작하기 전에는 누군가와 팀을 이뤄 무언가를 만들어 낸다는 것에 대해 막연한 두려움과 설레는 마음을 가지고 있었던 것 같습니다. SSAFY에 들어오기 전에는 프로그래밍 언어가 무엇인지도 몰랐고 평생을 사용해왔던 인터넷이고 컴퓨터였지만 이게 어떻게 작동하는지에 대해 알지 못했습니다. 하지만 약 4개월 동안 배우는 python, web, javascript, django, vue 등을 배우면서 웹 페이지가 어떻게 작동하는지를 배우니 내가 누르는 버튼 하나하나가 어떻게 동작하는지 생각하는 즐거움을 많이 느꼈습니다. 물론 모르는 것이 아는 것보다 훨씬 크고 많기 때문에 프로젝트를 진행하면서 이걸 내가 어떻게 하지 하는 마음과 부족함을 많이 느꼈지만 하지만 새롭게 작성하는 코드를 보고 이 코드가 이렇게 저렇게 실행되어 결과물이 만들어지는 것을 상상하며 코드를 보고 있으니 생각도 많이 하고 재미도 많이 느꼈습니다. 많이 부족하기에 팀원에게, 그리고 강사님에게 많이 배울 수 있었습니다. 프로젝트를 진행하는 동안 열심히 하려고 나름대로 노력한 것 같지만 제대로 하지 못한 것 같아 아쉬움이 많이 남습니다. 함께한 팀원에게 부족하지 않는 동료였었으면 좋겠고, 앞으로 더 많이 공부하고 성장할 수 있도록 노력해야겠습니다.
