@@ -218,16 +218,26 @@ function addMarker(location) {
   
   const infowindow = new window.kakao.maps.InfoWindow({
     content: `
-      <div class="custom-infowindow">
-        <h3>${location.place_name}</h3>
-        <p>${location.address_name}</p>
+      <div style="padding:5px;font-size:11px;min-width:150px;">
+        ${location.place_name}<br>
+        <span style="color:#999;font-size:10px;margin-top:2px;">${location.address_name}</span>
       </div>
-    `
+    `,
+    removable: false,
+    zIndex: 1
   })
   
+  let isOpen = false;
+  
   window.kakao.maps.event.addListener(marker, 'click', function() {
-    markers.forEach(({ infowindow: iw }) => iw.close())
-    infowindow.open(map, marker)
+    if (isOpen) {
+      infowindow.close()
+      isOpen = false
+    } else {
+      markers.forEach(({ infowindow: iw }) => iw.close())
+      infowindow.open(map, marker)
+      isOpen = true
+    }
   })
   
   markers.push({ marker, infowindow })
@@ -423,22 +433,31 @@ onMounted(async () => {
 }
 
 .custom-infowindow {
-  padding: 1rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  border-radius: 4px;
+  border: 1px solid #e1e1e1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.custom-infowindow h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1rem;
-  color: #1a202c;
-}
-
-.custom-infowindow p {
+.custom-infowindow .place-name {
   margin: 0;
-  font-size: 0.9rem;
-  color: #4a5568;
+  padding: 0;
+  font-size: 11px;
+  color: #333;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  line-height: 1.4;
+}
+
+.custom-infowindow .place-address {
+  margin: 1px 0 0 0;
+  padding: 0;
+  font-size: 10px;
+  color: #666;
+  letter-spacing: -0.2px;
+  line-height: 1.3;
 }
 
 @media (max-width: 1024px) {
