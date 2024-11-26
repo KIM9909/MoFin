@@ -210,11 +210,11 @@ function findNearbyBanks() {
 }
 
 function addMarker(location) {
-  const position = new window.kakao.maps.LatLng(location.y, location.x);
+  const position = new window.kakao.maps.LatLng(location.y, location.x)
   const marker = new window.kakao.maps.Marker({
     map: map,
     position: position
-  });
+  })
   
   const infowindow = new window.kakao.maps.InfoWindow({
     content: `
@@ -223,33 +223,33 @@ function addMarker(location) {
         <p>${location.address_name}</p>
       </div>
     `
-  });
+  })
   
   window.kakao.maps.event.addListener(marker, 'click', function() {
-    markers.forEach(({ infowindow: iw }) => iw.close());
-    infowindow.open(map, marker);
-  });
+    markers.forEach(({ infowindow: iw }) => iw.close())
+    infowindow.open(map, marker)
+  })
   
-  markers.push({ marker, infowindow });
+  markers.push({ marker, infowindow })
 }
 
 function clearMarkers() {
   markers.forEach(({ marker, infowindow }) => {
-    marker.setMap(null);
-    infowindow.close();
-  });
-  markers = [];
+    marker.setMap(null)
+    infowindow.close()
+  })
+  markers = []
   
   if (userMarker) {
-    userMarker.setMap(null);
-    userMarker = null;
+    userMarker.setMap(null)
+    userMarker = null
   }
 }
 
 onMounted(async () => {
   try {
-    await loadKakaoScript();
-    initializeMap();
+    await loadKakaoScript()
+    initializeMap()
   } catch (error) {
     console.error("카카오맵 스크립트를 로드하는 중 문제가 발생했습니다:", error);
   }

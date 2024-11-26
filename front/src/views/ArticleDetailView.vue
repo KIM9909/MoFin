@@ -88,44 +88,44 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
-import axios from 'axios';
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import axios from 'axios'
 
-const route = useRoute();
-const router = useRouter();
-const article = ref({});
-const comments = ref([]);
-const newComment = ref("");
-const authStore = useAuthStore();
+const route = useRoute()
+const router = useRouter()
+const article = ref({})
+const comments = ref([])
+const newComment = ref("")
+const authStore = useAuthStore()
 
 // 댓글 수정 관련 상태
-const editingCommentId = ref(null);
-const editingContent = ref("");
+const editingCommentId = ref(null)
+const editingContent = ref("")
 
 onMounted(() => {
-  fetchArticle();
-  fetchComments();
-});
+  fetchArticle()
+  fetchComments()
+})
 
 const fetchArticle = () => {
   axios
     .get(`http://127.0.0.1:8000/articles/articles/${route.params.id}/`)
     .then((response) => {
       console.log(authStore.userId)
-      article.value = response.data;
+      article.value = response.data
     })
     .catch((error) => {
-      console.error('게시글 데이터를 가져오는 중 오류가 발생했습니다:', error);
-    });
-};
+      console.error('게시글 데이터를 가져오는 중 오류가 발생했습니다:', error)
+    })
+}
 
 // 좋아요 토글 함수
 const toggleLike = async () => {
   if (!authStore.isLogin) {
-    alert('좋아요를 누르려면 로그인이 필요합니다.');
-    return;
+    alert('좋아요를 누르려면 로그인이 필요합니다.')
+    return
   }
 
   try {
@@ -133,25 +133,25 @@ const toggleLike = async () => {
       method: 'post',
       url: `http://127.0.0.1:8000/articles/articles/${article.value.id}/like/`,
       headers: { Authorization: `Token ${authStore.token}` }
-    });
+    })
     
-    article.value.is_liked = response.data.is_liked;
-    article.value.like_count = response.data.like_count;
+    article.value.is_liked = response.data.is_liked
+    article.value.like_count = response.data.like_count
   } catch (error) {
-    console.error('좋아요 처리 중 오류가 발생했습니다:', error);
-    alert('좋아요 처리 중 오류가 발생했습니다.');
+    console.error('좋아요 처리 중 오류가 발생했습니다:', error)
+    alert('좋아요 처리 중 오류가 발생했습니다.')
   }
 };
 
 const fetchComments = () => {
-  const url = `http://127.0.0.1:8000/articles/comments/article/${route.params.id}/`;
+  const url = `http://127.0.0.1:8000/articles/comments/article/${route.params.id}/`
   axios
     .get(url)
     .then((response) => {
-      comments.value = response.data;
+      comments.value = response.data
     })
     .catch((error) => {
-      console.error("댓글 데이터를 가져오는 중 오류가 발생했습니다:", error);
+      console.error("댓글 데이터를 가져오는 중 오류가 발생했습니다:", error)
     });
 };
 
@@ -163,19 +163,19 @@ const deleteArticle = () => {
         router.push({ name: 'articleList' });
       })
       .catch((error) => {
-        console.error('게시글 삭제 중 오류가 발생했습니다:', error);
+        console.error('게시글 삭제 중 오류가 발생했습니다:', error)
         if (error.response && error.response.status === 401) {
-          alert('로그인이 필요합니다.');
-          router.push({ name: 'login' });
+          alert('로그인이 필요합니다.')
+          router.push({ name: 'login' })
         }
-      });
+      })
   }
-};
+}
 
 const addComment = () => {
   if (!newComment.value.trim()) {
-    alert("댓글 내용을 입력하세요.");
-    return;
+    alert("댓글 내용을 입력하세요.")
+    return
   }
   axios
     .post(
@@ -189,35 +189,35 @@ const addComment = () => {
       }
     )
     .then(() => {
-      newComment.value = "";
-      fetchComments();
+      newComment.value = ""
+      fetchComments()
     })
     .catch((error) => {
-      console.error("댓글 작성 중 오류가 발생했습니다:", error);
+      console.error("댓글 작성 중 오류가 발생했습니다:", error)
       if (error.response && error.response.status === 401) {
-        alert("로그인이 필요합니다.");
-        router.push({ name: "login" });
+        alert("로그인이 필요합니다.")
+        router.push({ name: "login" })
       }
-    });
-};
+    })
+}
 
 // 댓글 수정 시작
 const startEdit = (comment) => {
-  editingCommentId.value = comment.id;
-  editingContent.value = comment.content;
-};
+  editingCommentId.value = comment.id
+  editingContent.value = comment.content
+}
 
 // 댓글 수정 취소
 const cancelEdit = () => {
-  editingCommentId.value = null;
-  editingContent.value = "";
-};
+  editingCommentId.value = null
+  editingContent.value = ""
+}
 
 // 댓글 수정 저장
 const updateComment = (commentId) => {
   if (!editingContent.value.trim()) {
-    alert("댓글 내용을 입력하세요.");
-    return;
+    alert("댓글 내용을 입력하세요.")
+    return
   }
 
   axios
@@ -236,18 +236,18 @@ const updateComment = (commentId) => {
       cancelEdit();
     })
     .catch((error) => {
-      console.error("댓글 수정 중 오류가 발생했습니다:", error);
+      console.error("댓글 수정 중 오류가 발생했습니다:", error)
       if (error.response && error.response.status === 401) {
-        alert("로그인이 필요합니다.");
-        router.push({ name: "login" });
+        alert("로그인이 필요합니다.")
+        router.push({ name: "login" })
       }
-    });
-};
+    })
+}
 
 // 댓글 삭제
 const deleteComment = (commentId) => {
   if (!confirm("정말 이 댓글을 삭제하시겠습니까?")) {
-    return;
+    return
   }
 
   axios
@@ -258,22 +258,22 @@ const deleteComment = (commentId) => {
       }
     )
     .then(() => {
-      fetchComments();
+      fetchComments()
     })
     .catch((error) => {
-      console.error("댓글 삭제 중 오류가 발생했습니다:", error);
+      console.error("댓글 삭제 중 오류가 발생했습니다:", error)
       if (error.response && error.response.status === 401) {
-        alert("로그인이 필요합니다.");
-        router.push({ name: "login" });
+        alert("로그인이 필요합니다.")
+        router.push({ name: "login" })
       }
-    });
-};
+    })
+}
 
 // 날짜 포맷팅 함수
 const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString();
-};
+  const date = new Date(dateString)
+  return date.toLocaleDateString()
+}
 </script>
 
 <style scoped>

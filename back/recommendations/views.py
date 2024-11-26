@@ -2,7 +2,6 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from savings.models import DepositProducts, SavingsProducts, DepositOptions, SavingsOptions
-from django.db.models import Max, F
 from .utils import (
     calculate_age,
     get_life_cycle_recommendation,

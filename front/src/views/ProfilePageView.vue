@@ -375,44 +375,44 @@
 
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-import ProductDetailModal from '@/components/ProductDetailModal.vue';
-import { useSubscriptionStore } from '@/stores/subscription';
-import { useDepositStore } from '@/stores/deposit';
-import { useSavingsStore } from '@/stores/savings';
-import InterestRateChart from '@/components/InterestRateChart.vue';
+import { ref, onMounted, watch } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+import ProductDetailModal from '@/components/ProductDetailModal.vue'
+import { useSubscriptionStore } from '@/stores/subscription'
+import { useDepositStore } from '@/stores/deposit'
+import { useSavingsStore } from '@/stores/savings'
+import InterestRateChart from '@/components/InterestRateChart.vue'
 
-const router = useRouter();
-const auth = useAuthStore();
-const subscriptionStore = useSubscriptionStore();
-const depositStore = useDepositStore();
-const savingsStore = useSavingsStore();
+const router = useRouter()
+const auth = useAuthStore()
+const subscriptionStore = useSubscriptionStore()
+const depositStore = useDepositStore()
+const savingsStore = useSavingsStore()
 
-const isEditing = ref(false);
-const activeMenu = ref('info');
-const likedArticles = ref([]);
-const selectedProduct = ref(null);
-const productDetails = ref(null);
-const depositDetails = ref({});
-const savingsDetails = ref({});
+const isEditing = ref(false)
+const activeMenu = ref('info')
+const likedArticles = ref([])
+const selectedProduct = ref(null)
+const productDetails = ref(null)
+const depositDetails = ref({})
+const savingsDetails = ref({})
 
 const formatDate = (dateString) => {
-  if (!dateString) return '';
+  if (!dateString) return ''
   
-  const date = new Date(dateString);
+  const date = new Date(dateString)
   const options = { 
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
-  };
+  }
   
-  return new Date(dateString).toLocaleDateString('ko-KR', options);
-};
+  return new Date(dateString).toLocaleDateString('ko-KR', options)
+}
 
 // 폼 초기화 추가
 const editForm = ref({
@@ -422,13 +422,13 @@ const editForm = ref({
  preference: null,
  annual_income: null,
  total_assets: null,
-});
+})
 
 const passwordForm = ref({
  old_password: '',
  new_password1: '',
  new_password2: ''
-});
+})
 
 // 메뉴 아이템 정의
 const menuItems = [
@@ -437,26 +437,26 @@ const menuItems = [
  { id: 'subscriptions', icon: '💰', label: '가입 상품' },
  { id: 'likes', icon: '❤️', label: '좋아요한 게시글' },
  { id: 'delete', icon: '⚠️', label: '탈퇴하기' }
-];
+]
 
 // 상품별 상세 정보 로드 함수
 const loadProductDetails = async (products, type) => {
- const details = {};
+ const details = {}
  for (const product of products) {
    try {
-     let response;
+     let response
      if (type === 'deposit') {
-       response = await depositStore.getDepositDetails(product.fin_prdt_cd);
+       response = await depositStore.getDepositDetails(product.fin_prdt_cd)
      } else {
-       response = await savingsStore.getSavingsDetails(product.fin_prdt_cd);
+       response = await savingsStore.getSavingsDetails(product.fin_prdt_cd)
      }
-     details[product.fin_prdt_cd] = response;
+     details[product.fin_prdt_cd] = response
    } catch (error) {
-     console.error(`상품 상세 정보 로드 실패 (${product.fin_prdt_cd}):`, error);
+     console.error(`상품 상세 정보 로드 실패 (${product.fin_prdt_cd}):`, error)
    }
  }
- return details;
-};
+ return details
+}
 
 // 상품 상세 정보 표시
 const showProductDetail = async (type, product) => {
@@ -504,50 +504,50 @@ const closeModal = () => {
 // 컴포넌트 마운트 시 초기 데이터 로드
 onMounted(async () => {
  try {
-   await auth.fetchUserInfo();
+   await auth.fetchUserInfo()
    if (auth.isLogin && activeMenu.value === 'subscriptions') {
-     await subscriptionStore.fetchSubscriptions();
+     await subscriptionStore.fetchSubscriptions()
      // 초기 상세 정보 로드
      if (subscriptionStore.subscribedDeposits.length > 0) {
        depositDetails.value = await loadProductDetails(
          subscriptionStore.subscribedDeposits, 
          'deposit'
-       );
+       )
      }
      if (subscriptionStore.subscribedSavings.length > 0) {
        savingsDetails.value = await loadProductDetails(
          subscriptionStore.subscribedSavings, 
          'savings'
-       );
+       )
      }
    }
  } catch (error) {
-   console.error('데이터 로딩 실패:', error);
-   alert('데이터를 불러오는데 실패했습니다.');
+   console.error('데이터 로딩 실패:', error)
+   alert('데이터를 불러오는데 실패했습니다.')
  }
-});
+})
 
 // 메뉴 변경 시 데이터 로드
 watch(activeMenu, async (newValue) => {
  if (newValue === 'subscriptions') {
-   await subscriptionStore.fetchSubscriptions();
+   await subscriptionStore.fetchSubscriptions()
    // 상세 정보 로드
    if (subscriptionStore.subscribedDeposits.length > 0) {
      depositDetails.value = await loadProductDetails(
        subscriptionStore.subscribedDeposits, 
        'deposit'
-     );
+     )
    }
    if (subscriptionStore.subscribedSavings.length > 0) {
      savingsDetails.value = await loadProductDetails(
        subscriptionStore.subscribedSavings, 
        'savings'
-     );
+     )
    }
  } else if (newValue === 'likes') {
-   await fetchLikedArticles();
+   await fetchLikedArticles()
  }
-});
+})
 
 // 좋아요한 게시글 불러오기
 const fetchLikedArticles = async () => {
@@ -556,12 +556,12 @@ const fetchLikedArticles = async () => {
      headers: {
        Authorization: `Token ${auth.token}`
      }
-   });
-   likedArticles.value = response.data;
+   })
+   likedArticles.value = response.data
  } catch (error) {
-   console.error('좋아요한 게시글을 불러오는데 실패했습니다:', error);
+   console.error('좋아요한 게시글을 불러오는데 실패했습니다:', error)
  }
-};
+}
 
 // 수정 모드 시작
 const startEditing = () => {
@@ -572,47 +572,47 @@ const startEditing = () => {
  editForm.value.preference = auth.userDetails.preference
  editForm.value.annual_income = auth.userDetails.annual_income
  editForm.value.total_assets = auth.userDetails.total_assets
-};
+}
 
 // 수정 취소
 const cancelEditing = () => {
- isEditing.value = false;
-};
+ isEditing.value = false
+}
 
 // 프로필 업데이트
 const updateProfile = async () => {
   try {
     // 현재 값과 다른 경우에만 업데이트할 데이터 포함
-    const updateData = {};
+    const updateData = {}
     
     // nickname이 변경된 경우
     if (editForm.value.nickname !== auth.nickname) {
-      updateData.nickname = editForm.value.nickname;
+      updateData.nickname = editForm.value.nickname
     }
     
     // email이 변경된 경우
     if (editForm.value.email !== auth.email) {
-      updateData.email = editForm.value.email;
+      updateData.email = editForm.value.email
     }
     
     // birth가 변경된 경우
     if (editForm.value.birth !== auth.userDetails.birth) {
-      updateData.birth = editForm.value.birth;
+      updateData.birth = editForm.value.birth
     }
     
     // preference가 변경된 경우
     if (editForm.value.preference !== auth.userDetails.preference) {
-      updateData.preference = editForm.value.preference;
+      updateData.preference = editForm.value.preference
     }
     
     // annual_income이 변경된 경우
     if (editForm.value.annual_income !== auth.userDetails.annual_income) {
-      updateData.annual_income = editForm.value.annual_income;
+      updateData.annual_income = editForm.value.annual_income
     }
     
     // total_assets이 변경된 경우
     if (editForm.value.total_assets !== auth.userDetails.total_assets) {
-      updateData.total_assets = editForm.value.total_assets;
+      updateData.total_assets = editForm.value.total_assets
     }
 
     await axios.put('http://127.0.0.1:8000/accounts/update/', updateData, {
@@ -620,21 +620,21 @@ const updateProfile = async () => {
         Authorization: `Token ${auth.token}`,
         'Content-Type': 'application/json',
       }
-    });
+    })
 
-    await auth.fetchUserInfo();
-    isEditing.value = false;
-    alert('프로필이 성공적으로 업데이트되었습니다.');
+    await auth.fetchUserInfo()
+    isEditing.value = false
+    alert('프로필이 성공적으로 업데이트되었습니다.')
   } catch (error) {
-    console.error('프로필 업데이트 실패:', error);
+    console.error('프로필 업데이트 실패:', error)
     if (error.response?.data) {
-      let errorMessage = '';
+      let errorMessage = ''
       Object.keys(error.response.data).forEach(key => {
-        errorMessage += `${key}: ${error.response.data[key].join(', ')} `;
-      });
-      alert(`프로필 업데이트에 실패했습니다: ${errorMessage}`);
+        errorMessage += `${key}: ${error.response.data[key].join(', ')} `
+      })
+      alert(`프로필 업데이트에 실패했습니다: ${errorMessage}`)
     } else {
-      alert('프로필 업데이트에 실패했습니다.');
+      alert('프로필 업데이트에 실패했습니다.')
     }
   }
 };
@@ -642,8 +642,8 @@ const updateProfile = async () => {
 // 비밀번호 변경
 const updatePassword = async () => {
  if (passwordForm.value.new_password1 !== passwordForm.value.new_password2) {
-   alert('새 비밀번호가 일치하지 않습니다.');
-   return;
+   alert('새 비밀번호가 일치하지 않습니다.')
+   return
  }
 
  try {
@@ -655,25 +655,25 @@ const updatePassword = async () => {
      headers: {
        Authorization: `Token ${auth.token}`
      }
-   });
+   })
 
    passwordForm.value = {
      old_password: '',
      new_password1: '',
      new_password2: ''
-   };
+   }
 
-   alert('비밀번호가 성공적으로 변경되었습니다.');
-   activeMenu.value = 'info';
+   alert('비밀번호가 성공적으로 변경되었습니다.')
+   activeMenu.value = 'info'
  } catch (error) {
-   console.error('비밀번호 변경 실패:', error);
+   console.error('비밀번호 변경 실패:', error)
    if (error.response?.data) {
-     alert(`비밀번호 변경에 실패했습니다: ${JSON.stringify(error.response.data)}`);
+     alert(`비밀번호 변경에 실패했습니다: ${JSON.stringify(error.response.data)}`)
    } else {
-     alert('비밀번호 변경에 실패했습니다.');
+     alert('비밀번호 변경에 실패했습니다.')
    }
  }
-};
+}
 
 // 계정 삭제
 const confirmDelete = async () => {
@@ -683,17 +683,17 @@ const confirmDelete = async () => {
        headers: {
          Authorization: `Token ${auth.token}`
        }
-     });
+     })
      
-     auth.logout();
-     router.push({ name: 'home' });
-     alert('계정이 성공적으로 삭제되었습니다.');
+     auth.logout()
+     router.push({ name: 'home' })
+     alert('계정이 성공적으로 삭제되었습니다.')
    } catch (error) {
-     console.error('계정 삭제 실패:', error);
+     console.error('계정 삭제 실패:', error)
      if (error.response?.data) {
-       alert(`계정 삭제 실패: ${JSON.stringify(error.response.data)}`);
+       alert(`계정 삭제 실패: ${JSON.stringify(error.response.data)}`)
      } else {
-       alert('계정 삭제에 실패했습니다.');
+       alert('계정 삭제에 실패했습니다.')
      }
    }
  }
