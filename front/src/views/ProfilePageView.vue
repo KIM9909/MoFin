@@ -677,26 +677,40 @@ const updatePassword = async () => {
 
 // 계정 삭제
 const confirmDelete = async () => {
- if (confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-   try {
-     await axios.delete('http://127.0.0.1:8000/accounts/delete/', {
-       headers: {
-         Authorization: `Token ${auth.token}`
-       }
-     })
-     
-     auth.logout()
-     router.push({ name: 'home' })
-     alert('계정이 성공적으로 삭제되었습니다.')
-   } catch (error) {
-     console.error('계정 삭제 실패:', error)
-     if (error.response?.data) {
-       alert(`계정 삭제 실패: ${JSON.stringify(error.response.data)}`)
-     } else {
-       alert('계정 삭제에 실패했습니다.')
-     }
-   }
- }
+  if (confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+    try {
+      // 1. 먼저 가입한 모든 상품 취소
+      if (subscriptionStore.subscribedDeposits.length > 0) {
+        for (const product of subscriptionStore.subscribedDeposits) {
+          await subscriptionStore.toggleSubscription('deposit', product.fin_prdt_cd)
+        }
+      }
+      
+      if (subscriptionStore.subscribedSavings.length > 0) {
+        for (const product of subscriptionStore.subscribedSavings) {
+          await subscriptionStore.toggleSubscription('savings', product.fin_prdt_cd)
+        }
+      }
+
+      // 2. 계정 삭제 진행
+      await axios.delete('http://127.0.0.1:8000/accounts/delete/', {
+        headers: {
+          Authorization: `Token ${auth.token}`
+        }
+      })
+      
+      auth.logout()
+      router.push({ name: 'home' })
+      alert('계정이 성공적으로 삭제되었습니다.')
+    } catch (error) {
+      console.error('계정 삭제 실패:', error)
+      if (error.response?.data) {
+        alert(`계정 삭제 실패: ${JSON.stringify(error.response.data)}`)
+      } else {
+        alert('계정 삭제에 실패했습니다.')
+      }
+    }
+  }
 }
 
 const handleImageChange = async (event) => {
