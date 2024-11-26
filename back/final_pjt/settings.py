@@ -20,24 +20,44 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-d3t$@!#k+ol(u#-+d3*@hty)6q+evb((83md6%b3&p0v^7x)&s'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
+import os
+import environ
+
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+
+environ.Env.read_env(
+    env_file=os.path.join(BASE_DIR, '.env')
+)
+
+
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
+API_KEY = env('API_KEY')
+EXIMBANK_API_KEY = env('EXIMBANK_API_KEY')
+KOSIS_API_KEY = env('KOSIS_API_KEY')
 
 ALLOWED_HOSTS = []
+
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'accounts',
+    'exchange',
+    'savings',
+    'articles.apps.ArticlesConfig',
+    'recommendations',
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
-    'django.contrib.sites',
     'allauth',
     'allauth.account',
+    'django.contrib.sites',
     'allauth.socialaccount',
     'dj_rest_auth.registration',
     'corsheaders',
@@ -62,8 +82,11 @@ MIDDLEWARE = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CALSSES': [
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
+        
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
@@ -71,8 +94,6 @@ REST_FRAMEWORK = {
 }
 
 SITE_ID = 1
-
-ROOT_URLCONF = 'crud.urls'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -154,6 +175,21 @@ AUTH_USER_MODEL = 'accounts.User'
 # settings.py
 REST_AUTH = {
     'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
+    'USER_DETAILS_SERIALIZER': 'accounts.serializers.CustomUserDetailsSerializer',
 }
 
 ACCOUNT_ADAPTER = 'accounts.models.CustomAccountAdapter'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+
+# 추가 설정
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

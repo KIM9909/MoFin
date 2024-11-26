@@ -1,51 +1,48 @@
 from django.contrib.auth.models import AbstractUser
 from allauth.account.adapter import DefaultAccountAdapter
 from django.db import models
+from savings.models import SavingsProducts, DepositProducts
+
+
+def user_profile_path(instance, filename):
+    # 파일명이 중복되지 않도록 처리하면서, 사용자별로 폴더 구분
+    ext = filename.split('.')[-1]  # 확장자 추출
+    filename = f'{instance.username}_profile.{ext}'
+    return f'profile_images/{instance.username}/{filename}'
 
 
 class User(AbstractUser):
-    # 추가 필드: nickname, birth, preference
     nickname = models.CharField(max_length=255, blank=False)
     birth = models.DateField(blank=True, null=True)
-    preference = models.TextField(blank=True, null=True)  # 다중 선택 값을 저장 가능
+    preference = models.TextField(blank=True, null=True)
+    subscribe_deposits = models.ManyToManyField(DepositProducts, blank=True)
+    subscribe_savings = models.ManyToManyField(SavingsProducts, blank=True)
+    annual_income = models.BigIntegerField(blank=True, null=True, help_text="연 소득(만원)")
+    total_assets = models.BigIntegerField(blank=True, null=True, help_text="총 자산(만원)")
+    profile_img = models.ImageField(
+        upload_to=user_profile_path,
+        default=None, 
+        blank=True, 
+        null=True,
+        verbose_name='프로필 이미지'
+    )
 
     def __str__(self):
         return self.username
-    
+
+
 class CustomAccountAdapter(DefaultAccountAdapter):
     def save_user(self, request, user, form, commit=True):
-        """
-        Saves a new `User` instance using information provided in the
-        signup form.
-        """
-        from allauth.account.utils import user_email, user_field, user_username
+        user = super().save_user(request, user, form, commit=False)
         data = form.cleaned_data
-        first_name = data.get("first_name")
-        last_name = data.get("last_name")
-        email = data.get("email")
-        username = data.get("username")
-        nickname = data.get("nickname")
-        birth = data.get("birth")
-        preference = data.get("preference")
-        user_email(user, email)
-        user_username(user, username)
-        if first_name:
-            user_field(user, "first_name", first_name)
-        if last_name:
-            user_field(user, "last_name", last_name)
-        if nickname:
-            user_field(user, "nickname", nickname)
-        if birth:
-            user_field(user, "birth", birth)
-        if preference:
-            user_field(user, "preference", preference)
-        if "password1" in data:
-            user.set_password(data["password1"])
-        else:
-            user.set_unusable_password()
-        self.populate_username(request, user)
+        user.nickname = data.get('nickname')
+        user.birth = data.get('birth')
+        user.preference = data.get('preference')
+        user.annual_income = data.get('annual_income')
+        user.total_assets = data.get('total_assets')
+        user.profile_img = data.get('profile_img')
+        
         if commit:
-            # Ability not to commit makes it easier to derive from
-            # this adapter by adding
             user.save()
         return user
+    
