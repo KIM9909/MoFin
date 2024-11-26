@@ -3,6 +3,7 @@
     <div class="search-section">
       <div class="search-card">
         <div class="search-header">
+          <div class="header-icon">🏦</div>
           <h1>은행 위치 찾기</h1>
           <p class="subtitle">가까운 은행을 쉽고 빠르게 찾아보세요</p>
         </div>
@@ -64,6 +65,21 @@ const selectedBank = ref("");
 let map = null;
 let markers = [];
 let userMarker = null;
+
+const userMarkerSVG = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="36" viewBox="0 0 24 36">
+    <!-- 마커 외형 -->
+    <path 
+      d="M12 0C5.4 0 0 5.4 0 12c0 8.034 10.766 15.9 11.225 16.225a1.5 1.5 0 0 0 1.55 0C13.234 27.9 24 20.034 24 12 24 5.4 18.6 0 12 0z"
+      fill="#FF4444"
+      class="marker-background"
+    />
+    <!-- 내부 흰색 원 -->
+    <circle cx="12" cy="12" r="5" fill="white"/>
+    <!-- 중앙 빨간 점 -->
+    <circle cx="12" cy="12" r="2.5" fill="#FF4444"/>
+  </svg>
+`;
 
 function loadKakaoScript() {
   return new Promise((resolve, reject) => {
@@ -137,15 +153,17 @@ function findNearbyBanks() {
         const userPosition = new window.kakao.maps.LatLng(userLat, userLng);
         
         clearMarkers();
+
+        // 사용자 정의 오버레이로 현재 위치 표시
+        const content = document.createElement('div');
+        content.innerHTML = userMarkerSVG;
         
-        userMarker = new window.kakao.maps.Marker({
+        userMarker = new window.kakao.maps.CustomOverlay({
           map: map,
           position: userPosition,
-          image: new window.kakao.maps.MarkerImage(
-            'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
-            new window.kakao.maps.Size(32, 35),
-            { offset: new window.kakao.maps.Point(16, 35) }
-          )
+          content: content,
+          yAnchor: 0.5,
+          xAnchor: 0.5
         });
 
         map.setCenter(userPosition);
@@ -200,9 +218,9 @@ function addMarker(location) {
   
   const infowindow = new window.kakao.maps.InfoWindow({
     content: `
-      <div style="padding:5px;font-size:12px;">
-        <strong>${location.place_name}</strong><br/>
-        ${location.address_name}
+      <div class="custom-infowindow">
+        <h3>${location.place_name}</h3>
+        <p>${location.address_name}</p>
       </div>
     `
   });
@@ -245,6 +263,7 @@ onMounted(async () => {
   padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  min-height: 100vh;
 }
 
 .search-section {
@@ -254,28 +273,40 @@ onMounted(async () => {
 
 .search-card {
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.search-card:hover {
+  transform: translateY(-5px);
 }
 
 .search-header {
-  background-color: #2c3e50;
+  background: linear-gradient(135deg, #5c9c5f 0%, #458748 100%);
   color: white;
   padding: 2rem;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
 }
 
 .search-header h1 {
   margin: 0;
   font-size: 1.8rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .subtitle {
   margin-top: 0.5rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
 }
 
 .search-form {
@@ -292,9 +323,9 @@ onMounted(async () => {
 }
 
 .form-group label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #2c3e50;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a202c;
 }
 
 .input-wrapper, .select-wrapper {
@@ -311,17 +342,19 @@ onMounted(async () => {
 
 .search-input, .bank-select {
   width: 100%;
-  padding: 0.75rem 1rem 0.75rem 3rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  padding: 0.875rem 1rem 0.875rem 3rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
   font-size: 1rem;
   transition: all 0.3s ease;
+  background-color: #f8fafc;
 }
 
 .search-input:focus, .bank-select:focus {
   outline: none;
-  border-color: #2c3e50;
-  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+  border-color: #5c9c5f;
+  box-shadow: 0 0 0 3px rgba(92, 156, 95, 0.2);
+  background-color: white;
 }
 
 .button-group {
@@ -335,33 +368,34 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
+  gap: 0.75rem;
+  padding: 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .search-btn.primary {
-  background-color: #5c9c5f;
+  background: linear-gradient(135deg, #5c9c5f 0%, #458748 100%);
   color: white;
 }
 
 .search-btn.primary:hover {
-  background-color: #518e54;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(92, 156, 95, 0.3);
 }
 
 .search-btn.secondary {
-  background-color: #e2e8f0;
-  color: #2c3e50;
+  background-color: #f1f5f9;
+  color: #1a202c;
+  border: 2px solid #e2e8f0;
 }
 
 .search-btn.secondary:hover {
-  background-color: #cbd5e1;
+  background-color: #e2e8f0;
   transform: translateY(-2px);
 }
 
@@ -377,8 +411,34 @@ onMounted(async () => {
 #map {
   width: 100%;
   height: 700px;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.custom-infowindow {
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.custom-infowindow h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: #1a202c;
+}
+
+.custom-infowindow p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #4a5568;
 }
 
 @media (max-width: 1024px) {
@@ -405,18 +465,11 @@ onMounted(async () => {
   }
 }
 
-.search-card {
-  animation: slideIn 0.5s ease-out;
+@media (min-width: 1025px) {
+  .search-card {
+    position: sticky;
+    top: 2rem;
+  }
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 </style>
