@@ -14,7 +14,9 @@
           </div>
           <!-- 메인 컨텐츠 -->
           <div class="col-lg-8 text-center">
-            <h1 class="hero-title">당신을 위한 스마트한 금융 파트너</h1>
+            <h1 class="hero-title">
+              당신을 위한 <strong>스마트한 금융 파트너</strong>
+            </h1>
             <p class="hero-subtitle">
               맞춤형 금융상품 추천부터 실시간 환율 정보까지,<br> MoFin과 함께 시작하세요
             </p>
@@ -28,6 +30,12 @@
             </div>
           </div>
         </div>
+      </div>
+      <!-- 배경 장식 -->
+      <div class="hero-decoration">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
       </div>
     </section>
 
@@ -101,295 +109,356 @@
 </template>
 
 <style scoped>
+/* Google Fonts 추가 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Poppins:wght@400;500;600;700&display=swap');
+
 /* 기본 스타일 */
 .home-container {
   overflow-x: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
-/* 히어로 섹션 */
+/* 히어로 섹션 개선 */
 .hero-section {
-  background: white;
-  padding: 4rem 0;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 6rem 0;
   position: relative;
+  overflow: hidden;
+}
+
+/* 배경 장식 스타일 */
+.hero-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.1;
+}
+
+.circle-1 {
+  width: 300px;
+  height: 300px;
+  background: #2c662f;
+  top: -100px;
+  right: -100px;
+}
+
+.circle-2 {
+  width: 200px;
+  height: 200px;
+  background: #218838;
+  bottom: -50px;
+  left: -50px;
+}
+
+.circle-3 {
+  width: 150px;
+  height: 150px;
+  background: #3d8e41;
+  top: 50%;
+  right: 10%;
 }
 
 .mofin-logo {
-  width: 200px;
+  width: 220px;
   height: auto;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
   transition: transform 0.3s ease;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
 .mofin-logo:hover {
-  transform: scale(1.05);
+  transform: scale(1.05) rotate(-2deg);
 }
 
 .hero-title {
-  font-size: 2.5rem;
+  font-size: 3.2rem;
   font-weight: 700;
-  color: #2c662f;
+  color: #1a1a1a;
   margin-bottom: 1.5rem;
   line-height: 1.2;
+  font-family: 'Poppins', 'Noto Sans KR', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.hero-title strong {
+  color: #2c662f;
+  display: block;
+  margin-top: 0.2em;
 }
 
 .hero-subtitle {
-  font-size: 1.2rem;
-  color: #495057;
-  margin-bottom: 2rem;
+  font-size: 1.3rem;
+  color: #666;
+  margin-bottom: 2.5rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  line-height: 1.6;
+  font-weight: 300;
 }
 
+/* 버튼 스타일 개선 */
 .hero-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   justify-content: center;
 }
 
-/* 버튼 스타일 */
 .btn-primary-gradient {
-  background: #218838;
+  background: linear-gradient(45deg, #218838, #2c662f);
   color: white;
-  padding: 0.8rem 1.8rem;
+  padding: 1rem 2.2rem;
   border: none;
   border-radius: 50px;
   font-weight: 600;
+  font-size: 1.1rem;
   transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
 .btn-primary-gradient:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(44, 102, 47, 0.2);
+  box-shadow: 0 6px 20px rgba(44, 102, 47, 0.25);
 }
 
 .btn-outline {
   background: transparent;
   border: 2px solid #2c662f;
   color: #2c662f;
-  padding: 0.8rem 1.8rem;
+  padding: 1rem 2.2rem;
   border-radius: 50px;
   font-weight: 600;
+  font-size: 1.1rem;
   transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
 .btn-outline:hover {
   background: #2c662f;
   color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(44, 102, 47, 0.15);
 }
 
-/* 특징 섹션 */
+/* 특징 섹션 개선 */
 .features-section {
-  padding: 5rem 0;
+  padding: 7rem 0;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  position: relative;
 }
 
 .section-title {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  color: #2c662f;
-  margin-bottom: 3rem;
+  color: #1a1a1a;
+  margin-bottom: 4rem;
+  font-family: 'Poppins', 'Noto Sans KR', sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .feature-card {
   background: white;
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  transition: all 0.4s ease;
   height: 100%;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(45deg, #218838, #2c662f);
+  opacity: 0;
+  transition: all 0.3s ease;
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-10px);
+}
+
+.feature-card:hover::before {
+  opacity: 1;
 }
 
 .feature-icon {
-  width: 60px;
-  height: 60px;
-  background: rgba(44, 102, 47, 0.1);
+  width: 80px;
+  height: 80px;
+  background: rgba(44, 102, 47, 0.08);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1.5rem;
+  margin: 0 auto 2rem;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+  background: rgba(44, 102, 47, 0.12);
+  transform: scale(1.1);
 }
 
 .feature-icon i {
-  font-size: 1.5rem;
+  font-size: 2rem;
   color: #2c662f;
 }
 
 .feature-card h3 {
-  font-size: 1.3rem;
-  color: #2c662f;
+  font-size: 1.4rem;
+  color: #1a1a1a;
   margin-bottom: 1rem;
+  font-family: 'Poppins', 'Noto Sans KR', sans-serif;
+  font-weight: 600;
 }
 
 .feature-card p {
   color: #666;
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  font-weight: 300;
 }
 
-/* CTA 섹션 */
+/* CTA 섹션 개선 */
 .cta-section {
   background: white;
-  padding: 3rem 0;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
+  padding: 5rem 0;
+  position: relative;
+  border: none;
 }
 
 .cta-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.cta-text {
-  flex-grow: 1;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
 }
 
 .cta-title {
-  color: #1f2937;
-  font-size: 1.75rem;
+  color: #1a1a1a;
+  font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
   letter-spacing: -0.02em;
+  font-family: 'Poppins', 'Noto Sans KR', sans-serif;
 }
 
 .cta-subtitle {
-  color: #6b7280;
-  font-size: 1.1rem;
+  color: #666;
+  font-size: 1.2rem;
   margin: 0;
+  font-weight: 300;
 }
 
 .cta-button {
-  background: #3d8e41;
+  background: linear-gradient(45deg, #218838, #2c662f);
   color: white;
   border: none;
-  padding: 0.75rem 2rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
+  padding: 1rem 2.5rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
   white-space: nowrap;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 6px rgba(44, 102, 47, 0.15);
+  font-family: 'Poppins', sans-serif;
 }
 
 .cta-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(44, 102, 47, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(44, 102, 47, 0.25);
 }
 
-/* 반응형 디자인 */
+/* 반응형 디자인 개선 */
 @media (max-width: 992px) {
+  .hero-title {
+    font-size: 2.8rem;
+  }
+  
   .col-md-3 {
     width: 50%;
+  }
+  
+  .cta-content {
+    padding: 2.5rem 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
+  .hero-section {
+    padding: 4rem 0;
+  }
+
   .hero-title {
-    font-size: 2rem;
+    font-size: 2.4rem;
   }
   
   .hero-subtitle {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
   
   .hero-buttons {
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 1rem;
   }
   
   .btn-primary-gradient,
   .btn-outline {
     width: 100%;
+    padding: 0.9rem 1.8rem;
   }
 
   .section-title {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
   
   .feature-card {
-    padding: 1.5rem;
+    padding: 2rem;
   }
   
-  .cta-section {
-    padding: 2rem 0;
-  }
-
   .cta-content {
     flex-direction: column;
     text-align: center;
-    gap: 1.5rem;
-  }
-
-  .cta-title {
-    font-size: 1.5rem;
-  }
-
-  .cta-subtitle {
-    font-size: 1rem;
-  }
-
-  .cta-button {
-    width: 100%;
+    gap: 2rem;
+    padding: 2rem 1.5rem;
   }
 }
 
 @media (max-width: 576px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+
   .col-md-3 {
     width: 100%;
   }
 
-  .hero-title {
-    font-size: 1.75rem;
-  }
-
-  .section-title {
-    font-size: 1.5rem;
-  }
-  
   .feature-card {
-    padding: 1.25rem;
+    padding: 1.8rem;
   }
   
   .feature-icon {
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
   }
-  
-  .feature-icon i {
-    font-size: 1.2rem;
-  }
-  
-  .feature-card h3 {
-    font-size: 1.2rem;
-  }
-  
-  .feature-card p {
-    font-size: 0.9rem;
-  }
-}
-
-/* 여백 조정 */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.row {
-  margin: 0 -1rem;
-}
-
-.col-12, .col-lg-8, .col-md-3 {
-  padding: 0 1rem;
 }
 </style>
