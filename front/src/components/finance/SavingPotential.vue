@@ -127,7 +127,7 @@
   const getSavingDistributionTip = () => {
     const age = parseInt(props.statusData.age_group);
     if (age < 30) {
-      return '6:4의 비율로 분산 투자하는 것을 추천드립니다.';
+      return '4:6의 비율로 분산 투자하는 것을 추천드립니다.';
     } else if (age < 40) {
       return '7:3의 비율로 분산 투자하는 것을 추천드립니다.';
     } else if (age < 50) {
