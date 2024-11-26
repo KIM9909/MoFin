@@ -50,26 +50,26 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
+import { ref } from 'vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
-const title = ref('');
-const content = ref('');
-const router = useRouter();
-const store = useAuthStore();
+const title = ref('')
+const content = ref('')
+const router = useRouter()
+const store = useAuthStore()
 
 const createArticle = () => {
   if (!store.isLogin) {
-    window.alert('로그인이 필요합니다.');
-    router.push({ name: 'signIn' });
-    return;
+    window.alert('로그인이 필요합니다.')
+    router.push({ name: 'signIn' })
+    return
   }
 
   if (!title.value.trim() || !content.value.trim()) {
-    window.alert('제목과 내용을 모두 입력해주세요.');
-    return;
+    window.alert('제목과 내용을 모두 입력해주세요.')
+    return
   }
 
   axios({
@@ -84,18 +84,18 @@ const createArticle = () => {
     }
   })
     .then(() => {
-      router.push({ name: 'articleList' });
+      router.push({ name: 'articleList' })
     })
     .catch((error) => {
       if (error.response?.status === 401) {
-        window.alert('로그인이 필요합니다.');
-        router.push({ name: 'signIn' });
+        window.alert('로그인이 필요합니다.')
+        router.push({ name: 'signIn' })
       } else {
-        console.error('게시글 생성 중 오류가 발생했습니다:', error);
-        window.alert('게시글 작성 중 오류가 발생했습니다. 다시 시도해주세요.');
+        console.error('게시글 생성 중 오류가 발생했습니다:', error)
+        window.alert('게시글 작성 중 오류가 발생했습니다. 다시 시도해주세요.')
       }
-    });
-};
+    })
+}
 </script>
 
 <style scoped>

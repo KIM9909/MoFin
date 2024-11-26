@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 
 const username = ref(null)
@@ -67,8 +67,8 @@ const store = useAuthStore()
 
 const signIn = function () {
   if (!username.value || !password.value) {
-    alert('아이디와 비밀번호를 모두 입력해주세요.');
-    return;
+    alert('아이디와 비밀번호를 모두 입력해주세요.')
+    return
   }
 
   const payload = {

@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed } from 'vue'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -30,8 +30,8 @@ import {
   Title,
   Tooltip,
   Legend
-} from 'chart.js';
-import { Bar } from 'vue-chartjs';
+} from 'chart.js'
+import { Bar } from 'vue-chartjs'
 
 ChartJS.register(
   CategoryScale,
@@ -40,7 +40,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend
-);
+)
 
 const props = defineProps({
   products: {
@@ -55,52 +55,52 @@ const props = defineProps({
     type: String,
     required: true
   }
-});
+})
 
 const isLoading = computed(() => {
   return !props.products || !props.details || Object.keys(props.details).length === 0;
-});
+})
 
 const hasData = computed(() => {
   return !isLoading.value && chartData.value.datasets[0].data.length > 0;
-});
+})
 
 const chartData = computed(() => {
   if (isLoading.value) return { labels: [], datasets: [] };
 
-  const labels = [];
-  const savingRates = [];
-  const preferentialRates = [];
-  const tooltipLabels = [];
+  const labels = []
+  const savingRates = []
+  const preferentialRates = []
+  const tooltipLabels = []
 
   props.products.forEach(product => {
-    const detail = props.details[product.fin_prdt_cd];
-    if (!detail || !detail.options) return;
+    const detail = props.details[product.fin_prdt_cd]
+    if (!detail || !detail.options) return
 
-    labels.push(product.fin_prdt_nm);
+    labels.push(product.fin_prdt_nm)
     tooltipLabels.push({
       productName: product.fin_prdt_nm,
       bankName: product.kor_co_nm
-    });
+    })
     
-    let maxSavingRate = 0;
-    let maxPreferentialRate = 0;
+    let maxSavingRate = 0
+    let maxPreferentialRate = 0
 
     detail.options.forEach(opt => {
-      const savingRate = parseFloat(opt.intr_rate || 0);
+      const savingRate = parseFloat(opt.intr_rate || 0)
       if (savingRate > maxSavingRate) {
-        maxSavingRate = savingRate;
+        maxSavingRate = savingRate
       }
 
-      const preferentialRate = parseFloat(opt.intr_rate2 || 0);
+      const preferentialRate = parseFloat(opt.intr_rate2 || 0)
       if (preferentialRate > maxPreferentialRate) {
-        maxPreferentialRate = preferentialRate;
+        maxPreferentialRate = preferentialRate
       }
-    });
+    })
 
-    savingRates.push(parseFloat(maxSavingRate.toFixed(2)));
-    preferentialRates.push(parseFloat(maxPreferentialRate.toFixed(2)));
-  });
+    savingRates.push(parseFloat(maxSavingRate.toFixed(2)))
+    preferentialRates.push(parseFloat(maxPreferentialRate.toFixed(2)))
+  })
 
   return {
     labels,
@@ -127,8 +127,8 @@ const chartData = computed(() => {
       }
     ],
     tooltipLabels
-  };
-});
+  }
+})
 
 const chartOptions = {
   responsive: true,
@@ -170,11 +170,11 @@ const chartOptions = {
           size: 11
         },
         callback: function(value, index) {
-          const label = this.getLabelForValue(index);
+          const label = this.getLabelForValue(index)
           if (label.length > 12) {
-            return label.substr(0, 12) + '...';
+            return label.substr(0, 12) + '...'
           }
-          return label;
+          return label
         }
       }
     }
@@ -207,22 +207,22 @@ const chartOptions = {
       borderColor: 'rgba(0, 0, 0, 0.1)',
       callbacks: {
         title: function(context) {
-          const dataIndex = context[0].dataIndex;
-          const tooltipLabel = chartData.value.tooltipLabels[dataIndex];
+          const dataIndex = context[0].dataIndex
+          const tooltipLabel = chartData.value.tooltipLabels[dataIndex]
           return [
             tooltipLabel.productName,
             `${tooltipLabel.bankName}`
-          ];
+          ]
         },
         label: function(context) {
-          let label = context.dataset.label || '';
+          let label = context.dataset.label || ''
           if (label) {
-            label += ': ';
+            label += ': '
           }
           if (context.parsed.y !== null) {
-            label += context.parsed.y.toFixed(2) + '%';
+            label += context.parsed.y.toFixed(2) + '%'
           }
-          return label;
+          return label
         }
       }
     }

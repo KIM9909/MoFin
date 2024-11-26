@@ -63,13 +63,13 @@ const content = ref('')
 onMounted(() => {
   axios.get(`http://127.0.0.1:8000/articles/articles/${route.params.id}/`)
     .then(response => {
-      title.value = response.data.title;
-      content.value = response.data.content;
+      title.value = response.data.title
+      content.value = response.data.content
     })
     .catch(error => {
-      console.error('게시글 데이터를 가져오는 중 오류가 발생했습니다:', error);
-    });
-});
+      console.error('게시글 데이터를 가져오는 중 오류가 발생했습니다:', error)
+    })
+})
 
 const updateArticle = () => {
   axios.put(`http://127.0.0.1:8000/articles/articles/${route.params.id}/`, {
@@ -77,10 +77,10 @@ const updateArticle = () => {
     content: content.value,
   })
   .then(() => {
-    router.push({ name: 'articleDetail', params: { id: route.params.id } });
+    router.push({ name: 'articleDetail', params: { id: route.params.id } })
   })
   .catch(error => {
-    console.error('게시글 수정 중 오류가 발생했습니다:', error);
+    console.error('게시글 수정 중 오류가 발생했습니다:', error)
   });
 };
 

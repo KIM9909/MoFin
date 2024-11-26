@@ -117,7 +117,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from "axios"
 
 export default {
   data() {
@@ -131,62 +131,62 @@ export default {
       exchangeResult: null,
       lastUpdateTime: null,
       currentRate: null,
-    };
+    }
   },
   computed: {
     amountLabel() {
-      return this.selectedDirection === "toForeign" ? "환전할 금액 (KRW)" : `환전할 금액 (${this.selectedCurrency})`;
+      return this.selectedDirection === "toForeign" ? "환전할 금액 (KRW)" : `환전할 금액 (${this.selectedCurrency})`
     },
   },
   methods: {
         async fetchExchangeRate() {
-      this.conversionDirection = this.selectedDirection;
-      this.targetCurrency = this.selectedCurrency;
-      this.calculationAmount = this.inputAmount;
+      this.conversionDirection = this.selectedDirection
+      this.targetCurrency = this.selectedCurrency
+      this.calculationAmount = this.inputAmount
 
       try {
-        const today = new Date();
-        const formattedDate = today.toISOString().split("T")[0].replace(/-/g, "");
+        const today = new Date()
+        const formattedDate = today.toISOString().split("T")[0].replace(/-/g, "")
         
         const response = await axios.get("http://127.0.0.1:8000/api/exchange-rate/", {
           params: {
             target: this.targetCurrency,
             date: formattedDate
           },
-        });
+        })
 
         if (response.data.error) {
-          throw new Error(response.data.error);
+          throw new Error(response.data.error)
         }
 
-        let rate = parseFloat(response.data.rate.replace(",", ""));
+        let rate = parseFloat(response.data.rate.replace(",", ""))
         if (this.targetCurrency === "JPY(100)") {
-          rate = rate / 100;
+          rate = rate / 100
         }
         
-        this.currentRate = rate;
-        this.lastUpdateTime = new Date().toLocaleString();
+        this.currentRate = rate
+        this.lastUpdateTime = new Date().toLocaleString()
 
         if (this.conversionDirection === "toForeign") {
-          this.exchangeResult = (this.calculationAmount / rate).toFixed(2);
+          this.exchangeResult = (this.calculationAmount / rate).toFixed(2)
         } else {
-          this.exchangeResult = (this.calculationAmount * rate).toFixed(2);
+          this.exchangeResult = (this.calculationAmount * rate).toFixed(2)
         }
-        this.exchangeResult = parseFloat(this.exchangeResult);
+        this.exchangeResult = parseFloat(this.exchangeResult)
         
       } catch (error) {
-        console.error("환율 정보를 가져오는데 실패했습니다.", error);
-        alert("환율 정보를 가져오는데 실패했습니다. 잠시 후 다시 시도해주세요.");
-        this.exchangeResult = null;
+        console.error("환율 정보를 가져오는데 실패했습니다.", error)
+        alert("환율 정보를 가져오는데 실패했습니다. 잠시 후 다시 시도해주세요.")
+        this.exchangeResult = null
       }
     },
     formatNumber(value) {
-      if (value === null || isNaN(value)) return "0";
-      return new Intl.NumberFormat().format(value);
+      if (value === null || isNaN(value)) return "0"
+      return new Intl.NumberFormat().format(value)
     },
   },
   async mounted() {
-    await this.fetchExchangeRate();
+    await this.fetchExchangeRate()
   }
 };
 </script>

@@ -65,13 +65,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { useAuthStore } from '@/stores/auth';
-import { RouterLink } from 'vue-router';
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
+import { RouterLink } from 'vue-router'
 
-const articles = ref([]);
-const store = useAuthStore();
+const articles = ref([])
+const store = useAuthStore()
 
 const fetchArticles = async () => {
   try {
@@ -79,22 +79,22 @@ const fetchArticles = async () => {
       method: 'get',
       url: 'http://127.0.0.1:8000/articles/articles/',
       headers: store.token ? { Authorization: `Token ${store.token}` } : {}
-    });
+    })
     
     if (Array.isArray(response.data)) {
-      articles.value = response.data;
+      articles.value = response.data
     } else if (response.data.results) {
-      articles.value = response.data.results;
+      articles.value = response.data.results
     }
   } catch (error) {
-    console.error('게시글 데이터를 가져오는 중 오류가 발생했습니다:', error);
+    console.error('게시글 데이터를 가져오는 중 오류가 발생했습니다:', error)
   }
-};
+}
 
 const toggleLike = async (article) => {
   if (!store.isLogin) {
-    alert('좋아요를 누르려면 로그인이 필요합니다.');
-    return;
+    alert('좋아요를 누르려면 로그인이 필요합니다.')
+    return
   }
 
   try {
@@ -102,19 +102,19 @@ const toggleLike = async (article) => {
       method: 'post',
       url: `http://127.0.0.1:8000/articles/articles/${article.id}/like/`,
       headers: { Authorization: `Token ${store.token}` }
-    });
+    })
     
-    article.is_liked = response.data.is_liked;
-    article.like_count = response.data.like_count;
+    article.is_liked = response.data.is_liked
+    article.like_count = response.data.like_count
   } catch (error) {
-    console.error('좋아요 처리 중 오류가 발생했습니다:', error);
-    alert('좋아요 처리 중 오류가 발생했습니다.');
+    console.error('좋아요 처리 중 오류가 발생했습니다:', error)
+    alert('좋아요 처리 중 오류가 발생했습니다.')
   }
-};
+}
 
 onMounted(() => {
-  fetchArticles();
-});
+  fetchArticles()
+})
 </script>
 
 <style scoped>
